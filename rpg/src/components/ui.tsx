@@ -3,13 +3,14 @@ import type { Item, Resources } from '../game/types';
 import { RARITY_BORDERS, RARITY_COLORS, RARITY_NAMES, RES_INFO, SLOT_INFO } from '../game/data/world';
 import { fmt } from '../game/engine/state';
 import { sfx } from '../game/audio';
+import { Icon, Sigil } from './icons';
 
 export function Panel({ title, icon, children, className = '', right }: { title?: ReactNode; icon?: string; children: ReactNode; className?: string; right?: ReactNode }) {
   return (
     <section className={`panel rounded-xl p-3 sm:p-4 ${className}`}>
       {title && (
         <div className="flex items-center justify-between gap-2 mb-3">
-          <h3 className="font-display text-sm sm:text-base text-bone tracking-wide flex items-center gap-2">{icon && <span>{icon}</span>}{title}</h3>
+          <h3 className="font-display text-sm sm:text-base text-bone tracking-wide flex items-center gap-2">{icon && <Icon name={icon} size={30} />}{title}</h3>
           {right}
         </div>
       )}
@@ -73,7 +74,7 @@ export function ItemCard({ it, onClick, selected, equipped, compact }: { it: Ite
   return (
     <button onClick={onClick} className={`text-left rounded-lg border ${RARITY_BORDERS[it.rarity]} bg-black/40 p-2 w-full transition ${selected ? 'ring-2 ring-ember' : ''} hover:bg-white/5`}>
       <div className="flex items-start gap-2">
-        <span className="text-lg">{SLOT_INFO[it.slot].icon}</span>
+        <Sigil emoji={SLOT_INFO[it.slot].icon} size={34} tone={(['bone', 'teal', 'violet', 'gold', 'blood', 'teal'] as const)[it.rarity]} />
         <div className="min-w-0 flex-1">
           <div className={`text-xs font-semibold truncate ${RARITY_COLORS[it.rarity]}`}>{it.name}{it.plus ? ` +${it.plus}` : ''}{it.locked ? ' 🔒' : ''}</div>
           <div className="text-[10px] text-mist">{RARITY_NAMES[it.rarity]} · Lv {it.ilvl}{equipped ? ' · equipaggiato' : ''}</div>

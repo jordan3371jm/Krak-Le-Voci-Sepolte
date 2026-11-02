@@ -513,6 +513,10 @@ export function startNewCycle(s: GameState, cardId: string, heirloomUid: string 
   n.valley.rebirthUntil = Date.now() + 3600_000;
   n.valley.prosperity = 45; n.valley.blight = 15;
   n.flags = ['new_cycle'];
+  // dal secondo Ciclo in poi niente guida: il portatore conosce già la valle
+  n.unlocked = [...s.unlocked];
+  n.tipsSeen = [...s.tipsSeen];
+  n.tutorial = 999;
   n.scene = 'intro';
   return n;
 }

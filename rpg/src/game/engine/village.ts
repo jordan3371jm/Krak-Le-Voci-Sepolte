@@ -4,6 +4,7 @@ import { ACHIEVEMENTS, BUILDINGS, DAILY_POOL, EXPEDITIONS, FISH, UPGRADE_THRESHO
 import { pick, todayKey, uid, weighted } from '../rng';
 import { addFlag, addRes, canAfford, cardMod, chronicle, hasFlag, intuitionCap, pay, prodMult, sanct, stat, toast, valleyState } from './state';
 import { addItem, companionXp, equip, gainXp, heroStats, makeItem, rollRarity } from './hero';
+import { onboard } from './onboarding';
 import { changeRep, checkStars, createPromise, generateDreams, pushValley, randomFragment, refreshMarket, resolveContracts } from './meta';
 
 // ============================================================
@@ -180,6 +181,7 @@ export function tick(s: GameState, dtMs: number, now = Date.now(), offline = fal
   if (s.world.day !== todayKey()) { s.world = { day: todayKey(), bossDamage: 0, bossTries: 0 }; }
   resolveContracts(s);
   checkAchievements(s);
+  onboard(s);
   s.lastTick = now;
 }
 

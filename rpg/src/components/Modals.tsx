@@ -7,6 +7,7 @@ import { applyEffect, trialRespond, trialScores } from '../game/engine/meta';
 import { addFlag, fillText } from '../game/engine/state';
 import { heartbeat, sfx } from '../game/audio';
 import { Btn, Modal } from './ui';
+import { Icon } from './icons';
 
 export default function Modals({ state: s, act }: { state: GameState; act: Act }) {
   const m = s.modal;
@@ -20,7 +21,7 @@ export default function Modals({ state: s, act }: { state: GameState; act: Act }
     if (!ev) { close(); return null; }
     return (
       <Modal>
-        <div className="text-4xl text-center mb-2">{ev.icon}</div>
+        <div className="flex justify-center mb-2"><Icon name={ev.icon} size={72} /></div>
         <h2 className="text-xl text-center text-bone mb-1">{ev.title}</h2>
         <p className="text-[11px] text-center text-mist mb-3">Il mondo ricorda. Una conseguenza ti aspettava al villaggio.</p>
         <p className="text-sm text-bone/85 italic mb-4">{fillText(s, ev.text)}</p>
@@ -49,7 +50,7 @@ export default function Modals({ state: s, act }: { state: GameState; act: Act }
     const F = s.fardello ? FARDELLI[s.fardello] : null;
     return (
       <Modal wide>
-        <div className="text-5xl text-center mb-2">⚖️</div>
+        <div className="flex justify-center mb-2"><Icon name="fazioni" size={80} /></div>
         <h2 className="text-2xl text-center text-bone">Il Processo alle Proprie Scelte</h2>
         <p className="text-sm text-center text-bone/70 italic mb-4">Ti svegli in un'aula di pietra. I giudici hanno il tuo volto. {F ? `Il testimone principale è ${F.name}.` : ''} Le tue Echi siedono tra il pubblico.</p>
         <div className="grid sm:grid-cols-2 gap-3 mb-4">

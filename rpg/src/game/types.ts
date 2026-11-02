@@ -320,8 +320,14 @@ export interface GameState {
   trialOutcome: string | null;
   ending: string | null;
 
-  settings: { music: boolean; sfx: boolean; autoBattle: boolean; autoPotion: number; fastCombat: boolean; purifiedUntil: number; reduceFx: boolean };
+  settings: { music: boolean; musicVolume: number; sfx: boolean; autoBattle: boolean; autoPotion: number; fastCombat: boolean; purifiedUntil: number; reduceFx: boolean };
   fullscreen: boolean;
+
+  unlocked: string[];
+  newTabs: string[];
+  codexQueue: string[];
+  tutorial: number;
+  tipsSeen: string[];
 
   modal: Modal | null;
   toasts: Toast[];

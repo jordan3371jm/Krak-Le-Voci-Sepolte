@@ -2,6 +2,7 @@
 import type { GameState } from './types';
 import { newGame, SAVE_VERSION } from './engine/state';
 import { hashStr } from './rng';
+import { onboard } from './engine/onboarding';
 
 const KEY = 'krak_voci_sepolte_save';
 const BAK = 'krak_voci_sepolte_bak_';
@@ -39,6 +40,11 @@ export function migrate(raw: any): GameState | null {
   // nuovi compagni aggiunti in versioni successive
   for (const c of base.companions) if (!out.companions.some((x: any) => x.id === c.id)) out.companions.push(c);
   out.toasts = [];
+  if ((raw.version || 0) < 3) {
+    // partite precedenti: sblocca subito ciò che il giocatore ha già raggiunto e riaccende la nuova musica
+    out.settings.music = true;
+    if (out.scene === 'game') { onboard(out, true); out.toasts = []; }
+  }
   out.version = SAVE_VERSION;
   if (out.combat && !out.combat.party) out.combat = null;
   return out as GameState;

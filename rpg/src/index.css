@@ -76,3 +76,13 @@ button { font-family: inherit; }
 .res-glow { animation: pulseGlow 1.6s ease-in-out infinite; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+/* ---------- Guida, consigli, sblocchi ---------- */
+.guide-bar { background: linear-gradient(90deg, rgba(60, 36, 10, .85), rgba(20, 14, 10, .9)); border: 1px solid rgba(245, 181, 68, .35); box-shadow: 0 0 24px rgba(245, 181, 68, .08); }
+.tip-card { background: linear-gradient(135deg, rgba(56, 34, 10, .9), rgba(18, 12, 8, .95)); border: 1px solid rgba(245, 181, 68, .4); }
+.unlock-glow { filter: drop-shadow(0 0 18px rgba(245, 181, 68, .55)); animation: breathe 3.5s ease-in-out infinite; }
+@keyframes newPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(245, 181, 68, .5) } 50% { box-shadow: 0 0 0 6px rgba(245, 181, 68, 0) } }
+.tab-new { animation: newPulse 1.8s ease-out infinite; border-radius: 8px; }
+/* emoji incastonati: tono antico, coerente con le icone */
+.sigil-glyph { filter: sepia(.55) saturate(1.25) contrast(1.05) drop-shadow(0 1px 1px #000) drop-shadow(0 0 4px rgba(245, 181, 68, .35)); line-height: 1; }
+.portal-bg { background: radial-gradient(ellipse at 50% 20%, rgba(120, 40, 160, .35), transparent 55%), radial-gradient(ellipse at 50% 110%, rgba(196, 66, 26, .45), transparent 60%), #070507; }

@@ -3,7 +3,7 @@ import { COMPANIONS, FACTION_IDS, FARDELLI } from '../data/core';
 import { CONSTELLATIONS, FATE_CARDS, SANCTUARY, STARS, VALLEY_EFFECTS } from '../data/world';
 import { clamp, todayKey } from '../rng';
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const MAX_LEVEL = 40;
 
 export function emptyRes(): Resources {
@@ -46,8 +46,9 @@ export function newGame(): GameState {
     cycle: { n: 1, memorie: 0, memorieTotal: 0, sanctuary: {}, card: null, cardOffer: [], heirloom: null },
     legacies: [], dreams: [],
     trial: 'none', trialOutcome: null, ending: null,
-    settings: { music: true, sfx: true, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
+    settings: { music: true, musicVolume: 0.55, sfx: true, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
     fullscreen: false,
+    unlocked: [], newTabs: [], codexQueue: [], tutorial: 0, tipsSeen: [],
     modal: null, toasts: [],
   };
 }

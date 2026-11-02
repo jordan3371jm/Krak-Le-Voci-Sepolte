@@ -14,6 +14,9 @@ import { sharedWorld } from '../game/engine/meta';
 import { todayKey } from '../game/rng';
 import { sfx } from '../game/audio';
 import { Bar, Btn, ItemCard, Panel, Tag } from './ui';
+import { Icon, Sigil } from './icons';
+import { Tip } from './Guide';
+import { isUnlocked } from '../game/engine/onboarding';
 
 function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
   const [start, setStart] = useState<Record<string, number>>({});
@@ -34,7 +37,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
             <section key={id} className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg} ${unlocked ? '' : 'opacity-50'}`}>
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-lg text-bone">{B.icon} {biomeName(s, id, B)}</h3>
+                  <h3 className="text-lg text-bone flex items-center gap-2"><Sigil emoji={B.icon} size={36} tone="violet" /> {biomeName(s, id, B)}</h3>
                   {s.fardello && biomeName(s, id, B) !== B.name && <p className="text-[10px] text-mist">Gli altri lo chiamano «{B.name}». Tu lo vedi diversamente.</p>}
                   <p className="text-xs text-bone/70 italic mt-1">{B.desc}</p>
                 </div>
@@ -61,17 +64,17 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
         })}
       </div>
 
-      <Panel title="Boss Mondiale: il Colosso di Cenere" icon="🗻" right={<span className="text-xs text-mist">Tentativi oggi: {s.world.bossTries}/3</span>}>
+      {isUnlocked(s, 'f_worldboss') && <Panel title="Boss Mondiale: il Colosso di Cenere" icon="boss" right={<span className="text-xs text-mist">Tentativi oggi: {s.world.bossTries}/3</span>}>
         <p className="text-xs text-bone/70 mb-2">Ogni giorno tutti i portatori della valle colpiscono lo stesso Colosso. {w.bearers} portatori oggi. Più danni infliggi in 10 round, migliori le ricompense.</p>
         <Bar value={bossHp} max={w.bossMax} color="bg-gradient-to-r from-orange-700 to-red-600" label={<><span>Salute condivisa</span><span>{fmt(bossHp)} / {fmt(w.bossMax)}</span></>} />
         <div className="flex items-center gap-3 mt-2">
           <Btn kind="bad" disabled={!s.fardello || !!s.delve || s.world.bossTries >= 3 || s.hero.hp < heroStats(s).maxHp * 0.3} onClick={() => act(d => startWorldBoss(d))}>Affronta il Colosso</Btn>
           <span className="text-xs text-mist">I tuoi danni oggi: {fmt(s.world.bossDamage)}</span>
         </div>
-      </Panel>
+      </Panel>}
 
-      {s.fardello && (
-        <Panel title={`L'Ombra del Fardello: ${FARDELLI[s.fardello].shadowName}`} icon="🖤">
+      {s.fardello && s.influence >= 8 && (
+        <Panel title={`L'Ombra del Fardello: ${FARDELLI[s.fardello].shadowName}`} icon="shadow">
           <Bar value={s.influence} max={40} color="bg-gradient-to-r from-stone-700 to-black" label={<><span>Influenza del Fardello</span><span>{Math.floor(s.influence)}/40</span></>} />
           <p className="text-xs text-mist mt-2">Ogni azione coerente nutre il tuo Fardello. Oltre 40, la sua Ombra (la versione estrema della tua scelta) inizia ad apparire nei dungeon come boss opzionale. Sconfiggerla lascia un Frammento e riduce l'influenza.</p>
         </Panel>
@@ -96,7 +99,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
         <section className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg}`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h2 className="text-lg text-bone">{B.icon} {biomeName(s, d.biome, B)}</h2>
+              <h2 className="text-lg text-bone flex items-center gap-2"><Sigil emoji={B.icon} size={34} tone="violet" /> {biomeName(s, d.biome, B)}</h2>
               <p className="text-xs text-mist">Piano <b className="text-ember text-base">{d.floor}</b>{B.depth ? ` / ${B.depth}` : ''} · Specchio: <span className="text-fate">{d.emotion}</span> · {valleyFx(s).icon}</p>
             </div>
             <div className="flex flex-wrap gap-1">{d.modifiers.map(m => <Tag key={m} className="border-fate/50 text-purple-200"><span title={DUNGEON_MODIFIERS[m].desc}>{DUNGEON_MODIFIERS[m].name}</span></Tag>)}{d.ghostAlly && <Tag className="text-teal-200">👻 Eco alleata</Tag>}</div>
@@ -105,12 +108,18 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
         </section>
 
         {/* Porte */}
+        {d.floor === 1 && !room && !d.floorCleared && (
+          <Tip id="delve" state={s} act={act} title="Come si scende">
+            <p>Ogni piano ti offre delle porte: scegline una. <b>Spade</b> = scontro, <b>?</b> = evento narrativo, <b>candela</b> = santuario per curarti, <b>forziere</b> = tesoro.</p>
+            <p>Il bottino va nella <b>Bisaccia</b> (a destra): è al sicuro solo quando torni in superficie. Ogni piano costa 1 Provvista. Ogni 5 piani c'è un boss.</p>
+          </Tip>
+        )}
         {!room && !d.floorCleared && (
           <Panel title="Scegli una porta" icon="🚪">
             <div className={`grid gap-3 ${d.doors.length === 1 ? '' : d.doors.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
               {d.doors.map((o, i) => (
                 <button key={i} onClick={() => { sfx.door(); act(x => chooseDoor(x, i)); }} className="rounded-xl border border-stone-700 hover:border-ember bg-black/50 p-4 text-center transition hover:-translate-y-0.5">
-                  <div className="text-4xl mb-1">{lie && o.type !== 'boss' ? '❔' : ROOM_ICONS[o.type]}</div>
+                  <div className="flex justify-center mb-2"><Icon name={lie && o.type !== 'boss' ? 'event' : o.type} size={64} /></div>
                   <div className="text-sm text-bone">{lie && o.type !== 'boss' ? '???' : ROOM_NAMES[o.type]}</div>
                   <div className="text-[11px] text-mist italic mt-1">«{o.hint}»</div>
                 </button>
@@ -122,7 +131,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
 
         {/* Stanza */}
         {room && (
-          <Panel title={ev && !postBoss ? ev.title : ROOM_NAMES[room.type]} icon={ev && !postBoss ? ev.icon : ROOM_ICONS[room.type]}>
+          <Panel title={ev && !postBoss ? ev.title : ROOM_NAMES[room.type]} icon={ev && !postBoss ? ev.icon : room.type}>
             {room.text && <p className="text-sm text-bone/85 mb-3 whitespace-pre-line">{room.text}</p>}
             {room.type === 'event' && ev && !room.resolved && (
               <>

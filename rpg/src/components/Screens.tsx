@@ -295,6 +295,9 @@ export function Settings({ state: s, act, replace, saveNow, onFullscreen }: { st
       <Panel title="Rito e Suono" icon="🎧">
         <div className="space-y-2 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" checked={s.settings.music} onChange={() => act(d => { d.settings.music = !d.settings.music; })} /> Musica e ambiente</label>
+          <div className="text-xs text-mist">Volume musica {Math.round((s.settings.musicVolume ?? 0.55) * 100)}%
+            <input type="range" min={0} max={1} step={0.05} value={s.settings.musicVolume ?? 0.55} onChange={e => { const v = +e.target.value; act(d => { d.settings.musicVolume = v; }); }} className="w-full" />
+          </div>
           <label className="flex items-center gap-2"><input type="checkbox" checked={s.settings.sfx} onChange={() => act(d => { d.settings.sfx = !d.settings.sfx; })} /> Effetti sonori</label>
           <p className="text-[11px] text-mist">L'audio è meccanico: con il suono attivo senti (e vedi) gli intenti dei nemici invisibili. Il silenzio totale arriva quando la Dissonanza è al massimo.</p>
           <Btn onClick={onFullscreen}>{s.fullscreen ? 'Esci dal Rito' : '⛶ Entra nel Rito (schermo intero)'}</Btn>

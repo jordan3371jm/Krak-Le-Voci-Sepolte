@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGame } from './game/useGame';
 import { BIOMES } from './game/data/enemies';
 import { corruptedUI, toast } from './game/engine/state';
-import { initAudio, setMood, setMusic, setSfx, sfx } from './game/audio';
+import { initAudio, setMood, setMusic, setMusicVolume, setSfx, sfx } from './game/audio';
 import Intro from './components/Intro';
+import { Icon, ICON_NAMES } from './components/icons';
 import HUD, { Nav } from './components/HUD';
-import Village from './components/Village';
+import Village, { PortalScreen } from './components/Village';
+import { Codex, GuideBar, UnlockCard } from './components/Guide';
 import Delve from './components/Delve';
 import Combat from './components/Combat';
 import Hero from './components/Hero';
@@ -15,14 +17,16 @@ import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from 
 
 export default function App() {
   const { state: s, act, replace, saveNow } = useGame();
+  const [codex, setCodex] = useState(false);
 
   // ---------------- audio come sistema ----------------
   useEffect(() => { setMusic(s.settings.music); }, [s.settings.music]);
+  useEffect(() => { setMusicVolume(s.settings.musicVolume ?? 0.55); }, [s.settings.musicVolume]);
   useEffect(() => { setSfx(s.settings.sfx); }, [s.settings.sfx]);
   useEffect(() => {
     const root = s.combat ? (s.combat.kind === 'boss' ? 41 : 49) : s.delve ? BIOMES[s.delve.biome].drone : 55;
-    setMood({ root, corruption: s.corruption, fullscreen: s.fullscreen, intensity: s.combat ? 1 : s.delve ? 0.5 : 0.1, silent: s.dissonance >= 15 });
-  }, [s.combat?.kind, !!s.combat, s.delve?.biome, Math.round(s.corruption / 10), s.fullscreen, s.dissonance >= 15]); // eslint-disable-line react-hooks/exhaustive-deps
+    setMood({ scene: s.scene !== 'game' ? 'menu' : s.combat ? (s.combat.kind === 'boss' || s.combat.kind === 'shadow' || s.combat.kind === 'trial' ? 'boss' : 'combat') : s.delve ? 'delve' : 'village', root, corruption: s.corruption, fullscreen: s.fullscreen, intensity: s.combat ? 1 : s.delve ? 0.5 : 0.1, silent: s.dissonance >= 15 });
+  }, [s.scene, s.combat?.kind, !!s.combat, s.delve?.biome, Math.round(s.corruption / 10), s.fullscreen, s.dissonance >= 15]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const unlock = () => initAudio();
     window.addEventListener('pointerdown', unlock, { once: true });
@@ -62,8 +66,12 @@ export default function App() {
     return () => window.clearTimeout(t);
   }, [firstToast, act]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  if (typeof location !== 'undefined' && location.hash === '#icone') return (
+    <div className="p-6 grid grid-cols-6 sm:grid-cols-10 gap-4">{ICON_NAMES.map(n => <div key={n} className="text-center text-[10px] text-mist"><Icon name={n} size={64} /><div>{n}</div></div>)}</div>
+  );
   if (s.scene === 'intro') return <Intro state={s} act={act} />;
   if (s.scene === 'ending') return <Ending state={s} act={act} replace={replace} />;
+  if (!s.fardello) return <PortalScreen act={act} />;
 
   const corrupt = corruptedUI(s) && !s.settings.reduceFx;
   return (
@@ -71,9 +79,10 @@ export default function App() {
       {corrupt && <div className="vignette vignette-corrupt" />}
       {s.fullscreen && !s.settings.reduceFx && <div className="vignette vignette-rite" />}
       <div className="sticky top-0 z-30">
-        <HUD state={s} act={act} onFullscreen={toggleFullscreen} />
+        <HUD state={s} act={act} onFullscreen={toggleFullscreen} onCodex={() => setCodex(true)} />
         <Nav state={s} act={act} />
       </div>
+      {!s.combat && <GuideBar state={s} act={act} />}
       <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16">
         {s.combat ? <Combat state={s} act={act} /> : (
           <>
@@ -96,6 +105,8 @@ export default function App() {
         ))}
       </div>
       <Modals state={s} act={act} />
+      {!s.modal && !s.combat && s.codexQueue.length > 0 && <UnlockCard state={s} act={act} />}
+      {codex && <Codex state={s} onClose={() => setCodex(false)} />}
     </div>
   );
 }

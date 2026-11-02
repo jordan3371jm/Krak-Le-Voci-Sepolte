@@ -9,6 +9,9 @@ import { resonanceMax } from '../game/engine/hero';
 import { hasFlag } from '../game/engine/state';
 import { sfx } from '../game/audio';
 import { Bar, Btn, Tag } from './ui';
+import { Icon, Sigil } from './icons';
+import { Tip } from './Guide';
+import { isUnlocked } from '../game/engine/onboarding';
 
 const NATURE_LABEL: Record<string, string> = { protect: 'protezione', sacrifice: 'sacrificio', cruel: 'crudeltà', betray: 'tradimento', silent: 'silenzio', faith: 'fede', blood: 'sangue', neutral: 'neutra' };
 
@@ -28,7 +31,7 @@ function Unit({ u, s, targetable, onClick }: { u: Combatant; s: GameState; targe
         <span key={f.id} className={`fx-float text-sm ${f.kind === 'heal' ? 'text-green-300' : f.kind === 'crit' ? 'text-yellow-300 text-lg' : f.kind === 'miss' ? 'text-sky-300' : f.kind === 'echo' ? 'text-teal-200 text-lg' : f.kind === 'status' ? 'text-purple-300 text-xs' : 'text-red-300'}`} style={{ top: `${-4 - i * 14}px` }}>{f.text}</span>
       ))}
       <div className="flex items-center gap-2">
-        <span className={`text-3xl ${boss ? 'text-4xl' : ''}`}>{u.icon}</span>
+        {u.uid === 'hero' ? <Icon name={s.aberration ? 'corruzione' : s.classId} size={46} /> : <Sigil emoji={u.icon} size={boss ? 56 : 44} tone={u.side === 'enemy' ? (boss ? 'blood' : 'ember') : 'teal'} />}
         <div className="min-w-0 flex-1">
           <div className="text-xs text-bone truncate">{u.name}{u.row === 'back' ? <span className="text-[9px] text-mist"> · retrovia</span> : ''}</div>
           <Bar value={u.hp} max={u.maxHp} color={u.side === 'enemy' ? 'bg-gradient-to-r from-red-900 to-red-500' : 'bg-gradient-to-r from-emerald-800 to-emerald-500'} height="h-1.5" />
@@ -107,12 +110,19 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
 
   return (
     <div className="max-w-5xl mx-auto space-y-3">
+      {(s.totals.kills || 0) === 0 && (
+        <Tip id="combat" state={s} act={act} title="Il tuo primo scontro">
+          <p>1. Tocca un'<b>abilità</b>, poi il <b>nemico</b> da colpire. L'attacco base dà Focus (◆), le abilità forti lo spendono.</p>
+          <p>2. Bordo <span className="text-resonance font-semibold">verde</span> = l'azione è coerente col tuo Fardello e carica la Risonanza. Bordo <span className="text-dissonance font-semibold">rosso</span> = gli è contraria e genera Dissonanza. Nessuna è sbagliata.</p>
+          <p>3. Sotto ogni nemico (⚠) vedi la sua prossima mossa. Le pozioni non consumano il turno.</p>
+        </Tip>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base sm:text-lg text-bone">{c.title}</h2>
         <div className="flex items-center gap-2 text-xs">
           <Tag>Round {c.round}</Tag>
           {c.kind === 'boss' && <Tag className="border-red-700 text-red-300">Scacchiera del boss</Tag>}
-          <label className="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked={s.settings.autoBattle} onChange={() => act(d => { d.settings.autoBattle = !d.settings.autoBattle; })} />Auto</label>
+          {isUnlocked(s, 'f_auto') && <label className="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked={s.settings.autoBattle} onChange={() => act(d => { d.settings.autoBattle = !d.settings.autoBattle; })} />Auto</label>}
           <label className="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked={s.settings.fastCombat} onChange={() => act(d => { d.settings.fastCombat = !d.settings.fastCombat; })} />Veloce</label>
         </div>
       </div>
@@ -167,7 +177,7 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
               );
             })}
           </div>
-          <details className="text-xs">
+          {isUnlocked(s, 'f_dark') && <details className="text-xs">
             <summary className="cursor-pointer text-dissonance/90">〰 Azioni di Dissonanza (potenti, destabilizzanti)</summary>
             <div className="grid sm:grid-cols-3 gap-2 mt-2">
               {darkSkills.map(sk => { const ok = canUseSkill(s, sk.id); return (
@@ -177,11 +187,11 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
                 </button>
               ); })}
             </div>
-          </details>
+          </details>}
           <div className="flex flex-wrap gap-2 items-center">
             <Btn small kind="good" disabled={s.potions < 1 || c.phase !== 'player' || (hero.cds['__potion'] || 0) > 0} onClick={() => act(d => usePotion(d))}>🧪 Pozione ({s.potions})</Btn>
             <Btn small disabled={c.phase !== 'player' || c.repositioned} onClick={() => act(d => reposition(d))}>↔️ {hero.row === 'front' ? 'Arretra' : 'Avanza'}</Btn>
-            {F && hasLiar && !c.wordUsed && (
+            {F && hasLiar && !c.wordUsed && (hasFlag(s, 'know_word') || s.hero.level >= 4) && (
               <span className="flex items-center gap-1">
                 <input value={word} onChange={e => setWord(e.target.value)} placeholder="Parola d'Ordine…" className="bg-black/60 border border-fate/50 rounded px-2 py-1 text-xs w-32" />
                 <Btn small kind="fate" disabled={!word || c.phase !== 'player'} onClick={() => { act(d => { speakWord(d, word); }); setWord(''); }}>Pronuncia</Btn>

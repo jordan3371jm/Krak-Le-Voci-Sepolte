@@ -16,7 +16,7 @@ export const RES_INFO: Record<ResKey | 'reliquie', { name: string; icon: string;
 export interface BuildingDef { id: string; name: string; icon: string; desc: string; cost: Partial<Resources>; prod: Partial<Resources>; max?: number; unlock?: { building: string; count: number } }
 export const BUILDINGS: BuildingDef[] = [
   { id: 'segheria', name: 'Segheria', icon: '🪓', desc: 'Produce legno.', cost: { cenere: 12 }, prod: { legno: 0.3 } },
-  { id: 'capanna', name: 'Capanna dei Raccoglitori', icon: '🛖', desc: 'Produce provviste per le spedizioni.', cost: { legno: 20 }, prod: { provviste: 0.014 } },
+  { id: 'capanna', name: 'Capanna dei Raccoglitori', icon: '🛖', desc: 'Produce provviste per le spedizioni.', cost: { legno: 20 }, prod: { provviste: 0.02 } },
   { id: 'bottega', name: 'Bottega delle Gilde', icon: '🏪', desc: 'Produce cenere.', cost: { legno: 25, pietra: 5 }, prod: { cenere: 0.35 }, unlock: { building: 'segheria', count: 1 } },
   { id: 'cava', name: 'Cava di Pietra', icon: '⛏️', desc: 'Produce pietra.', cost: { legno: 35 }, prod: { pietra: 0.18 }, unlock: { building: 'segheria', count: 2 } },
   { id: 'fucina', name: 'Fucina', icon: '🔥', desc: 'Produce ferro.', cost: { pietra: 45, legno: 25 }, prod: { ferro: 0.09 }, unlock: { building: 'cava', count: 2 } },
