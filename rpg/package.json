@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node -e \"require('fs').copyFileSync('dist/index.html','../GIOCA.html')\"",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
@@ -19,7 +19,8 @@
     "@vitejs/plugin-react": "^4.3.4",
     "tailwindcss": "^4.1.7",
     "typescript": "^5.7.0",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vite-plugin-singlefile": "^2.3.0"
   },
   "version": "0.2.0"
 }
