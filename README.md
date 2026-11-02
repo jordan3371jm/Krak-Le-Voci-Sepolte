@@ -8,16 +8,22 @@ RPG narrativo-tattico **web-native** che fonde:
 - il loop idle/gestionale di **Hondovalle** (Playgama): villaggio che produce anche offline, edifici, eventi, pesca, ere/prestigio, giornaliere, imprese;
 - il loop RPG di **Krak Realm**: classi, equipaggiamento a rarità e affissi, discesa nei dungeon a piani con bisaccia da mettere al sicuro, auto-battaglia, forgiatura, boss mondiale, bestiario, talenti, ascensione.
 
-## Avvio
+## Giocare subito
+
+Fai **doppio clic su `GIOCA.html`** (nella cartella principale): è tutto il gioco in un unico file e funziona anche senza server.
+
+## Avvio per sviluppare
 
 ```bash
 cd rpg
 npm install
 npm run dev        # http://localhost:3000
-npm run build      # build statica in rpg/dist (base relativa: funziona da qualunque cartella)
+npm run build      # crea rpg/dist/index.html (file unico) e lo copia in GIOCA.html
 ```
 
 Per pubblicare su Playgama/itch.io basta comprimere il contenuto di `rpg/dist`.
+
+> Non aprire `rpg/index.html` con doppio clic: è il file sorgente per lo sviluppo e mostra una pagina nera.
 
 ## Cosa c'è nel gioco
 
