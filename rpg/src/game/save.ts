@@ -1,68 +1,108 @@
+// Salvataggio robusto (GDD §21): autosave, backup rotanti, checksum, migrazione, codice di esportazione.
 import type { GameState } from './types';
+import { newGame, SAVE_VERSION } from './engine/state';
+import { hashStr } from './rng';
 
-const SAVE_KEY = 'hondovalle_save_v1';
+const KEY = 'krak_voci_sepolte_save';
+const BAK = 'krak_voci_sepolte_bak_';
+const BAK_SLOTS = 3;
+const LEGACY_KEY = 'hondovalle_save_v1';
 
-export function saveGame(state: GameState): boolean {
+function strip(s: GameState): GameState {
+  return { ...s, toasts: [], modal: s.modal && s.modal.kind === 'welcome' ? null : s.modal };
+}
+function wrap(s: GameState): string {
+  const body = JSON.stringify(strip(s));
+  return JSON.stringify({ v: SAVE_VERSION, sum: hashStr(body), body });
+}
+function unwrap(raw: string | null): GameState | null {
+  if (!raw) return null;
   try {
-    const data = JSON.stringify(state);
-    localStorage.setItem(SAVE_KEY, data);
+    const o = JSON.parse(raw);
+    if (!o || typeof o.body !== 'string') return null;
+    if (hashStr(o.body) !== o.sum) return null; // corruzione rilevata
+    return migrate(JSON.parse(o.body));
+  } catch {
+    return null;
+  }
+}
+
+// Completa i campi mancanti con i valori di default (compatibilità tra versioni)
+export function migrate(raw: any): GameState | null {
+  if (!raw || typeof raw !== 'object' || !raw.hero || !raw.res) return null;
+  const base = newGame();
+  const out: any = { ...base, ...raw };
+  for (const k of ['hero', 'res', 'village', 'valley', 'world', 'daily', 'events', 'cycle', 'settings', 'market', 'biomes', 'factions'] as const) {
+    out[k] = { ...(base as any)[k], ...(raw[k] || {}) };
+  }
+  for (const b of Object.keys(base.biomes)) out.biomes[b] = { ...(base.biomes as any)[b], ...(raw.biomes?.[b] || {}) };
+  // nuovi compagni aggiunti in versioni successive
+  for (const c of base.companions) if (!out.companions.some((x: any) => x.id === c.id)) out.companions.push(c);
+  out.toasts = [];
+  out.version = SAVE_VERSION;
+  if (out.combat && !out.combat.party) out.combat = null;
+  return out as GameState;
+}
+
+let lastBackup = 0;
+export function saveGame(s: GameState): boolean {
+  if (s.scene === 'intro' && !s.playerName && s.cycle.n === 1) return false;
+  try {
+    const data = wrap({ ...s, lastSave: Date.now() });
+    localStorage.setItem(KEY, data);
+    const now = Date.now();
+    if (now - lastBackup > 5 * 60_000) {
+      lastBackup = now;
+      const slot = Math.floor(now / (5 * 60_000)) % BAK_SLOTS;
+      localStorage.setItem(BAK + slot, data);
+    }
     return true;
   } catch (e) {
-    console.error('Save failed:', e);
+    console.warn('Salvataggio fallito', e);
     return false;
   }
 }
 
 export function loadGame(): GameState | null {
   try {
-    const data = localStorage.getItem(SAVE_KEY);
-    if (!data) return null;
-    return JSON.parse(data) as GameState;
-  } catch (e) {
-    console.error('Load failed:', e);
-    return null;
-  }
-}
-
-export function deleteSave(): void {
-  localStorage.removeItem(SAVE_KEY);
-}
-
-export function exportSaveCode(state: GameState): string {
-  try {
-    const data = JSON.stringify(state);
-    return btoa(encodeURIComponent(data));
-  } catch {
-    return '';
-  }
-}
-
-export function importSaveCode(code: string): GameState | null {
-  try {
-    const data = decodeURIComponent(atob(code));
-    return JSON.parse(data) as GameState;
+    const main = unwrap(localStorage.getItem(KEY));
+    if (main) return main;
+    // fallback sui backup rotanti, il più recente valido
+    const baks: GameState[] = [];
+    for (let i = 0; i < BAK_SLOTS; i++) { const b = unwrap(localStorage.getItem(BAK + i)); if (b) baks.push(b); }
+    baks.sort((a, b) => b.lastSave - a.lastSave);
+    return baks[0] || null;
   } catch {
     return null;
   }
 }
 
-const LEGACY_KEY = 'hondovalle_legacy';
-
-export function saveLegacyToLocal(legacy: any): void {
-  try {
-    const existing = loadLegacyFromLocal();
-    const updated = [...existing, legacy];
-    localStorage.setItem(LEGACY_KEY, JSON.stringify(updated));
-  } catch (e) {
-    console.error('Legacy save failed:', e);
-  }
+export function hasSave(): boolean {
+  try { return !!loadGame(); } catch { return false; }
+}
+export function hasOldSave(): boolean {
+  try { return !!localStorage.getItem(LEGACY_KEY); } catch { return false; }
 }
 
-export function loadLegacyFromLocal(): any[] {
+export function deleteSave() {
   try {
-    const data = localStorage.getItem(LEGACY_KEY);
-    return data ? JSON.parse(data) : [];
+    localStorage.removeItem(KEY);
+    for (let i = 0; i < BAK_SLOTS; i++) localStorage.removeItem(BAK + i);
+  } catch { /* ignora */ }
+}
+
+// Codice di esportazione (Save Claim su un altro dispositivo)
+export function exportCode(s: GameState): string {
+  const body = JSON.stringify(strip(s));
+  const payload = JSON.stringify({ v: SAVE_VERSION, sum: hashStr(body), body });
+  return 'KRAK1.' + btoa(unescape(encodeURIComponent(payload)));
+}
+export function importCode(code: string): GameState | null {
+  try {
+    const c = code.trim().replace(/^KRAK1\./, '');
+    const payload = decodeURIComponent(escape(atob(c)));
+    return unwrap(payload);
   } catch {
-    return [];
+    return null;
   }
 }
