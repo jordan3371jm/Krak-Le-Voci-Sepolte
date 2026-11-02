@@ -1,283 +1,328 @@
-// Game Types - Hondovalle: Echi di Krak
+// ============================================================
+// KRAK — LE VOCI SEPOLTE · Tipi di gioco
+// "Il mondo non salva i tuoi progressi. Li ricorda."
+// ============================================================
 
-export type FardelloType = 'sacrificio' | 'sangue' | 'silenzio' | null;
+export type FardelloId = 'sacrificio' | 'sangue' | 'silenzio';
+export type ClassId = 'penitente' | 'lama' | 'veggente' | 'custode';
+export type Nature = 'protect' | 'sacrifice' | 'cruel' | 'betray' | 'silent' | 'faith' | 'blood' | 'neutral';
 
-export type FactionRep = {
-  culto: number;
-  capitale: number;
-  contadini: number;
-  guaritori: number;
-  eretici: number;
-};
+export type ResKey = 'cenere' | 'provviste' | 'legno' | 'pietra' | 'ferro' | 'intuizione';
+export type Resources = Record<ResKey, number>;
 
-export type Fardello = {
-  type: FardelloType;
+export type FactionId = 'culto' | 'capitale' | 'gilde' | 'contadini' | 'guaritori' | 'eretici' | 'ombre' | 'guardiani';
+export type RepState = 'Ignorato' | 'Tollerato' | 'Fidato' | 'Adorato' | 'Temuto' | 'Bandito' | 'Marchiato';
+
+export type StatKey = 'maxHp' | 'atk' | 'def' | 'crit' | 'critDmg' | 'dodge' | 'lifesteal' | 'thorns' | 'speed';
+export type Stats = Record<StatKey, number>;
+
+export type Slot = 'arma' | 'scudo' | 'elmo' | 'corazza' | 'stivali' | 'amuleto' | 'anello';
+export type Rarity = 0 | 1 | 2 | 3 | 4 | 5;
+
+export interface Item {
+  uid: string;
   name: string;
-  description: string;
+  slot: Slot;
+  rarity: Rarity;
+  ilvl: number;
+  plus: number;
+  stats: Partial<Stats>;
+  origin: string;      // valutazione narrativa ("storico delle anime")
+  locked?: boolean;
+}
+
+export type BiomeId = 'cimitero' | 'paludi' | 'torre' | 'abisso';
+export type ValleyState = 'Fioritura' | 'Quiete' | 'Tensione' | 'Corruzione' | 'Cenere' | 'Eclisse' | 'Rinascita';
+export type Emotion = 'colpa' | 'paura' | 'ambizione' | 'fede' | 'rabbia' | 'isolamento';
+
+export type StatusType =
+  | 'poison' | 'burn' | 'bleed' | 'weaken' | 'vulnerable' | 'shield'
+  | 'stun' | 'regen' | 'taunt' | 'dodgeUp' | 'atkUp' | 'defUp' | 'hidden';
+
+export interface Status { type: StatusType; dur: number; pot: number }
+
+export type SkillTarget = 'enemy' | 'allEnemies' | 'ally' | 'self' | 'allAllies';
+export type SkillKind = 'damage' | 'heal' | 'shield' | 'buff' | 'debuff' | 'drain';
+
+export interface Skill {
+  id: string;
+  name: string;
   icon: string;
-  weight: number;
-  resonanceMax: number;
-  echoName: string;
-  echoDescription: string;
-  shadowName: string;
-  secretWord?: string; // FEATURE: Parola d'Ordine del Fardello
-};
+  desc: string;
+  kind: SkillKind;
+  natures: Nature[];
+  target: SkillTarget;
+  power: number;          // moltiplicatore dell'attacco (o della cura)
+  focusCost?: number;
+  focusGain?: number;
+  cooldown: number;
+  melee?: boolean;
+  hits?: number;
+  selfDamage?: number;    // frazione degli HP massimi
+  dissonanceCost?: number;
+  status?: Status;        // applicato al bersaglio
+  selfStatus?: Status;    // applicato a chi lancia
+  executeBonus?: number;  // danni extra se bersaglio < 35%
+  extraTurn?: boolean;
+  betrayAlly?: number;    // frazione HP tolta a un compagno
+  burnSupply?: boolean;   // brucia una provvista
+  ignoreDef?: boolean;
+  loud?: boolean;         // abilità rumorose (Ascoltatori)
+}
 
-export type StatusEffectType = 'poison' | 'weaken' | 'shield' | 'stun' | 'regen';
+export interface Intent { skillId: string; targetUid: string; label: string }
 
-export type StatusEffect = {
-  type: StatusEffectType;
-  duration: number;
-  potency: number;
-};
-
-export type EnemyIntent = {
-  abilityId: string;
-  abilityName: string;
-  targetId: string;
-  description: string;
-};
-
-export type Position = {
-  x: number;
-  y: number;
-};
-
-export type Talent = {
-  id: string;
+export interface Combatant {
+  uid: string;
+  defId: string;
   name: string;
-  description: string;
-  cost: number;
-  requires?: string[];
-  effect: {
-    hp?: number;
-    attack?: number;
-    defense?: number;
-  };
-};
-
-export type TalentTree = {
-  via: 'sacrificio' | 'sangue' | 'silenzio';
-  talents: Talent[];
-  unlockedTalents: string[];
-};
-
-export type Character = {
-  id: string;
-  name: string;
-  role: 'player' | 'ally' | 'enemy';
+  icon: string;
+  side: 'party' | 'enemy';
+  row: 'front' | 'back';
   hp: number;
   maxHp: number;
-  attack: number;
-  defense: number;
+  atk: number;
+  def: number;
+  crit: number;
+  critDmg: number;
+  dodge: number;
+  lifesteal: number;
+  thorns: number;
   speed: number;
-  abilities: Ability[];
-  statusEffects: StatusEffect[];
-  isCorrupted?: boolean;
-  intent?: EnemyIntent | null;
-  position?: Position;
-  moveRange?: number;
-  attackRange?: number;
-};
+  statuses: Status[];
+  skills: string[];
+  cds: Record<string, number>;
+  intent?: Intent | null;
+  tags: string[];
+  companionId?: string;
+  revealed?: boolean;
+  phase?: number;
+}
 
-export type Ability = {
-  id: string;
-  name: string;
-  description: string;
-  type: 'attack' | 'defend' | 'sacrifice' | 'betray' | 'echo' | 'heal' | 'dark';
-  power: number;
-  cooldown: number;
-  currentCooldown: number;
-  resonanceGain: number;
-  dissonanceGain: number;
-  corruptionChange: number;
-  targetAlly?: boolean;
-  targetEnemy?: boolean;
-  requiresDissonance?: number;
-  appliesStatus?: StatusEffect;
-};
+export interface FxEvent { id: number; uid: string; text: string; kind: 'dmg' | 'heal' | 'crit' | 'miss' | 'status' | 'echo' }
 
-export type DungeonRoom = {
-  id: string;
-  name: string;
-  description: string;
-  type: 'narrative' | 'combat' | 'trap' | 'choice' | 'boss';
-  enemies?: string[];
-  event?: string;
-  choices?: RoomChoice[];
-  postBattleChoices?: RoomChoice[];
-  corruption: number;
-  cleared: boolean;
-};
-
-export type RoomChoice = {
-  id: string;
-  text: string;
-  effect: {
-    resonance?: number;
-    dissonance?: number;
-    corruption?: number;
-    hp?: number;
-    faction?: keyof FactionRep;
-    factionChange?: number;
-    flag?: string;
-    xp?: number;
-    endingFlag?: string;
-    promiseText?: string; // Se presente, crea una promessa narrativa
-  };
-  result: string;
-};
-
-export type NPC = {
-  id: string;
-  name: string;
-  role: string;
-  faction: keyof FactionRep;
-  icon: string;
-  dialogue: string[];
-  quest?: string;
-};
-
-export type GameScene = 'intro' | 'hub' | 'dungeon' | 'combat' | 'post_combat' | 'map' | 'market' | 'ascension' | 'dreams' | 'talents' | 'legacy' | 'ending' | 'menu';
-
-export type FateFragment = {
-  id: string;
-  name: string;
-  description: string;
-  constraint?: FardelloType; // Vincolo narrativo
-  effect: string;
-  value: number;
-};
-
-export type MarketListing = {
-  id: string;
-  seller: string; // 'player' | 'bot'
-  item: FateFragment | Equipment;
-  price: number;
-  timestamp: number;
-};
-
-export type Equipment = {
-  id: string;
-  name: string;
-  type: 'weapon' | 'armor' | 'trinket';
-  bonus: {
-    attack?: number;
-    defense?: number;
-    hp?: number;
-    resonance?: number;
-  };
-};
-
-export type Ascension = {
-  id: string;
-  name: string;
-  description: string;
-  requirements: {
-    level: number;
-    bossesDefeated: number;
-  };
-  benefits: {
-    attack?: number;
-    defense?: number;
-    hp?: number;
-    resonance?: number;
-    special?: string;
-  };
-  costs: {
-    hp?: number;
-    resonance?: number;
-  };
-};
-
-export type OfflineDream = {
-  id: string;
-  timestamp: number;
+export interface CombatState {
+  kind: 'delve' | 'boss' | 'worldboss' | 'shadow' | 'trial' | 'hunter' | 'ghost';
+  party: Combatant[];
+  enemies: Combatant[];
+  round: number;
+  focus: number;
+  phase: 'player' | 'enemy' | 'won' | 'lost';
+  log: string[];
+  fx: FxEvent[];
+  sacrificeBank: number;
+  echoUsed: number;
+  damageDealt: number;
+  heroActedExtra?: boolean;
+  repositioned?: boolean;
+  wordUsed?: boolean;
+  reviveAvailable: boolean;
   title: string;
-  description: string;
-  rewards: {
-    fragments?: number;
-    cenere?: number;
-    resonance?: number;
-    dissonance?: number;
-    provviste?: number;
+}
+
+export interface Loot {
+  cenere: number;
+  legno: number;
+  pietra: number;
+  ferro: number;
+  provviste: number;
+  reliquie: number;
+  xp: number;
+  items: Item[];
+  fragments: string[];
+}
+
+export type RoomType = 'combat' | 'elite' | 'event' | 'trap' | 'shrine' | 'treasure' | 'ghost' | 'shadow' | 'hunter' | 'boss' | 'merchant';
+
+export interface RoomOption { type: RoomType; seed: number; hint: string }
+
+export interface ActiveRoom {
+  type: RoomType;
+  eventId?: string;
+  resolved: boolean;
+  text?: string;
+  ghostName?: string;
+  ghostKind?: 'ally' | 'enemy' | 'merchant' | 'corpse';
+  bossChoice?: Item[];
+  merchantItems?: { item: Item; price: number }[];
+}
+
+export interface DelveState {
+  biome: BiomeId;
+  floor: number;
+  startFloor: number;
+  satchel: Loot;
+  doors: RoomOption[];
+  room: ActiveRoom | null;
+  floorCleared: boolean;
+  modifiers: string[];
+  emotion: Emotion;
+  pledged: number;
+  ghostAlly?: boolean;
+  log: string[];
+}
+
+export interface Companion {
+  id: string;
+  name: string;
+  icon: string;
+  role: string;
+  level: number;
+  xp: number;
+  trust: number;
+  hp: number;           // frazione 0..1
+  recruited: boolean;
+  inParty: boolean;
+  mission?: { locId: string; start: number; end: number } | null;
+  left?: boolean;
+}
+
+export interface PromiseState {
+  uid: string;
+  defId: string;
+  text: string;
+  createdAt: number;
+  deadlineDelves: number;   // spedizioni rimanenti
+  status: 'open' | 'kept' | 'broken';
+}
+
+export interface FragmentInst { uid: string; defId: string }
+
+export interface Listing {
+  uid: string;
+  seller: string;
+  kind: 'item' | 'fragment' | 'res';
+  item?: Item;
+  fragment?: string;
+  res?: { key: ResKey; amount: number };
+  price: number;
+}
+
+export interface Contract { uid: string; fragmentUid: string; fragmentDef: string; prediction: ValleyState; day: string; resolved?: boolean; won?: boolean }
+
+export interface Chronicle { t: number; text: string; kind: 'choice' | 'combat' | 'promise' | 'world' | 'loot' | 'fate' }
+
+export interface Dream { id: string; title: string; text: string; rewards: Partial<Resources> & { reliquie?: number } ; consequence?: string }
+
+export interface Legacy {
+  name: string;
+  classId: ClassId;
+  fardello: FardelloId | null;
+  ending: string;
+  level: number;
+  cycle: number;
+  t: number;
+  kind: 'ally' | 'enemy' | 'merchant' | 'corpse';
+}
+
+export interface DailyMission { id: string; target: number; progress: number; claimed: boolean }
+
+export interface Request { uid: string; faction: FactionId; need: Partial<Resources>; reward: { cenere?: number; reliquie?: number; rep: number }; until: number; text: string }
+
+export interface VillageEvents {
+  cart: number;        // timestamp di scadenza (0 = nessuno)
+  deer: number;
+  threat: { name: string; icon: string; hp: number; maxHp: number; until: number } | null;
+  nextAt: number;
+  buffs: { id: string; label: string; until: number; prod?: number; click?: number }[];
+  bardReadyAt: number;
+}
+
+export type TabId = 'villaggio' | 'discesa' | 'eroe' | 'bussola' | 'mercato' | 'fazioni' | 'spedizioni' | 'diario' | 'eredita' | 'opzioni';
+
+export interface Modal {
+  kind: 'event' | 'welcome' | 'trial' | 'info' | 'promise';
+  eventId?: string;
+  title?: string;
+  text?: string;
+  lines?: string[];
+}
+
+export interface Toast { id: number; text: string; kind: 'info' | 'good' | 'bad' | 'fate' }
+
+export interface GameState {
+  version: number;
+  createdAt: number;
+  lastTick: number;
+  lastSave: number;
+  scene: 'intro' | 'game' | 'ending';
+  tab: TabId;
+
+  playerName: string;
+  classId: ClassId;
+  fardello: FardelloId | null;
+  influence: number;              // influenza del Fardello (genera l'Ombra)
+  ascension: { paths: string[]; hybrid: boolean } | null;
+  aberration: boolean;
+  nameCorrupted: boolean;
+
+  hero: {
+    level: number;
+    xp: number;
+    paragon: number;
+    hp: number;
+    pledgedMaxHp: number;
+    equipped: Partial<Record<Slot, string>>;
+    talents: string[];
+    talentPoints: number;
+    deaths: number;
   };
-  consequences: string[];
-};
+  inventory: Item[];
+  potions: number;
+  elixirs: Record<string, number>;
+  activeElixir: string | null;
 
-export type Legacy = {
-  playerName: string;
-  fardelloType: FardelloType;
-  endingFlag: string;
-  timestamp: number;
-  legacyType: 'npc' | 'dungeon' | 'fragment' | 'legend';
-};
+  res: Resources;
+  reliquie: number;
+  totals: Record<string, number>;
 
-export type GameState = {
-  scene: GameScene;
-  playerName: string;
-  fardello: Fardello | null;
+  village: { buildings: Record<string, number>; upgrades: string[] };
+  companions: Companion[];
+
   resonance: number;
   dissonance: number;
   corruption: number;
-  party: Character[];
-  currentRoom: number;
-  dungeonRooms: DungeonRoom[];
-  dungeonCompleted: boolean;
-  factionRep: FactionRep;
+
+  factions: Record<FactionId, number>;
   flags: string[];
-  promises: GamePromise[];
-  fragments: number;
-  cenere: number;
-  provviste: number;
-  intuizione: number;
-  constellationStars: string[];
-  combatLog: string[];
-  currentEnemy: Character | null;
-  turn: number;
-  dialogueQueue: DialogueLine[];
-  notifications: string[];
-  visitedScenes: string[];
-  choicesMade: number;
-  bossesDefeated: number;
-  level: number;
-  experience: number;
-  experienceToNext: number;
-  endingFlags: string[];
-  pendingPostBattleChoice: RoomChoice[] | null;
-  skipAnimations: boolean;
-  // Nuove feature GDD
-  fateFragments: FateFragment[];
-  marketListings: MarketListing[];
-  equipment: Equipment[];
-  talentTree: TalentTree | null;
-  ascension: Ascension | null;
-  offlineDreams: OfflineDream[];
+  chronicle: Chronicle[];
+  promises: PromiseState[];
+  fragments: FragmentInst[];
+
+  delve: DelveState | null;
+  biomes: Record<BiomeId, { best: number; conquered: boolean; visits: number; lastVisit: number; memory: string[] }>;
+  combat: CombatState | null;
+
+  stars: string[];
+
+  market: { listings: Listing[]; refreshAt: number; history: string[] };
+  contracts: Contract[];
+
+  valley: { prosperity: number; tension: number; blight: number; eclipseUntil: number; rebirthUntil: number };
+  world: { day: string; bossDamage: number; bossTries: number };
+
+  daily: { day: string; chest: boolean; missions: DailyMission[]; bonus: boolean };
+  achievements: string[];
+  bestiary: Record<string, number>;
+  fish: string[];
+  bait: number;
+  baitAt: number;
+
+  requests: Request[];
+  requestsAt: number;
+  events: VillageEvents;
+
+  cycle: { n: number; memorie: number; memorieTotal: number; sanctuary: Record<string, number>; card: string | null; cardOffer: string[]; heirloom: Item | null };
   legacies: Legacy[];
-  lastSaveTimestamp: number;
-  fullscreenBonus: boolean;
-  corruptedUI: boolean;
-  // Shadow Battle
-  isShadowBattle: boolean;
-  shadowBattleActive: boolean;
-  shadowBattleReturnScene: 'hub' | 'dungeon';
-  talentPoints: number;
-  // Griglia tattica
-  combatMode: 'turn' | 'tactical';
-  // FEATURE: Soglia di Ritiro / Pegno del Futuro
-  pledgedMaxHp: number; // HP massimi pegnorati
-};
+  dreams: Dream[];
 
-export type GamePromise = {
-  id: string;
-  text: string;
-  kept: boolean;
-  broken: boolean;
-};
+  trial: 'none' | 'pending' | 'done';
+  trialOutcome: string | null;
+  ending: string | null;
 
-export type DialogueLine = {
-  speaker: string;
-  text: string;
-  icon?: string;
-  choices?: { text: string; action: string }[];
-};
+  settings: { music: boolean; sfx: boolean; autoBattle: boolean; autoPotion: number; fastCombat: boolean; purifiedUntil: number; reduceFx: boolean };
+  fullscreen: boolean;
+
+  modal: Modal | null;
+  toasts: Toast[];
+}
