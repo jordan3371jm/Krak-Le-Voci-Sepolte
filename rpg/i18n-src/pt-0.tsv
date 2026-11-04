@@ -1,0 +1,440 @@
+1gxdn8s	👁️ O Rito começa (modo imersivo)
+1iqyhym	Desvias o olhar do vale.
+1bp7xlr	👁️ O Rito começa. O vale respira. Escuta os sussurros.
+wi73xp	Desvias o olhar do vale. Algumas verdades desvanecem.
+1sv9axa	proteção
+1lvjhdb	sacrifício
+1fncv44	crueldade
+1pat47y	traição
+bvvuty	silêncio
+1izphcf	fé
+1h668yc	sangue
+1wvhnl0	neutro
+6y3blm	· retaguarda
+a32x1y	 · 🎭 mentiroso
+oikker	Desperta
+1ux3ecg	Toca para lutar
+hn1wtn	O teu primeiro combate
+1v3se4x	1. Toca numa **habilidade**, depois no **inimigo** a atacar. O ataque básico gera Foco (◆); as habilidades fortes gastam-no.
+13k72th	2. Borda **verde** = a ação está de acordo com o teu Fardo e carrega Ressonância. Borda **vermelha** = vai contra ele e gera Dissonância. Nenhuma está errada.
+1cc7m5z	3. Sob cada inimigo (⚠) vês o seu próximo movimento. As poções não gastam o teu turno.
+1vx0wyj	Ronda
+gatzpc	🔗 Cadeia ×{n}
+3yv227	Campo de batalha do chefe
+540b06	Auto
+1poom5h	Rápido
+13x6kr3	Escolhe o alvo de {pendingName}{fila} ·
+h1zog9	⚔️ O teu turno
+wymdpy	…os inimigos agem…
+85ae02	cancelar
+mmta42	◈ Ressonância
+knq9pz	〰 Dissonância
+mfjk0t	◆ Foco
+17hs1kg	{desc} · natureza: {n}
+136l8r7	〰 Ações de Dissonância (poderosas, desestabilizadoras)
+wp95lt	🧪 Poção (
+w3psps	Recuar
+13pzfdk	Avançar
+1q20fse	Palavra-passe…
+faigt0	Pronunciar
+1bcxxk5	Retirar
+o1ncs	🏃 Fugir (perdes metade da bolsa)
+177rirx	🗻 Fim do combate
+nfbavz	🏆 Vitória
+c72ogt	☠️ Derrota
+f8rwb7	Dano infligido: {damageDealt}
+if9j4l	O vale leva-te de volta à superfície, mais pobre.
+1aerg2g	Continuar
+1cmcw27	Bússola do Destino
+djk6x3	Intuição
+rdal7n	O vale não é um menu de níveis: é uma constelação viva. As tuas escolhas acendem estrelas; com Intuição podes ler outras e revelar segredos, pessoas, ameaças e memórias do mundo.
+mnowd7	ler
+1bzbwtv	Só se acende com uma escolha.
+1q6zguo	Pode ser lida com Intuição.
+1njxbd1	Estrelas acesas: {lit}/{total}. Constelações completas: {list}.
+1czi4iw	nenhuma
+1ear6jv	Promessas
+1884tk7	Nenhuma promessa. As promessas nascem de escolhas importantes.
+13m001f	Expedições restantes: {deadlineDelves}
+p12uxe	Cumprida
+1954eqe	Quebrada: um Caçador procura-te
+zlm9f	Temperatura narrativa
+1n2n5x2	O teu vale:
+1c7bxm2	Florescimento
+19aap5j	Corrupção do vale
+dhxed4	Tensão
+hxc37r	🌐 Mundo das Sementes — hoje {n} portadores:
+d9v8dw	O vale partilhado hoje:
+1gb3xwf	Fragmentos de Destino
+10oaoeb	Nenhum fragmento. Obtêm-se em escolhas difíceis, chefes, promessas e no Mercado.
+5qczb1	 · sombrio
+1s1xvvq	Ativar
+ncjn3x	Anti-abuso: os fragmentos sombrios têm 1 hora de recarga; os efeitos ficam no teu vale.
+12ewewi	Contratos do Destino
+cr57mt	Aposta um fragmento no estado de amanhã do vale partilhado. Se acertares ganhas influência (+2 relíquias e um fragmento extra); se errares o fragmento corrompe-se. Só economia do jogo, sem dinheiro real.
+1b9hxbw	— fragmento —
+1wpm9z7	Amanhã:
+1rkvahc	Assinar
+r98217	✔ cumprido
+19wlk9s	✖ falhado
+18vit5w	pendente
+11xsg5s	Hoje o vale partilhado está em «{state}». Dano total ao Colosso hoje: {dmg}.
+p6ud5o	Antes de descer tens de escolher o teu Fardo, na aldeia. As masmorras nascem das tuas escolhas.
+hqrrj5	Os outros chamam-lhe «
+12wlmal	». Tu vês de outra forma.
+jassxi	Nível recomendado:
+qlnxxo	· 🏆 Conquistada
+4dutwe	Lembra-se: «
+1udzdmz	Do piso
+18zt3ln	Descer (🍞1)
+1u9kgoc	Estás no nível
+39yh2n	🔒 Conquista
+6ad1g2	para a desbloquear.
+tmmc7j	Chefe Mundial: o Colosso de Cinza
+1yn9q4t	Tentativas hoje:
+f9uj9m	Todos os dias todos os portadores do vale atacam o mesmo Colosso.
+ggp0fo	portadores hoje. Quanto mais dano causares em 10 rondas, melhores as recompensas.
+17l05fb	Vida partilhada
+1hgjf1f	Enfrentar o Colosso
+19k44k5	O teu dano hoje:
+1ft71i	A Sombra do Fardo: {shadowName}
+ouqi3b	Influência do Fardo
+11mpof2	Cada ação coerente alimenta o teu Fardo. Acima de 40, a sua Sombra (a versão extrema da tua escolha) começa a aparecer nas masmorras como chefe opcional. Derrotá-la deixa um Fragmento e baixa a influência.
+alxfi	Piso
+hopaw9	Espelho:
+id8ywu	👻 Eco aliado
+1m5q3ez	Como funciona a descida
+15r0x28	Cada piso oferece-te portas: escolhe uma. **Espadas** = combate, **?** = evento narrativo, **vela** = santuário para curar, **baú** = tesouro.
+tfytat	O saque vai para a **Bolsa** (à direita): só está seguro quando voltas à superfície. Cada piso custa 1 Provisão. A cada 5 pisos há um chefe.
+arqgys	Escolhe uma porta
+bc1grt	A corrupção embaralha os sinais. Purifica a interface no Altar para voltares a lê-los.
+seq1gs	… algo sussurra nas margens. (Só no Rito: ecrã inteiro)
+z0dak0	🛠️ Desarmar (
+xn7rzk	🩹 Passar à força (−10%)
+1823grd	🩸 Oferecer sangue (sacrifício)
+1015mfx	🛏️ Descansar (🍞1, +45%)
+mxplwh	🙏 Rezar (+Ressonância)
+1tj0ya7	Seguir em frente
+vi6uxa	🕯️ Purificar-te
+1h7lx23	O chefe deixou uma escolha: fica com uma.
+s3pjax	Piso {floor} limpo
+gk7xmt	⬇️ Descer ao piso
+1simt8i	Limiar da Retirada
+1wrji78	⛓️ Penhorar o futuro: −
+6fos1e	vida máxima para descer
+158sn88	⬆️ Voltar à superfície e garantir a bolsa
+1s6vzwp	Sem provisões. Podes penhorar vida máxima futura: se voltares vivo recuperas metade; se morreres a penhora torna-se permanente até a Elara a retirar.
+drp0f1	Chegaste ao fundo deste estrato.
+8osbyp	Descer mais é mais rico e mais perigoso. Se caíres perdes três quartos da bolsa.
+13svo92	Bolsa (não garantida)
+1dqqpgk	⛓️ Penhorado nesta descida:
+1pgr25j	Provisões na aldeia: {p} · Poções: {n}
+4jrxnd	🧪 Beber uma poção
+1ou4smc	Grupo
+1g6fez5	Guia do Portador ·
+4r8eqv	recolher
+nzfqer	mostrar
+1vm7iw3	Ir
+n5yktc	Nova possibilidade
+pfe80m	Entendido
+mrzgn	Nova secção
+rqgd1l	Abrir agora
+1rhvqfz	Códice do Portador
+iqcsg0	Novas entradas aparecem à medida que descobres o vale.
+1nf6dpr	Fechar
+a706bw	Entendido ✕
+vpx9a8	Nível
+3whroo	 · Ciclo {n}
+1a6hlkh	Vida
+5z319y	penhora −
+1gyr5zi	Ressonância / Dissonância / Corrupção
+154cneq	Ressonância
+70iv7a	Diss.
+1orz41v	Relíquias
+15wq9ff	Poções
+11deu9i	Códice: como funciona
+1f5kmjy	Música ligada
+1dwnd4e	Música desligada
+1ddeffj	O Rito (ecrã inteiro)
+5s2kql	Aldeia
+i06ydn	Descida
+1j2ot22	Herói
+prvaes	Bússola
+i4ct2v	Companheiros
+zg4dtm	Mercado
+uipjer	Fações
+w1xs95	Diário
+1qdt732	Legado
+13g5sfh	Opções
+14bw3me	novo
+1ntmul	Forja
+m68mi8	Constrói uma Forja na aldeia para criar equipamento.
+14k8kl8	Acender a forja ·
+1v9ir10	Golpe
+2mwqno	/3 — golpeia quando o calor estiver na zona brilhante.
+22wcy7	🔨 Golpear!
+zg0zbl	A qualidade dos golpes aumenta a raridade. As Guildas (De confiança) melhoram cada forja.
+19d8nv8	Inventário ({inventory}/80)
+1bze9hi	Auto-equipar
+clu15w	Desmontar comuns
+1jucrvb	Todos
+1tof9q7	Comparação:
+fbqfrf	▲ melhor que {name}
+16kjalp	▼ pior que {name}
+b66p82	Remover
+jfvxq2	Equipar
+1ain5i8	Melhorar +
+mbn4rs	🔓 Desbloquear
+81uy9e	🔒 Bloquear
+1uc2qm9	Desmontar (⛓️
+5zlbs3	Vender no Mercado
+78fqct	Nenhum objeto. Desce às masmorras ou forja.
+ri3jb4	Caminhos de Talento · {talentPoints} pontos
+18wpbpu	Repor (
+1twu1vg	Não sobes de nível para ficar mais forte: sobes para te tornares alguém. Cada Caminho aproxima-te de uma fação e afasta-te de outra.
+389r2d	Ascensão do Fardo
+wnho1w	Precisas de um Fardo.
+1oiaez5	Ascensão Paralela (híbrida)
+v54bzj	Ascensão
+7ydgea	Híbrida: cada caminho conta a 60%, mas carregas os custos de ambos.
+1dynlcz	Para lá do nível: o Fardo evolui para formas mais poderosas e vinculativas. Escolhe um caminho, ou dois para uma **Ascensão Paralela** (híbrida: requer o Fragmento do Pacto Quebrado ou 5 relíquias).
+18y2bz7	Requer nível 15 e o Cemitério conquistado (ou 4 chefes derrotados).
+k5hjn6	Ascensão Paralela: {name}
+pr7cru	Poder
+1557tkw	Nível {n}
+1aqkykf	 · Para lá do limite ✴{paragon}
+1kfjtsr	 · 🦷 Aberração
+1atcjhd	leve: ages primeiro
+iqxlys	pesado: +10% de dano
+ti3c5b	Equipamento
+bi2zxi	{slot}: vazio
+11c881i	Habilidades
+1tb960	Eco:
+3xrivr	Inventário e Forja
+1fuo3uu	Talentos
+c3zmbh	Raridade:
+1s9x6zu	Na noite em que o portal se abriu, Hondovalle ardia.
+19nv7eb	Sob o vale, algo enterrado começou a falar.
+l9cifi	Chamam-lhe Krak. Não tem boca. Só tem as tuas escolhas.
+1dvhq6f	O mundo não guarda o teu progresso.
+1qzwyaw	Lembra-se dele.
+192g22r	Um RPG que se lembra
+1669srk	KRAK
+coeiip	As Vozes Enterradas
+1crviq1	O eco de {name} ({ending}) ainda vagueia pelo vale. As tuas Memórias: +{prod}% produção, +{stats}% atributos.
+kyj54b	Carta do Destino:
+1i77gfi	Saltar ›
+11i67iz	Entrar no vale
+qorwjs	Dica: auscultadores e ecrã inteiro tornam o rito mais profundo.
+1dedf4o	Quem carrega o Fardo?
+kbbtol	O teu nome tornar-se-á um feitiço. Uns vão pronunciá-lo com amor, outros vão amaldiçoá-lo.
+6jxkdh	O teu nome
+xsv5mk	Vida {hp} · Ataque {atk} · Defesa {def} · Crítico {crit}%
+c4xtne	Descer a Hondovalle Baixo
+136qwmg	O jogo recarrega para mudar de idioma.
+12rsbse	O mundo lembra-se. Uma consequência esperava-te na aldeia.
+1ore8vt	O Julgamento das Tuas Escolhas
+19h8z84	Acordas numa sala de pedra. Os juízes têm o teu rosto.
+96vw38	A testemunha principal é {FName}.
+dfdn00	Os teus Ecos estão sentados no público.
+zfxi8t	Acusações
+1u6tmvt	Nenhuma acusação grave.
+x0xyvv	Defesas
+1ln1jy0	Nenhuma defesa.
+17dg2mo	🙇 Confessar tudo
+1694kvx	🛡️ Defender-te (arriscas um combate)
+4a59k7	💔 Renunciar ao Fardo (rutura)
+gnwwfa	⛓️ Aceitar a sentença
+j5egys	Mercado das Almas
+1reeby5	Novas mercadorias dentro de
+1rruu5y	Aqui não se vendem só objetos: troca-se destino. Cada mercadoria carrega a história de quem a possuiu. Os preços dependem da tua reputação com as Sombras do Mercado.
+og4p5i	de
+9xrdrc	Vender Fragmentos
+c34yro	Nenhum fragmento para vender.
+iw22ik	Vender fragmentos sombrios escurece o vale. Para vender equipamento, usa o Inventário do Herói.
+wr3hne	Livro das Almas
+10ke7iy	Ainda nenhuma troca.
+7f7lb	De confiança: o Culto oferece-te a Fonte. Banido: fanáticos nas incursões.
+1xzrrh7	De confiança: recompensas mais ricas. Banido: impostos e saqueadores.
+l2ucbq	Produção global; De confiança: forja melhor; Adorado: edifícios −10%.
+q6pl0k	Produção de provisões e madeira; protegem-te das incursões.
+l7fthx	Cuidados da Elara, ritos para retirar penhoras e aberrações.
+vlc65q	Verdades ocultas; a Palavra-passe torna-os teus aliados.
+onst89	Preços do Mercado das Almas e Contratos do Destino.
+1uh1jwo	Selos de Krak: o vale respira melhor.
+yu9nu7	Reputação no Vale
+17wj1cm	Não há um karma único. Ganhar reputação com uma fação prejudica muitas vezes a sua rival. O estado (Ignorado, Tolerado, De confiança, Temido, Adorado, Banido, Marcado) muda diálogos, preços, eventos e finais.
+1ntsjb5	Rival: {name}.
+15z2xwb	No grupo:
+zp0j8m	Confiança
+l336w7	Vida {hp} · Ataque {atk} · Defesa {def}
+1wxzz0m	vanguarda
+gvryc5	retaguarda
+14zxv7c	Abandonou-te
+1qa3604	Recrutar · ⚱️
+6lxw4h	✔ No grupo
+18t3204	Levar contigo
+1t3j8na	🧭 Enviar em expedição
+1pge8ol	Recolher o saque (
+1grhekg	Em {place} · volta em {time}
+14e8qtt	Usar um companheiro como escudo baixa a sua confiança. Abaixo de 25 hesita em combate; a 0 parte para sempre.
+1tlsa23	Expedições ({busy}/{s} vagas)
+1udw49o	As expedições duram horas reais e continuam mesmo com o jogo fechado. Escolhe o destino e depois envia um companheiro.
+1c7rq73	 · objeto {itemChance}%
+14xmiw	 · fragmento {fragmentChance}%
+cc919u	Carta do Destino: expedições mais rápidas.
+bb0qwn	📅 Hoje
+1yqzwur	📜 Crónica
+15py8c0	🏆 Feitos
+t25r2p	👹 Bestiário
+11ngfj0	Diárias
+1fmoqnt	🎁 Baú já aberto hoje
+qkr95g	🎁 Abrir o baú diário
+pbf75g	Recolhido
+bfrx05	Recolher
+19lyzhs	Completa as três para uma relíquia. Renovam-se todos os dias.
+1m9tlra	Diário dos Sonhos
+wxrnr2	O teu save sonha enquanto estás fora. Voltas e encontras vestígios do que aconteceu.
+t4dmp9	Nenhum sonho. Volta após pelo menos uma hora fora.
+53l24d	Acordar
+iz3bvi	O Vale Lembra-se
+1f4b421	Ainda nada para lembrar.
+74b0kx	Feitos {achievements}/{ACHIEVEMENTS}
+1kb33xz	% produção
+yf6klp	Bestiário
+u11h8a	Quando o teu portador alcança o Coração de Krak (ou o vale se torna lenda), podes fechar o Ciclo. A personagem torna-se um Legado: um eco que os futuros portadores vão encontrar. Ganhas **Memórias** permanentes (+5% produção e +1,5% atributos cada). Manténs relíquias, Santuário, feitos, memórias do lago e bestiário.
+1i58zg9	Memórias reunidas:
+1b08bix	(+{n}% produção)
+qrvci3	Cinza neste Ciclo:
+14m7jof	Memórias se fechares agora:
+1a5q7ll	Fechar o Ciclo e descobrir o teu final
+1dnjtcq	Derrota o Coração de Krak (ou junta 150K de cinza no nível 12)
+waqfyh	Ecos de Portadores Passados
+1mj832c	Ainda nenhum legado. O teu será o primeiro nome que o vale recordará.
+1qvaune	· Ciclo
+4b5lud	· nas masmorras aparece como
+12x79bj	cadáver com saque
+1x7poc7	Santuário das Relíquias
+x7pen0	Oferece relíquias por melhorias permanentes que sobrevivem a cada Ciclo.
+1ak1nbb	→ custo 🏺
+ldkuob	Gravação
+147za0m	O jogo grava-se sozinho a cada 10 segundos e ao fechar o separador, com 3 cópias rotativas e verificação de integridade. Para o passar a outro dispositivo, copia o código e cola-o lá.
+1bka08	Jogo gravado.
+10qk5t9	Falha ao gravar (armazenamento cheio?)
+1mrwv5b	💾 Gravar agora
+17re9jn	Código copiado para a área de transferência.
+13glwah	Código pronto: seleciona-o e copia-o.
+1t3tsx2	📋 Copiar código
+13faw57	Jogo carregado. Bem-vindo de volta a Hondovalle.
+1n2vt9w	Este código não funciona: verifica se está completo.
+1wp6e5l	📥 Carregar código
+1h87o7s	Cola aqui um código e carrega em «Carregar código»
+3kqw9u	Toca de novo para apagar TUDO
+wd6zce	🗑️ Apagar a gravação
+1n4kmx7	Idioma
+q1adgd	Escolhe o idioma do jogo.
+uykjsc	Rito e Som
+jec2l3	Música e ambiente
+1mjp33b	Volume da música
+1fwcvny	Efeitos sonoros
+11y8h1k	O áudio é uma mecânica: com o som ligado ouves (e vês) as intenções dos inimigos invisíveis. O silêncio total chega quando a Dissonância está no máximo.
+1qs2cqw	Sair do Rito
+4eitvp	⛶ Entrar no Rito (ecrã inteiro)
+17a404	No Rito: +25% Ressonância, sussurros, escolhas ocultas nos eventos.
+1ci6c7b	Reduzir animações e efeitos de corrupção
+d87goe	Combate automático
+cx364v	Lutar automaticamente (rotação coerente com o teu Fardo)
+1v8jkwl	Combate rápido
+15kkg11	Beber uma poção abaixo de {n}% de vida
+146wri9	O combate automático nunca usa ações de Dissonância: essas continuam a ser escolha tua.
+lu3bfy	Como jogar
+jetwjc	**Aldeia**: recolhe, constrói, a produção continua mesmo offline.
+1y6pqlo	**Descida**: escolhe portas, luta, depois decide se desces mais ou garantes a bolsa.
+15eb36x	**Fardo**: ações coerentes carregam Ressonância (→ Eco), incoerentes Dissonância (→ ações sombrias).
+4asdgt	**Promessas**: cumpri-las dá fragmentos; quebrá-las invoca o Caçador de Promessas.
+1gji0ae	**Ciclo**: fecha-o para obter um final, um Legado e Memórias permanentes.
+ba2zuf	Fim do Ciclo
+s8h57w	+{gain} Memórias. {name} torna-se um Legado: os futuros portadores vão encontrar o seu eco.
+zcyhfz	Escolhe a Carta do Destino para o próximo Ciclo
+advfsk	Um objeto para deixar em herança (opcional)
+wiuja8	Ainda não: voltar ao vale
+1mdbh3s	Começar Ciclo
+4ev0jd	Kael, espadachim
+1jirgna	«O portal está a alargar-se! Tomas, meu irmão, é o mais próximo do selo. Se alguém o empurrar, o portal fecha-se com ele.»
+frt4hp	Selar o portal sacrificando Tomas
+1r49d83	Fardo pesado: golpes poderosos, Ressonância ao proteger os outros
+1jcine4	Vesper, enviado do Culto
+1ixbk8n	«O filho da Elara está a morrer envenenado. O Culto tem o antídoto. O preço? Aquele refugiado, Ilyas. Entrega-o.»
+1cb9b6	Entregar Ilyas ao Culto para salvar a criança
+1wmh11c	Fardo muito pesado: roubo de vida e ataque, o Culto chama-te irmão
+1j267rc	Marcus, capitão da Capital
+lzf8us	«Para trás, civil. Aqui decidimos nós.» À tua volta o vale arde. Só podes olhar, e lembrar cada rosto.
+x46wdn	Não intervir. Olhar. Lembrar.
+1xnroq5	Fardo leve: ages primeiro, esquivas-te, vês o que está oculto
+46eoe7	Prólogo
+c80wvw	A Noite do Portal
+cilmyi	Hondovalle arde. Um portal de carne e metal abre-se sobre o poço. Três vozes chamam-te no mesmo instante. Só podes responder a uma. Nenhuma está certa. Todas serão lembradas.
+s5cado	Não poderás voltar atrás.
+11gwnh3	{description}\n\nAs ações coerentes com o teu Fardo carregam Ressonância; as contrárias geram Dissonância. O mundo vai lembrar-se de ambas.\n\nAgora reconstrói Hondovalle. O Guia no topo dir-te-á o que podes fazer, nunca o que escolher.
+jqku85	Escolhe. E carrega o peso.
+bbabk7	"O que… o que fizeste a ti mesmo? Ainda te posso curar, se deixares."
+uqxo7c	"Afasta-te da praça, monstro. As pessoas têm medo."
+1rlqzlo	"…Como te chamavas? Tenho-o na ponta da língua."
+hg0b5e	"{n}, a criança perguntou por ti hoje. Disse o teu nome pela primeira vez."
+mjadk8	"{n}, a minha casa é tua."
+16q1z4d	"Senta-te, {n}. Vou mudar-te as ligaduras."
+1653g9u	"{n}. Precisas de cura, ou de perdão?"
+1s64eru	"Mais um portador. Espero que sejas diferente dos outros."
+9nrc0w	"Não… não me faças mal, {n}."
+11nie03	"Sai da minha enfermaria."
+1stsbf5	"Tens a marca do Culto. Vai-te embora."
+17017oo	"Queimaste o édito da Capital. Vou lembrar-me disso, portador."
+rfcbnv	"Portador {n}! A Capital precisa de gente como tu."
+1nizn86	"{n}. Um relatório, por favor."
+gvs3gn	"Circula. Tenho uma guarnição para alimentar."
+1ysv4al	"Quem és tu? Não me interessa. Segue."
+1wvpp76	"…Por favor, passa."
+la39eg	"Mais um passo e mando prender-te."
+vljjb1	"Procurado. Vivo ou morto."
+1u7qron	"Irmão {n}. O Culto não esquece quem lhe deu um filho."
+ar0850	"{n}, a Fonte espera-te."
+sg3bhc	"O Culto observa-te com favor."
+1sbiyj5	"Todo o poder tem um preço. Sempre."
+21q01c	"O vale está a morrer. Só o Culto o pode salvar… ou destruir."
+1wk6mdd	"Até o Culto reconhece um predador quando o vê."
+1m9hkfw	"O teu sangue será nosso."
+s93oxn	Cedo demais! A isca perdeu-se.
+1eg5rqq	Captura perfeita! Uma memória sobe da água.
+kzluk1	Uma memória sobe da água.
+1y5417j	Sem isca. Volta com o tempo.
+n8soxy	…a linha afunda-se na água escura…
+1jwfnr2	MORDEU! Toca agora!
+xqx87q	Escapou…
+k4xg09	O Lago das Vozes
+njvo6d	Isca
+18d4et4	Cada espécie é uma memória do vale: +1% produção para sempre. Memórias:
+1z055ws	 · 🏆 Cana dourada
+2w4mzr	Hondovalle Baixo
+17gw81p	Só cinza e um fogo moribundo. Reconstrói.
+hlnpil	A aldeia renasce, uma viga de cada vez.
+1h5saoe	Hondovalle volta a viver. As crianças correm entre as casas.
+14l1bih	Hondovalle tornou-se a capital do vale.
+1p982c1	O fogo de Hondovalle
+14doiu2	Casas queimadas
+19rjuzr	🛒 Chegou um mercador! (
+9vpwtf	O Veado de Cinza!
+eevbzz	Incursão: {name}
+1kq1q81	⚔️ Golpear!
+10t1a52	(as {torre} torres ajudam)
+18hn9w2	Recolha
+1ydqvw7	Cortar
+4gifw3	Escavar
+1i1em9r	Apanhar
+1yhpthu	O contador de histórias volta dentro de {now}
+xvi7tl	Ouvir o contador de histórias (produção ×2)
+14q7bvs	Rostos de Hondovalle
+i6en5e	Edifícios
+1vywl9u	cada edifício custa +15%
+scluf7	??? · construir
+wh3oww	Melhorias
+7pna5x	Comprar tudo
