@@ -20,11 +20,14 @@ body {
   margin: 0;
   background: radial-gradient(ellipse at top, #1c1410 0%, #0d0d0d 55%, #050505 100%) fixed;
   color: #e8dcc8;
-  font-family: 'Crimson Text', Georgia, 'Times New Roman', serif;
+  font-family: 'Crimson Text', Georgia, 'Noto Serif', 'Times New Roman', 'PingFang SC', 'Hiragino Mincho ProN', 'Yu Mincho', 'Microsoft YaHei', serif;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
 }
-h1, h2, h3, h4, .font-display { font-family: 'Cinzel', Georgia, serif; }
+h1, h2, h3, h4, .font-display { font-family: 'Cinzel', Georgia, 'Noto Serif', 'PingFang SC', 'Hiragino Mincho ProN', 'Yu Mincho', 'Microsoft YaHei', serif; }
+/* evita selezione testo e menu contestuale con pressione lunga su mobile (requisito 1.4.5) */
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input, textarea { -webkit-user-select: text; user-select: text; }
 button { font-family: inherit; }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }

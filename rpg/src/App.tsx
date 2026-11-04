@@ -1,3 +1,4 @@
+import { t as T } from './i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGame } from './game/useGame';
 import { BIOMES } from './game/data/enemies';
@@ -43,7 +44,7 @@ export default function App() {
   // ---------------- fullscreen come rito ----------------
   const toggleFullscreen = useCallback(() => {
     initAudio();
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => act(d => { d.fullscreen = !d.fullscreen; toast(d, d.fullscreen ? '👁️ Il Rito ha inizio (modalità immersiva)' : 'Distogli lo sguardo dalla valle.', 'fate'); }));
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => act(d => { d.fullscreen = !d.fullscreen; toast(d, d.fullscreen ? T('👁️ Il Rito ha inizio (modalità immersiva)') : T('Distogli lo sguardo dalla valle.'), 'fate'); }));
     else document.exitFullscreen?.().catch(() => {});
   }, [act]);
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function App() {
       const fs = !!document.fullscreenElement;
       act(d => {
         d.fullscreen = fs;
-        toast(d, fs ? '👁️ Il Rito ha inizio. La valle respira. Ascolta i sussurri.' : 'Distogli lo sguardo dalla valle. Alcune verità svaniscono.', 'fate');
+        toast(d, fs ? T('👁️ Il Rito ha inizio. La valle respira. Ascolta i sussurri.') : T('Distogli lo sguardo dalla valle. Alcune verità svaniscono.'), 'fate');
       });
     };
     document.addEventListener('fullscreenchange', on);
@@ -79,7 +80,7 @@ export default function App() {
       {corrupt && <div className="vignette vignette-corrupt" />}
       {s.fullscreen && !s.settings.reduceFx && <div className="vignette vignette-rite" />}
       <div className="sticky top-0 z-30">
-        <HUD state={s} act={act} onFullscreen={toggleFullscreen} onCodex={() => setCodex(true)} />
+        <HUD state={s} act={act} onFullscreen={toggleFullscreen} onCodex={() => setCodex(true)} onSave={saveNow} />
         <Nav state={s} act={act} />
       </div>
       {!s.combat && <GuideBar state={s} act={act} />}

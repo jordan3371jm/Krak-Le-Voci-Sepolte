@@ -1,3 +1,4 @@
+import { t as T } from '../../i18n';
 import type { BiomeId, Chronicle, FactionId, GameState, Loot, Resources, Toast, ValleyState } from '../types';
 import { COMPANIONS, FACTION_IDS, FARDELLI } from '../data/core';
 import { CONSTELLATIONS, FATE_CARDS, SANCTUARY, STARS, VALLEY_EFFECTS } from '../data/world';
@@ -48,7 +49,7 @@ export function newGame(): GameState {
     trial: 'none', trialOutcome: null, ending: null,
     settings: { music: true, musicVolume: 0.55, sfx: true, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
     fullscreen: false,
-    unlocked: [], newTabs: [], codexQueue: [], tutorial: 0, tipsSeen: [],
+    unlocked: [], newTabs: [], codexQueue: [], tutorial: 0, tipsSeen: [], lastReport: null,
     modal: null, toasts: [],
   };
 }
@@ -94,7 +95,7 @@ export function displayName(s: GameState): string {
   return s.playerName.split('').map((c, i) => (i % 2 ? '̷' + c : c)).join('');
 }
 export function fillText(s: GameState, t: string): string {
-  return t.replace(/\{name\}/g, displayName(s)).replace(/\{fardello\}/g, s.fardello ? FARDELLI[s.fardello].name : 'nessun Fardello');
+  return t.replace(/\{name\}/g, displayName(s)).replace(/\{fardello\}/g, s.fardello ? FARDELLI[s.fardello].name : T('nessun Fardello'));
 }
 
 // ---------------- Risorse ----------------

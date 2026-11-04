@@ -1,6 +1,7 @@
+import { t as T } from '../../i18n';
 import type { ClassId, FactionId, FardelloId, GameState, ResKey, Resources } from '../types';
 import { COMPANIONS, FACTIONS, FACTION_IDS, FARDELLI } from '../data/core';
-import { ACHIEVEMENTS, BUILDINGS, DAILY_POOL, EXPEDITIONS, FISH, UPGRADE_THRESHOLDS, type FishDef } from '../data/world';
+import { ACHIEVEMENTS, BUILDINGS, DAILY_POOL, EXPEDITIONS, FISH, UPGRADE_THRESHOLDS, type FishDef, RES_INFO } from '../data/world';
 import { pick, todayKey, uid, weighted } from '../rng';
 import { addFlag, addRes, canAfford, cardMod, chronicle, hasFlag, intuitionCap, pay, prodMult, sanct, stat, toast, valleyState } from './state';
 import { addItem, companionXp, equip, gainXp, heroStats, makeItem, rollRarity } from './hero';
@@ -17,13 +18,13 @@ export function beginGame(s: GameState, name: string, classId: ClassId) {
   s.tab = 'villaggio';
   s.hero.hp = heroStats(s).maxHp;
   if (s.cycle.heirloom) {
-    const h = { ...s.cycle.heirloom, uid: uid('it'), origin: `Eredità del Ciclo ${s.cycle.n - 1}. ${s.cycle.heirloom.origin}` };
+    const h = { ...s.cycle.heirloom, uid: uid('it'), origin: T('Eredità del Ciclo {n}. {origin}', { n: s.cycle.n - 1, origin: s.cycle.heirloom.origin }) };
     addItem(s, h);
     equip(s, h.uid);
     s.cycle.heirloom = null;
   }
   s.hero.hp = heroStats(s).maxHp;
-  chronicle(s, `${s.playerName} arriva a Hondovalle Bassa. La valle brucia. (Ciclo ${s.cycle.n})`, 'world');
+  chronicle(s, T('{playerName} arriva a Hondovalle Bassa. La valle brucia. (Ciclo {n})', { playerName: s.playerName, n: s.cycle.n }), 'world');
   ensureDaily(s);
   refreshMarket(s, true);
 }
@@ -38,8 +39,8 @@ export function chooseFardello(s: GameState, f: FardelloId) {
   if (f === 'sangue') { changeRep(s, 'culto', 10); changeRep(s, 'capitale', 4); changeRep(s, 'contadini', -10); createPromise(s, 'p_ilyas'); createPromise(s, 'p_bambino'); }
   if (f === 'silenzio') { changeRep(s, 'eretici', 6); changeRep(s, 'guaritori', -5); createPromise(s, 'p_testimone'); }
   s.hero.hp = heroStats(s).maxHp;
-  chronicle(s, `${F.origin} Ora porti il Fardello: ${F.name}.`, 'fate');
-  toast(s, `${F.icon} ${F.name}: il tuo Fardello è stato forgiato`, 'fate');
+  chronicle(s, T('{origin} Ora porti il Fardello: {FName}.', { origin: F.origin, FName: F.name }), 'fate');
+  toast(s, T('{F} {FName}: il tuo Fardello è stato forgiato', { F: F.icon, FName: F.name }), 'fate');
   checkStars(s);
 }
 
@@ -67,7 +68,7 @@ export function build(s: GameState, id: string) {
   s.village.buildings[id] = n + 1;
   stat(s, 'built');
   pushValley(s, { prosperity: 0.4 });
-  if (n === 0) { toast(s, `${b.icon} ${b.name} costruita!`, 'good'); chronicle(s, `Hai costruito ${b.name} a Hondovalle.`, 'world'); }
+  if (n === 0) { toast(s, T('{icon} {name}: costruzione completata!', { icon: b.icon, name: b.name }), 'good'); chronicle(s, T('Hai costruito {bName} a Hondovalle.', { bName: b.name }), 'world'); }
 }
 export function totalBuildings(s: GameState) {
   return Object.values(s.village.buildings).reduce((a, b) => a + b, 0);
@@ -94,12 +95,12 @@ export function buyUpgrade(s: GameState, id: string) {
   if (!u || !pay(s, u.cost)) return;
   s.village.upgrades.push(id);
   const b = BUILDINGS.find(b => b.id === u.building)!;
-  toast(s, `⚙️ ${b.name}: produzione ×2`, 'good');
+  toast(s, T('⚙️ {bName}: produzione ×2', { bName: b.name }), 'good');
 }
 export function buyAllUpgrades(s: GameState) {
   let n = 0;
   for (const u of availableUpgrades(s)) if (canAfford(s, u.cost)) { buyUpgrade(s, u.id); n++; }
-  if (!n) toast(s, 'Nessun miglioramento acquistabile', 'info');
+  if (!n) toast(s, T('Nessun miglioramento acquistabile'), 'info');
 }
 
 export function productionPerSec(s: GameState): Resources {
@@ -197,25 +198,25 @@ export function catchUp(s: GameState) {
   const lines: string[] = [];
   for (const k of Object.keys(before) as ResKey[]) {
     const d = s.res[k] - before[k];
-    if (d >= 1) lines.push(`+${Math.floor(d)} ${k}`);
+    if (d >= 1) lines.push(`+${Math.floor(d)} ${RES_INFO[k].name}`);
   }
   const hours = away / 3600_000;
   generateDreams(s, hours);
   const ready = s.companions.filter(c => c.mission && c.mission.end <= now).length;
   s.modal = {
     kind: 'welcome',
-    title: 'Bentornato a Hondovalle',
-    text: `Sei stato via ${fmtAway(away)}${away > counted ? ` (contano fino a ${capH}h)` : ''}. La valle ha continuato a vivere.`,
+    title: T('Bentornato a Hondovalle'),
+    text: T('Sei stato via {away}{h}. La valle ha continuato a vivere.', { away: fmtAway(away), h: away > counted ? T(' (contano fino a {capH}h)', { capH: capH }) : '' }),
     lines: [
       ...(lines.length ? [lines.join(' · ')] : []),
-      ...(ready ? [`🧭 ${ready} compagni sono tornati dalle spedizioni.`] : []),
-      ...(s.dreams.length ? [`🌙 ${s.dreams.length} sogni ti aspettano nel Diario.`] : []),
+      ...(ready ? [T('🧭 {ready} compagni sono tornati dalle spedizioni.', { ready: ready })] : []),
+      ...(s.dreams.length ? [T('🌙 {dreams} sogni ti aspettano nel Diario.', { dreams: s.dreams.length })] : []),
     ],
   };
 }
 function fmtAway(ms: number) {
   const h = Math.floor(ms / 3600_000), m = Math.floor((ms % 3600_000) / 60_000);
-  return h ? `${h}h ${m}m` : `${m} minuti`;
+  return h ? `${h}h ${m}m` : T('{m} minuti', { m });
 }
 
 // ============================================================
@@ -233,8 +234,8 @@ function villageEvents(s: GameState, now: number, dt: number) {
       const lostC = Math.floor(s.res.cenere * 0.1), lostL = Math.floor(s.res.legno * 0.1);
       s.res.cenere -= lostC; s.res.legno -= lostL;
       pushValley(s, { blight: 2, tension: 3 });
-      toast(s, `🔥 ${E.threat.name} ha saccheggiato il villaggio: -${lostC} cenere, -${lostL} legno`, 'bad');
-      chronicle(s, `${E.threat.name} ha razziato Hondovalle.`, 'world');
+      toast(s, T('🔥 {threatName} ha saccheggiato il villaggio: -{lostC} cenere, -{lostL} legno', { threatName: E.threat.name, lostC: lostC, lostL: lostL }), 'bad');
+      chronicle(s, T('{threatName} ha razziato Hondovalle.', { threatName: E.threat.name }), 'world');
       E.threat = null;
     }
   }
@@ -246,9 +247,9 @@ function villageEvents(s: GameState, now: number, dt: number) {
   else if (kind === 'deer') E.deer = now + 15_000;
   else {
     const hp = Math.round(80 * Math.pow(1.25, s.hero.level) + totalBuildings(s) * 8);
-    const t = pick([{ name: 'Predoni della Capitale', icon: '🪖' }, { name: 'Lupi di Cenere', icon: '🐺' }, { name: 'Fanatici del Culto', icon: '🕯️' }, { name: 'Ossa Erranti', icon: '💀' }]);
+    const t = pick([{ name: T('Predoni della Capitale'), icon: '🪖' }, { name: T('Lupi di Cenere'), icon: '🐺' }, { name: T('Fanatici del Culto'), icon: '🕯️' }, { name: T('Ossa Erranti'), icon: '💀' }]);
     E.threat = { ...t, hp, maxHp: hp, until: now + 40_000 };
-    toast(s, `⚠️ Incursione: ${t.name}! Colpiscili o lascia fare alle torri.`, 'bad');
+    toast(s, T('⚠️ Incursione: {tName}! Colpiscili o lascia fare alle torri.', { tName: t.name }), 'bad');
   }
   E.nextAt = now + (120 + Math.random() * 180) * 1000;
 }
@@ -259,29 +260,29 @@ export function clickCart(s: GameState) {
   const k = pick(['legno', 'pietra', 'ferro', 'cenere'] as ResKey[]);
   const amt = Math.max(30, p[k] * 90 + s.hero.level * 10);
   addRes(s, { [k]: amt, cenere: Math.max(20, p.cenere * 30) });
-  if (Math.random() < 0.15) { s.potions++; toast(s, '🛒 Il mercante regala anche una pozione!', 'good'); }
+  if (Math.random() < 0.15) { s.potions++; toast(s, T('🛒 Il mercante regala anche una pozione!'), 'good'); }
   stat(s, 'carts');
-  toast(s, `🛒 Mercante generoso: +${Math.floor(amt)} ${k}`, 'good');
+  toast(s, T('🛒 Mercante generoso: +{amt} {k}', { amt: Math.floor(amt), k: RES_INFO[k].name }), 'good');
 }
 export function clickDeer(s: GameState) {
   if (!s.events.deer) return;
   s.events.deer = 0;
   const now = Date.now();
   const r = Math.random();
-  if (r < 0.45) { s.events.buffs.push({ id: 'deer_prod', label: 'Benedizione di Cenere ×3', until: now + 30_000, prod: 3 }); toast(s, '🦌 Benedizione: produzione ×3 per 30s', 'fate'); }
-  else if (r < 0.8) { s.events.buffs.push({ id: 'deer_click', label: 'Frenesia ×10', until: now + 30_000, click: 10 }); toast(s, '🦌 Frenesia: raccolta manuale ×10 per 30s', 'fate'); }
-  else { s.res.intuizione = intuitionCap(s); toast(s, '🦌 Sorgente di lucidità: Intuizione piena', 'fate'); }
+  if (r < 0.45) { s.events.buffs.push({ id: 'deer_prod', label: T('Benedizione di Cenere ×3'), until: now + 30_000, prod: 3 }); toast(s, T('🦌 Benedizione: produzione ×3 per 30s'), 'fate'); }
+  else if (r < 0.8) { s.events.buffs.push({ id: 'deer_click', label: T('Frenesia ×10'), until: now + 30_000, click: 10 }); toast(s, T('🦌 Frenesia: raccolta manuale ×10 per 30s'), 'fate'); }
+  else { s.res.intuizione = intuitionCap(s); toast(s, T('🦌 Sorgente di lucidità: Intuizione piena'), 'fate'); }
   stat(s, 'carts');
 }
 export function hitThreat(s: GameState) {
-  const T = s.events.threat;
-  if (!T) return;
+  const th = s.events.threat;
+  if (!th) return;
   const dmg = (5 + heroStats(s).atk * 0.6) * (1 + sanct(s, 'sentinelle') / 100) * (1 + (s.village.buildings.torre || 0) * 0.2);
-  T.hp -= dmg;
-  if (T.hp <= 0) defeatThreat(s);
+  th.hp -= dmg;
+  if (th.hp <= 0) defeatThreat(s);
 }
 function defeatThreat(s: GameState) {
-  const T = s.events.threat!;
+  const th = s.events.threat!;
   const mult = 1 + cardMod(s, 'loot') * 2;
   const c = Math.round((40 + s.hero.level * 25) * mult);
   addRes(s, { cenere: c, ferro: Math.round(10 + s.hero.level * 4) });
@@ -289,15 +290,15 @@ function defeatThreat(s: GameState) {
   gainXp(s, 15 + s.hero.level * 4);
   changeRep(s, 'contadini', 1);
   stat(s, 'threats');
-  toast(s, `🛡️ ${T.name} respinti! +${c} cenere`, 'good');
+  toast(s, T('🛡️ {name} respinti! +{c} cenere', { name: th.name, c: c }), 'good');
   s.events.threat = null;
 }
 export function playBard(s: GameState) {
   const now = Date.now();
   if (now < s.events.bardReadyAt) return;
   s.events.bardReadyAt = now + 10 * 60_000;
-  s.events.buffs.push({ id: 'bard', label: 'Ballata del Cantastorie ×2', until: now + 90_000, prod: 2 });
-  toast(s, '🎻 Il cantastorie racconta la tua storia: produzione ×2 per 90s', 'fate');
+  s.events.buffs.push({ id: 'bard', label: T('Ballata del Cantastorie ×2'), until: now + 90_000, prod: 2 });
+  toast(s, T('🎻 Il cantastorie racconta la tua storia: produzione ×2 per 90s'), 'fate');
 }
 
 // ============================================================
@@ -314,10 +315,10 @@ function refreshRequests(s: GameState, now: number) {
   need[k1] = Math.ceil(Math.max(20, p[k1] * 240) * (k1 === 'provviste' ? 0.3 : 1));
   if (k2 !== k1 && Math.random() < 0.6) need[k2] = Math.ceil(Math.max(15, p[k2] * 160) * (k2 === 'provviste' ? 0.3 : 1));
   const texts: Record<FactionId, string> = {
-    culto: 'Il Culto chiede offerte per l\'altare di Vhalzareth.', capitale: 'Il Capitano Marcus requisisce materiali per la guarnigione.',
-    gilde: 'Le Gilde ordinano materie prime per i telai.', contadini: 'I contadini chiedono aiuto per ricostruire i fienili.',
-    guaritori: 'Elara ha bisogno di scorte per l\'Infermeria.', eretici: 'Gli Eretici cercano materiale per una stamperia clandestina.',
-    ombre: 'Una figura senza volto ordina merci "senza domande".', guardiani: 'I Guardiani chiedono pietra per i sigilli.',
+    culto: T('Il Culto chiede offerte per l\'altare di Vhalzareth.'), capitale: T('Il Capitano Marcus requisisce materiali per la guarnigione.'),
+    gilde: T('Le Gilde ordinano materie prime per i telai.'), contadini: T('I contadini chiedono aiuto per ricostruire i fienili.'),
+    guaritori: T('Elara ha bisogno di scorte per l\'Infermeria.'), eretici: T('Gli Eretici cercano materiale per una stamperia clandestina.'),
+    ombre: T('Una figura senza volto ordina merci "senza domande".'), guardiani: T('I Guardiani chiedono pietra per i sigilli.'),
   };
   s.requests.push({ uid: uid('rq'), faction: f, need, reward: { cenere: Math.round(60 + s.hero.level * 30), reliquie: Math.random() < 0.15 ? 1 : 0, rep: 6 }, until: now + 30 * 60_000, text: texts[f] });
 }
@@ -329,7 +330,7 @@ export function completeRequest(s: GameState, ruid: string) {
   changeRep(s, r.faction, r.reward.rep);
   s.requests = s.requests.filter(x => x.uid !== ruid);
   stat(s, 'requests');
-  toast(s, `${FACTIONS[r.faction].icon} Richiesta completata per ${FACTIONS[r.faction].name}`, 'good');
+  toast(s, T('{faction} Richiesta completata per {factionName}', { faction: FACTIONS[r.faction].icon, factionName: FACTIONS[r.faction].name }), 'good');
 }
 
 // ============================================================
@@ -343,11 +344,11 @@ export function sendExpedition(s: GameState, compId: string, locId: string) {
   const c = s.companions.find(c => c.id === compId);
   const L = EXPEDITIONS.find(e => e.id === locId);
   if (!c || !L || !c.recruited || c.left || c.mission || s.delve) return;
-  if (c.level < L.minLevel) { toast(s, `${c.name} deve essere almeno di livello ${L.minLevel}`, 'bad'); return; }
-  if (s.companions.filter(x => x.mission).length >= expeditionSlots(s)) { toast(s, 'Nessuno slot libero: costruisci la Locanda', 'bad'); return; }
+  if (c.level < L.minLevel) { toast(s, T('{cName} deve essere almeno di livello {minLevel}', { cName: c.name, minLevel: L.minLevel }), 'bad'); return; }
+  if (s.companions.filter(x => x.mission).length >= expeditionSlots(s)) { toast(s, T('Nessuno slot libero: costruisci la Locanda'), 'bad'); return; }
   const now = Date.now();
   c.mission = { locId, start: now, end: now + expeditionDuration(s, L.minutes) };
-  toast(s, `${c.icon} ${c.name} parte per ${L.name}`, 'info');
+  toast(s, T('{c} {cName} parte per {LName}', { c: c.icon, cName: c.name, LName: L.name }), 'info');
 }
 export function collectExpedition(s: GameState, compId: string) {
   const c = s.companions.find(c => c.id === compId);
@@ -358,33 +359,33 @@ export function collectExpedition(s: GameState, compId: string) {
   const got: Partial<Resources> = {};
   for (const [k, v] of Object.entries(res)) got[k as ResKey] = Math.round((v || 0) * m);
   addRes(s, got);
-  const parts = Object.entries(got).map(([k, v]) => `${v} ${k}`);
-  if (reliquie) { s.reliquie += reliquie; parts.push(`${reliquie} reliquie`); }
+  const parts = Object.entries(got).map(([k, v]) => `${v} ${RES_INFO[k as ResKey].name}`);
+  if (reliquie) { s.reliquie += reliquie; parts.push(T('{n} reliquie', { n: reliquie })); }
   if (itemChance && Math.random() < itemChance) { const it = makeItem(s.hero.level + 1, rollRarity(0.6 + c.level / 10)); addItem(s, it); parts.push(it.name); }
-  if (fragmentChance && Math.random() < fragmentChance) { s.fragments.push({ uid: uid('fr'), defId: randomFragment(s) }); parts.push('un Frammento di Fato'); }
+  if (fragmentChance && Math.random() < fragmentChance) { s.fragments.push({ uid: uid('fr'), defId: randomFragment(s) }); parts.push(T('un Frammento di Fato')); }
   companionXp(s, c.id, L.minutes * 5);
   c.mission = null;
   stat(s, 'expeditions');
-  toast(s, `${c.icon} ${c.name} torna da ${L.name}: ${parts.join(', ')}`, 'good');
+  toast(s, T('{c} {cName} torna da {LName}: {parts}', { c: c.icon, cName: c.name, LName: L.name, parts: parts.join(', ') }), 'good');
 }
 export function recruit(s: GameState, id: string) {
   const def = COMPANIONS.find(c => c.id === id);
   const c = s.companions.find(c => c.id === id);
   if (!def || !c || c.recruited) return;
   const cost = def.recruitCost || { cenere: 0 };
-  if (s.res.cenere < cost.cenere || s.reliquie < (cost.reliquie || 0)) { toast(s, 'Risorse insufficienti', 'bad'); return; }
-  if ((s.village.buildings.locanda || 0) < 1) { toast(s, 'Serve la Locanda dei Viandanti', 'bad'); return; }
+  if (s.res.cenere < cost.cenere || s.reliquie < (cost.reliquie || 0)) { toast(s, T('Risorse insufficienti'), 'bad'); return; }
+  if ((s.village.buildings.locanda || 0) < 1) { toast(s, T('Serve la Locanda dei Viandanti'), 'bad'); return; }
   s.res.cenere -= cost.cenere; s.reliquie -= cost.reliquie || 0;
   c.recruited = true;
   c.level = Math.max(1, Math.floor(s.hero.level * 0.7));
   if (def.faction) changeRep(s, def.faction, 4);
-  chronicle(s, `${c.name} si unisce a te.`, 'world');
-  toast(s, `${c.icon} ${c.name} si unisce al gruppo`, 'good');
+  chronicle(s, T('{cName} si unisce a te.', { cName: c.name }), 'world');
+  toast(s, T('{c} {cName} si unisce al gruppo', { c: c.icon, cName: c.name }), 'good');
 }
 export function toggleParty(s: GameState, id: string) {
   const c = s.companions.find(c => c.id === id);
   if (!c || !c.recruited || c.left || s.delve) return;
-  if (!c.inParty && s.companions.filter(x => x.inParty).length >= 2) { toast(s, 'Massimo 2 compagni in spedizione', 'bad'); return; }
+  if (!c.inParty && s.companions.filter(x => x.inParty).length >= 2) { toast(s, T('Massimo 2 compagni in spedizione'), 'bad'); return; }
   c.inParty = !c.inParty;
 }
 
@@ -414,11 +415,11 @@ export function catchFish(s: GameState, quality: number): FishDef | null {
   if (!s.fish.includes(f.id)) {
     s.fish.push(f.id);
     s.totals.species = s.fish.length;
-    chronicle(s, `Dallo Stagno delle Voci hai ripescato una memoria: ${f.name}. "${f.lore}"`, 'world');
-    toast(s, `🎣 Nuova memoria: ${f.name}! +1% produzione`, 'fate');
+    chronicle(s, T('Dallo Stagno delle Voci hai ripescato una memoria: {fName}. "{lore}"', { fName: f.name, lore: f.lore }), 'world');
+    toast(s, T('🎣 Nuova memoria: {fName}! +1% produzione', { fName: f.name }), 'fate');
   } else {
     addRes(s, { cenere: 15 * (f.rarity + 1) * s.hero.level });
-    toast(s, `🎣 ${f.name} (già nota): +cenere`, 'info');
+    toast(s, T('🎣 {fName} (già nota): +cenere', { fName: f.name }), 'info');
   }
   return f;
 }
@@ -449,7 +450,7 @@ export function claimDailyChest(s: GameState) {
   addRes(s, { cenere: 100 + s.hero.level * 40, provviste: 3, intuizione: 1 });
   s.potions++;
   if (Math.random() < 0.25) s.reliquie++;
-  toast(s, '🎁 Forziere giornaliero aperto', 'good');
+  toast(s, T('🎁 Forziere giornaliero aperto'), 'good');
 }
 export function claimMission(s: GameState, id: string) {
   const m = s.daily.missions.find(m => m.id === id);
@@ -457,11 +458,11 @@ export function claimMission(s: GameState, id: string) {
   m.claimed = true;
   addRes(s, { cenere: 80 + s.hero.level * 30, intuizione: 1 });
   gainXp(s, 30 + s.hero.level * 10);
-  toast(s, '✅ Missione giornaliera completata', 'good');
+  toast(s, T('✅ Missione giornaliera completata'), 'good');
   if (s.daily.missions.every(x => x.claimed) && !s.daily.bonus) {
     s.daily.bonus = true;
     s.reliquie++;
-    toast(s, '🏺 Tutte le missioni: +1 reliquia', 'fate');
+    toast(s, T('🏺 Tutte le missioni: +1 reliquia'), 'fate');
   }
 }
 export function checkAchievements(s: GameState) {
@@ -472,7 +473,7 @@ export function checkAchievements(s: GameState) {
     else if (a.stat) ok = (a.stat === 'species' ? s.fish.length : a.stat === 'starsLit' ? s.stars.length : s.totals[a.stat] || 0) >= (a.need || 0);
     if (ok) {
       s.achievements.push(a.id);
-      toast(s, `🏆 Impresa: ${a.name} (+2% produzione)`, 'fate');
+      toast(s, T('🏆 Impresa: {aName} (+2% produzione)', { aName: a.name }), 'fate');
     }
   }
 }
@@ -486,8 +487,8 @@ export function buySanctuary(s: GameState, id: string, max: number) {
   const lvl = s.cycle.sanctuary[id] || 0;
   if (lvl >= max) return;
   const c = sanctuaryCost(s, id);
-  if (s.reliquie < c) { toast(s, `Servono ${c} reliquie`, 'bad'); return; }
+  if (s.reliquie < c) { toast(s, T('Servono {c} reliquie', { c: c }), 'bad'); return; }
   s.reliquie -= c;
   s.cycle.sanctuary[id] = lvl + 1;
-  toast(s, '🏺 Offerta accettata dal Santuario', 'good');
+  toast(s, T('🏺 Offerta accettata dal Santuario'), 'good');
 }

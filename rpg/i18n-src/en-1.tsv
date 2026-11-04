@@ -1,0 +1,440 @@
+1moybcv	{name} ({n}): production ×2
+gq2dam	Production
+1slos22	/min
+1f2c6vj	Faction Requests
+seyleu	The factions will notice you when the village has 4 buildings.
+bw7997	No requests, for now. More will come.
+11k7s9v	Asks for:
+27zxsx	Deliver
+18gvyy9	Reward: ⚱️{c} · reputation +{rep} (−{down} {rival})
+fjrqwb	Elara's Infirmary
+1ltta66	Build the Infirmary to brew potions and elixirs.
+6amgje	🧪 Brew potion (
+1d7huz5	Drink (
+1vvvcoy	Infirmary level 2: elixirs for expeditions.
+11b3d2y	Active:
+a6ndfh	⛓️ Pledge on future health: -
+16myv0n	Elara's rite: ⚱️
+44w5sl	🦷 You are an Aberration. Elara knows a rite to become human again, at an enormous price.
+gm82sr	Rite: ⚱️3000 + 🏺8
+1c9k820	Altar of the Vigil
+1meif2c	Purify the interface (🔮2)
+d3okrl	· corruption is low
+mslaq8	Speak your true name (🏺3)
+oxd8rj	Personal corruption: {n}%. Above 60% the interface starts to lie.
+3vqg6d	Crit %
+j1jbad	Crit damage %
+12glb81	Dodge %
+159pnls	Lifesteal %
+r7zsos	Thorns %
+n3k0tp	Speed
+kgj0gq	 · equipped
+wuz2qf	Marked by Sacrifice
+lksdhb	You sealed the portal by sacrificing Tomas, Kael's brother.
+1pvqpoi	A part of you stayed on the other side of the portal. Your body bears the mark of that choice.
+1kqdiw8	+20% damage against Cult enemies; Resonance by protecting allies.
+1bnvna	-10% max health; hallucinations on deep floors.
+1ar7p01	The Farmers distrust you. Kael watches you in silence.
+11eqdev	Echo of Sacrifice
+10kqrzs	Damage to all enemies equal to your attack + all the health the party lost in this fight. Shields your allies.
+4hpyv0	The Black Martyr
+pmao4u	Blood Debt
+1wpp0ud	You handed the refugee Ilyas to the Cult, in exchange for the antidote that saved the child.
+10hphco	A life saved, a life sold. The Cult remembers your name and calls you "brother".
+hv729p	+5 attack, innate 6% lifesteal.
+56km7k	-2 defense; healing received is reduced by 20%.
+1ko5vo5	The Farmers call you a sellout. The Cult opens its doors to you.
+1txpry4	Echo of Blood
+1a133kr	A strike that drains three times your attack and heals the party for half the damage.
+938ofi	Silent Witness
+1k6glh3	You watched the valley burn without intervening. You saw everything. You remember everything.
+wr96v0	Silence has become your cloak. No one saw you, but you saw them.
+12zo8e5	+3 speed, +8% dodge; you see hidden enemy intents.
+1lihgw3	Lower max Resonance; loud abilities generate Dissonance.
+ec0jwu	The Heretics seek you out. The Healers call you a coward.
+13d5jxq	Echo of Silence
+kypgq4	Reveals every enemy's weak points (+40% damage taken for 3 turns) and stuns them.
+6ghewj	The Empty Mirror
+1woccof	Martyr of the Valley
+tzftoj	Resurrection once per expedition.
+k6zul0	Resurrection 1 time/expedition
+11ffknq	+30 max health
+103n6m6	-15% effective max health
+18uw80l	Enemies prioritize you
+ncy684	Silent Judge
+rfbymv	You see weak points. NPC lies are highlighted.
+1ptiim5	+12% crit
+kepruh	Lying enemies revealed
+1bzyvic	You receive no healing from allies
+1ny4upv	Broken Bearer
+1pf5zow	You charge Resonance faster. You unlock corrupted Echoes.
+j6we91	Resonance +50%
+7qdzu6	Max Resonance +4
+2tpn4p	Every sacrifice action deals extra damage to you
+6b0m8x	Pact Collector
+a3y5cy	Every blow demands a tribute.
+1fz4yzw	+10% lifesteal
+excvi5	+6 attack
+l16rsi	-4 defense
+121soel	The Cult demands tithes
+1yov6d5	The Silent God
+1jkc16q	Silence becomes law.
+6745cm	+15% dodge
+1swi16i	First strike always critical
+guvv3m	Allies lose trust faster
+hf5nr0	Ash Penitent
+dbx4xi	Armored, protects and sacrifices. Lots of health, thorns.
+1tv4hls	Blade of Debt
+k4rv1j	Crits and bleeding. Fragile but deadly.
+19rw39b	Mute Seer
+1t70c6d	Weaknesses, healing and storms of whispers.
+1xjzwxz	Keeper of the Flame
+5uh0cx	Balanced warrior: fires, charges and blessings.
+qj150x	Ash Strike
+ybv6kl	Basic attack. +1 Focus.
+1d20txs	Martyr's Shield
+2afaj	Shield an ally and protect them (taunt on you).
+swbbyj	Scourge
+q57eyr	Sacrifice 8% of your health for a sacred blow.
+1rau4ac	Iron Vow
+1hz2pfi	+60% defense and thorns for 3 turns.
+1vluuyh	Slash
+1o3sw52	Fast basic attack. +1 Focus.
+vu8cxh	Bloodletting
+1mbeuv2	Makes the target bleed for 3 turns.
+whnwxr	Execution
+osvprv	Huge damage if the target is below 35%.
+190k9	Shadow Step
+hjat2g	+40% dodge for 2 turns and a sneak strike.
+16s3j00	Dart of Clarity
+18a5w9u	Basic ranged attack. +1 Focus.
+5mfu96	True Gaze
+1kftrnc	The target takes +35% damage for 3 turns.
+1gbsghn	Litany of the Saved
+11b18qc	Heals the whole party.
+1sp1cdh	Storm of Whispers
+saybgc	Damage to all enemies. Loud.
+flk8mi	Cleave
+15ooiq4	Pyre
+iq2axy	Sets all enemies ablaze. Loud.
+1brpbp0	Blessing of the Flame
+1d17k1m	+30% attack and regeneration for the party.
+94qr8g	Charge
+1xrht96	Stuns the target. Loud.
+cefeda	Offering
+kq1y0j	Give 15% of your health: the ally heals twice as much.
+1qol686	Blood Tribute
+tf1fvf	Drains the target's life.
+f71ocl	Vow of Silence
+1hytw09	Become invisible for 1 turn; your next strike is critical.
+1vcx4uc	Dark Pact
+32h2ou	Spend 6 Dissonance and 15% of your health: huge pure damage.
+w6noa	Tactical Betrayal
+zedw66	Spend 4 Dissonance: use a companion as a shield (-20% of their health) and gain an extra turn.
+1mkudna	Supply Pyre
+o31mxf	Spend 5 Dissonance and burn 2 Supplies: massive damage to everyone.
+1ex5ox9	Jaws of the Font
+wddy4g	Aberrant form: devours the target.
+e8y4e9	Quick Blade
+1s6akag	Cure-all
+18zvqkw	Brann's Wall
+5kgoqc	Maul
+1xnld95	Heretic Arrow
+6d125o	Spectral Strike
+1bvyk6o	Kael
+p71tn0	Swordsman
+w2bfj8	Tomas's brother. He follows you, but hasn't yet decided whether to forgive you.
+l4a5tj	Lyra
+joryt2	Healer
+1xf3r1j	Elara's student. She heals anyone, even those who don't deserve it.
+vxtds8	Brann
+fxatyo	Wall
+1ums2po	Former Warden of the Valley. He swore never to let anyone die again.
+1hocd52	Mira
+sy0cox	Heretic Archer
+yu92ws	She burns holy texts to keep warm. Rarely laughs, always aims.
+1hnjoqc	Cult of Vhalzareth
+1qxjrbk	Blood, vision, sacrifice. They promise to save the valley by burning it.
+19e6mkt	The Capital
+10zuc8s	Order, command, repression.
+1aakxbq	Local Guilds
+zd1w2w	Artisans and merchants of Hondovalle.
+4v8gua	Farmers
+1cmjbef	Endurance, healing, natural traps.
+1wxfp9d	Healers
+1aj35hi	Elara and her students. They heal without asking.
+ux6a4m	Heretics
+1htzjh2	Revolt, sabotage, uncomfortable truths.
+1jsf9hs	Market Shadows
+arslu5	They trade destiny. No one knows who they are.
+u2xa9r	Wardens of the Valley
+12t87er	Ancient keepers of the seals of Krak.
+h80dxz	Path of the Cult
+1pv7heh	Blood, vision, sacrifice.
+sj7e4g	Path of the Capital
+1d2x1pe	Command, order, repression.
+rgy6io	Path of the Farmers
+m2z01k	Path of the Revolt
+1y1xjlf	Sabotage, charisma, chaos.
+1n815rg	Ritual Thirst
+1ryiqky	+5% lifesteal
+e5r1q2	Eye of the Font
+e2sk0n	+8% crit, +20% crit damage
+1j2qh20	Blood Sacrament
+15quhp8	Blood abilities give +1 Resonance
+182hgdy	Vision of Vhalzareth
+glmo4y	+10 attack
+lirpsz	Discipline
+y0r2zt	+5 defense
+1tt5mns	Command
+1pmzmbj	Companions deal +25% damage
+ixkxea	Repression
+zlf8d3	+6 attack, +30 health
+19vh78a	Martial Law
+xxls5r	Start every fight with 2 Focus
+1pm401x	Tough Skin
+1r323n3	+40 max health
+1kqx59s	Field Herbs
+3v5ivu	Potions heal 50% more
+41j79s	Natural Traps
+1b1b22j	+10% thorns, dungeon traps hurt you half as much
+md2qu3	Roots
+1qvxlsl	+8 defense, +60 health
+1oxsehz	Sabotage
+1gcn4bl	+6% dodge, +2 speed
+c003wv	Charisma
+1rmbv9v	Market prices -15%
+5v08lv	Chaos
+17l00fq	Dissonance costs 1 less per action
+e0jei8	Fire of the Revolt
+1k6u0ll	+8 attack, +10% crit
+fzu0dr	Rotten Claw
+11j1eo1	Corrupted Whisper
+apf26b	Lament
+mz7cqb	Corrupted Regeneration
+uufkje	Bone Shell
+3695ao	Fury
+1dm41ms	Heavy Blow
+bp2ur2	Poisoned Dart
+8pq1mf	Bite
+2wdqc8	Black Flame
+tts0c8	Paralyzing Scream
+ybz3gx	Accusation
+i9o5sq	Stronger for every broken Promise.
+1sguqbo	Betrayed Face
+q0j78z	Mimics a betrayed ally.
+1lu5fx2	Gaze of the Void
+jo6k5s	Caged Lightning
+kugata	Colossus Step
+11obmrb	Spiteful Bones
+11rg2p8	Bones that remember only the wrong they suffered.
+6wh4ze	Specter of Regret
+1f4jqeg	You can only see it by listening. With the audio off, its intent is a mystery.
+16vimme	Corrupted Gravedigger
+1gd5l7g	Buries the living. Says it's kinder.
+16pen6v	Lying Crow
+1mb475x	Repeats your name in the voice of someone you lost. Always lies.
+1wir9pg	Shadow of Betrayal
+b24kap	It wears the face of the last ally you let down.
+op6iw5	Keeper of the Tombstones
+1mxsp2t	Every tombstone is a name. Every name, a blow.
+1lq8v3l	Choir of the Saved Unslain
+og0e4v	The voices of everyone you could have saved. It heals if you lied, grows stronger with broken Promises.
+1emmf5j	The Choir calls a voice from the bottom of the pit!
+rfuvf6	Cult Drowned
+173redr	The Cult submerges them until they stop doubting.
+1kq6iev	Mother Leech
+ny11tb	It has drunk from every pilgrim in the swamp.
+yner58	Listening Acolyte
+14knxft	It hears loud abilities and flies into a rage.
+12xesgk	Reed Viper
+ogmqbi	Its rustle betrays it, if you have ears to hear.
+z1sav6	Priestess of the Font
+152xpn5	She offers to remove your Burden, in exchange for a betrayal.
+xf716e	That Which Drinks from the Swamp
+zl8stg	The swamp swallows armies and asks for more.
+12uyzdf	The Mother of Vhalzareth
+1ovtojt	Source of the Cult. Her blood changes whoever drinks it.
+1ouzzpv	The Mother calls her children!
+1k3q284	The blood of the Font invigorates her.
+tvx1mz	Mute Echo
+18akcpa	A voice whose mouth was taken away.
+niaha8	Seal Guard
+ocgvd8	Once a Warden of the Valley. Now it guards only silence.
+1rgz0zu	Blind Judge
+1rq4hao	Condemns without looking. Has never acquitted anyone.
+ebuhcu	Moth of Krak
+kts7c3	It flies toward noise as if toward a flame.
+7bifr2	Herald of Silence
+1bb9ppu	It announces the end of every word.
+1sr1wzl	The Tongueless Bellringer
+1inxvyt	It rings bells only the dead can hear.
+u7tqcc	The Heart of Krak
+1qqesdz	The voice buried under the valley. Every burden is a beat of its heart.
+2gv0bb	The Heart pulses: the buried voices rise!
+b9uoiy	Krak judges your choices!
+1lk0p8j	Echo of the Abyss
+b9f2b1	Fragments of fallen bearers.
+e69n0c	Devourer of Names
+1afi9pp	It eats names. Then people forget they ever had them.
+jh44xf	Sovereign of the Void
+qswawe	A throne hammered out of absolute nothing.
+1yjmq0z	The extreme version of your sacrifice: one who dies for all, and demands that all die for them.
+17dg1da	It comes to collect your debt. With interest.
+g9cguw	It shows what you saw and did not stop.
+1kokme	Promise Hunter
+u28m8c	Born from every broken promise. It carries your words hanging from its belt.
+1j1veju	Echo of a Bearer
+1jcz0j5	Another bearer's failed run, left to wander.
+2uu1qg	The Tribunal of Echoes
+y4a2qf	Your Burdens testify. Your broken Promises accuse.
+wzpj27	The Ash Colossus
+3mpmcp	World boss. Every bearer in the valley strikes it every day.
+1uxagj	Capital Raider
+zkibxt	Conscripted by force, he plunders so as not to be plundered.
+1n7xs0l	The Cemetery of the Betrayed
+gfb22y	The Field of the Sacrificed
+13vetz7	The Bone Market
+1p2zv1w	The Cemetery You Remember
+fxrk3p	The graves bear the names of those you let down.
+1ynv4af	The Swamps of Vhalzareth
+udql9z	The Waters of the Martyrs
+1juma2z	The Font of the Brothers
+1d37c82	The Silent Swamp
+164gfjl	A crimson swamp that swallows armies and asks for more.
+25zsyy	The Tower of Silence
+p7u2x9	The Stairway of the Price
+1aymvp6	The Tower of Debt
+6hlfyp	The House of the Witness
+1oarlrr	A stairway carved for giants, sinking toward the Heart of Krak.
+1b3z4wn	Bottomless. Every floor deeper, every echo older. Endless progression.
+14hqg19	Claustrophobia
+182o5zl	Only two doors per floor; more frequent traps.
+181h1ok	Wounds That Don't Close
+x7205p	All healing -40%.
+1d0kbb0	Betrayed Faces
+dr3521	Enemies mimic betrayed allies: +20% attack if you have betrayed.
+v9vvgd	Thirst for Victory
+g06uky	Enemies +25% health, loot +40%.
+1s3273	Reliquary
+g3bhiv	More shrines and treasures, but resting at a shrine costs Ash.
+12lf1in	Blind Fury
+8jvsnl	Everyone deals +25% damage (you too).
+1jb3gxj	Empty Echo
+15yt3th	Companions deal -30% damage. More bearer Echoes.
+8nzynf	Double Shadows
+iy2e4n	Fights often have one extra enemy.
+1xzjyfb	The Tithe
+zxpkj1	Every floor also costs 5 Ash.
+18f2zar	Silent Prayer
+jf8gun	Faith actions give double Resonance.
+bbx8go	The Tombstones of Names
+yczy1y	Gates of rusted iron. The graves bear names you recognize: the names of those you let down. One is still fresh: "{name}".
+syv4wo	Pray for the souls of the betrayed
+96dyvg	Your words echo. A faint light kindles on the path.
+1363o10	Kick the tombstones to open a passage
+1d6luzs	The metal screeches. Under the tombstones, ash coins. The shadows stir.
+m526ow	Silently study the carved symbols
+1tiyxad	You notice a secret path among the graves. The valley remembers those who watch.
+d51xvh	The Claustrophobic Corridor
+1h8s88a	The walls close in. The ceiling pulses like a sick heart. Bone traps block the way.
+n7igli	Advance carefully
+7t5vc2	A thorn scratches you. You avoid the worst.
+eh4dfc	Push a companion ahead as bait
+1wkl5gd	Your companion screams as the traps strike. They look at you. They won't forget.
+1o1gimo	Cut your palm and offer blood to the walls
+1bh1s2g	The walls drink and recede. The passage is yours.
+o5erdd	The Bridge of Sighs
+6l370v	A bridge over a bottomless abyss. Ghostly figures whisper names. One has your father's voice: "{name}… did you know?"
+18rut21	Cross in silence
+15ue315	The ghosts let you pass. Silence is a form of respect.
+15th8br	Speak to your father's ghost
+1ebq66j	He whispers a painful truth: the Heart of Krak was calling him, just as it now calls you.
+3ab1vg	Destroy the ghosts
+1l5t2y9	The figures shriek and hurl themselves at you!
+16j6svf	The Deserter
+1cuaw8x	A boy in a Cult robe trembles in a corner. "I didn't want to… they forced me." His hands are stained with blood that isn't his.
+2u7p9d	Spare him and show him the way out
+ahhuix	He runs away. One day, maybe, someone will tell you about him.
+14ur6zk	Kill him: the Cult does not forgive, and neither do you
+ox01sy	It was quick. The valley will not forget him.
+1w8ki1	Hand him to the Capital for the bounty
+dmhxgk	Captain Marcus will pay well. The boy no longer looks at you.
+17fabnv	[Whispers] Listen to what the blood on his hands is telling
+12l4wax	Only in the Rite (fullscreen)
+1tdxs9u	The blood murmurs a word: the Password of your Burden. Now you know it.
+pyysuw	A Bearer's Diary
+6xogwz	Next to a corpse, a diary. The last page reads: "If you read this, don't trust the door that breathes."
+1x71oi2	Read all of it
+fz8vrf	Their choices resemble yours. Too much.
+1sdowto	Burn it to warm yourself
+15w7atn	The warmth restores you. Their words rise in smoke.
+1csj1rx	Search the corpse
+14jzgk6	You find something useful. They no longer need it.
+1vg7uu	The Pale Spring
+yru15t	A spring of sickly light. The water heals, but something swims at the bottom.
+aa0uxz	Drink deeply
+1rebjnn	Your wounds close. Something watches you from within.
+102fxjq	Bathe only your companions' wounds
+kawsyf	Your companions thank you with a look.
+1585rye	Purify the water with a prayer
+1q5cp28	The light turns clear for an instant.
+194etkq	The Font of Blood
+3355rv	At the heart of the swamp, the Font of Vhalzareth boils. Whoever drinks becomes something else: stronger, less human. Vesper watches you from the far bank.
+1wi3jz3	Drink from the Font
+so54xm	The blood fills you. Your bones lengthen. You become an Aberration.
+ksa718	Collect a sample
+153ld1f	The blood in the vial pulses. You gain a Blood Shard.
+1m3hlco	Purify it with salt and prayer
+lndkuo	The Cult won't allow it. The faithful attack!
+m0mu0z	Ilyas's Cage
+hq65vh	In a cage hanging over black water: Ilyas, the refugee. He is alive. "{name}… you came back?"
+1nizuuc	Free him, whatever the cost
+rdfeci	You break the cage. The Priestess screams your name!
+1bkd917	Leave him there
+1l55dt9	You turn away. He stops calling you.
+1ae5svu	Sell him to the Cult a second time
+r5l3ab	Vesper smiles. "Brother." The blood debt grows deeper.
+1449pdy	The Drowned Pilgrims
+8bm8l	A boat capsizes. Three pilgrims flounder in the red mud.
+1f3bivx	Dive in to save them
+yecu3t	You save two. The third sinks, looking at you.
+xhjzbh	Take their bags as they sink
+fyl43o	The mud closes over them. The bags are heavy.
+1so68kg	Pray for them and move on
+1ffe7a5	You can't save them all. You know it. It hurts anyway.
+gji3am	The Mirror of the Tower
+1yc3rj0	A mirror as tall as the tower. The reflection is you, but with the face of what your Burden wants you to become.
+1anbmwb	Accept the reflection
+fjkfbt	The reflection smiles. The Burden grows heavier, and more yours.
+1sdoj9i	Shatter it
+1mmmiky	A thousand shards. Each one has your face.
+1lz8y2p	[Whispers] Ask the mirror for the truth
+14286en	The mirror answers: "The Heart of Krak feeds on what you pretend not to know."
+sxa9qc	The Mute Bell
+1du2fhy	A huge bell hangs from a rope of bones. If it rang, the whole tower would hear.
+f3nzms	Ring it
+1z0f0a7	DONG. Something flies toward the noise!
+1rp0u9c	Cut the rope silently
+9wv88d	The bell plunges into the abyss. No one hears a thing.
+ubz6y4	Leave it be
+18zcmvh	Some things must remain silent.
+1wy372c	The Judge's Scales
+jthth3	A golden scale: on one pan a withered heart, on the other, emptiness. "Weigh what you are willing to lose."
+1mcnhhm	Offer your Resonance
+gis1d7	Requires 4 Resonance
+1nkl3sx	The scale tips. A relic appears on the pan.
+1nnqh4g	Offer your blood
+122wt5i	The pan turns red. You receive an ancient item.
+1vhg25j	Offer your Dissonance
+wqdu65	Requires 5 Dissonance
+1ofyvib	The weight of incoherence slips away, for now.
+n3n4wo	The Child Who Asks Your Name
+bvf968	A ghostly child tugs at your sleeve. "What's your name? If you tell me, I'll remember you forever."
+1pvo22h	Tell them your name: "{name}"
+1vsis45	They repeat your name, softly. Now the valley holds one more memory of you.
+1ozy93c	Lie to them
+2try42	They repeat the false name. Yours, meanwhile, fades a little.
+v976xd	Don't answer
+1glo79z	The child vanishes, offended. The silence weighs.
+1nvfcw7	The Choir of Fallen Bearers

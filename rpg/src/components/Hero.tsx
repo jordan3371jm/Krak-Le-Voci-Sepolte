@@ -1,3 +1,4 @@
+import { t as T } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
 import type { GameState, Item, Slot } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -11,7 +12,7 @@ import { heroSkills } from '../game/engine/combat';
 import { sellItem } from '../game/engine/meta';
 import { displayName } from '../game/engine/state';
 import { sfx } from '../game/audio';
-import { Btn, Cost, Empty, ItemCard, Panel, STAT_LABELS, Tag } from './ui';
+import { Btn, Cost, Empty, ItemCard, Panel, STAT_LABELS, Tag, rich } from './ui';
 
 function Forge({ state: s, act }: { state: GameState; act: Act }) {
   const [slot, setSlot] = useState<Slot>('arma');
@@ -42,23 +43,23 @@ function Forge({ state: s, act }: { state: GameState; act: Act }) {
   };
   const cost = forgeCost(s);
   return (
-    <Panel title="Fucina" icon="🔨">
-      {!s.village.buildings.fucina ? <Empty>Costruisci una Fucina nel villaggio per forgiare equipaggiamento.</Empty> : (
+    <Panel title={T('Fucina')} icon="🔨">
+      {!s.village.buildings.fucina ? <Empty>{T('Costruisci una Fucina nel villaggio per forgiare equipaggiamento.')}</Empty> : (
         <>
           <div className="flex flex-wrap gap-1 mb-2">{SLOTS.map(sl => <Btn key={sl} small kind={slot === sl ? 'ember' : 'default'} onClick={() => setSlot(sl)}>{SLOT_INFO[sl].icon} {SLOT_INFO[sl].name}</Btn>)}</div>
           {step < 0 ? (
-            <Btn kind="ember" onClick={() => { setScores([]); setStep(0); }}>Accendi la forgia · <Cost cost={cost} have={s.res} /></Btn>
+            <Btn kind="ember" onClick={() => { setScores([]); setStep(0); }}>{T('Accendi la forgia ·')}{' '}<Cost cost={cost} have={s.res} /></Btn>
           ) : (
             <div>
-              <p className="text-xs text-mist mb-1">Colpo {step + 1}/3 — batti quando il calore è nella zona luminosa.</p>
+              <p className="text-xs text-mist mb-1">{T('Colpo')}{' '}{step + 1}{T('/3 — batti quando il calore è nella zona luminosa.')}</p>
               <div className="relative h-6 rounded bg-gradient-to-r from-stone-900 via-orange-900 to-stone-900 border border-stone-700 overflow-hidden">
                 <div className="absolute inset-y-0 bg-amber-400/40" style={{ left: `${zone[0] * 100}%`, width: `${(zone[1] - zone[0]) * 100}%` }} />
                 <div className="absolute inset-y-0 w-1 bg-white shadow-[0_0_8px_white]" style={{ left: `${pos * 100}%` }} />
               </div>
-              <Btn kind="ember" className="mt-2 w-full" onClick={strike}>🔨 Batti!</Btn>
+              <Btn kind="ember" className="mt-2 w-full" onClick={strike}>{T('🔨 Batti!')}</Btn>
             </div>
           )}
-          <p className="text-[11px] text-mist mt-2">La qualità dei colpi aumenta la rarità. Le Gilde (Fidato) migliorano ogni forgiatura.</p>
+          <p className="text-[11px] text-mist mt-2">{T('La qualità dei colpi aumenta la rarità. Le Gilde (Fidato) migliorano ogni forgiatura.')}</p>
         </>
       )}
     </Panel>
@@ -73,28 +74,28 @@ function Inventory({ state: s, act }: { state: GameState; act: Act }) {
   const it = s.inventory.find(i => i.uid === sel);
   const current = it ? s.inventory.find(i => i.uid === s.hero.equipped[it.slot]) : undefined;
   return (
-    <Panel title={`Inventario (${s.inventory.length}/80)`} icon="🎒" right={<div className="flex gap-1"><Btn small onClick={() => act(d => autoEquip(d))}>Auto-equipaggia</Btn><Btn small kind="bad" onClick={() => act(d => salvageJunk(d))}>Smonta comuni</Btn></div>}>
+    <Panel title={T('Inventario ({inventory}/80)', { inventory: s.inventory.length })} icon="🎒" right={<div className="flex gap-1"><Btn small onClick={() => act(d => autoEquip(d))}>{T('Auto-equipaggia')}</Btn><Btn small kind="bad" onClick={() => act(d => salvageJunk(d))}>{T('Smonta comuni')}</Btn></div>}>
       <div className="flex flex-wrap gap-1 mb-2">
-        <Btn small kind={filter === 'all' ? 'ember' : 'ghost'} onClick={() => setFilter('all')}>Tutto</Btn>
+        <Btn small kind={filter === 'all' ? 'ember' : 'ghost'} onClick={() => setFilter('all')}>{T('Tutto')}</Btn>
         {SLOTS.map(sl => <Btn key={sl} small kind={filter === sl ? 'ember' : 'ghost'} onClick={() => setFilter(sl)}>{SLOT_INFO[sl].icon}</Btn>)}
       </div>
       {it && (
         <div className="rounded-lg border border-ember/40 p-2 mb-2 bg-black/40 animate-fade">
           <ItemCard it={it} equipped={equipped.has(it.uid)} />
           <p className="text-[11px] text-fate/80 italic mt-1">«{it.origin}»</p>
-          {current && current.uid !== it.uid && <p className="text-[11px] mt-1">Confronto: {itemScore(it) > itemScore(current) ? <span className="text-resonance">▲ migliore di {current.name}</span> : <span className="text-dissonance">▼ peggiore di {current.name}</span>}</p>}
+          {current && current.uid !== it.uid && <p className="text-[11px] mt-1">{T('Confronto:')}{' '}{itemScore(it) > itemScore(current) ? <span className="text-resonance">{T('▲ migliore di {name}', { name: current.name })}</span> : <span className="text-dissonance">{T('▼ peggiore di {name}', { name: current.name })}</span>}</p>}
           <div className="flex flex-wrap gap-1 mt-2">
-            {equipped.has(it.uid) ? <Btn small onClick={() => act(d => unequip(d, it.slot))}>Togli</Btn> : <Btn small kind="good" onClick={() => act(d => equip(d, it.uid))}>Equipaggia</Btn>}
-            <Btn small onClick={() => act(d => upgradeItem(d, it.uid))} disabled={it.plus >= 15}>Potenzia +{it.plus + 1} <Cost cost={upgradeCost(it)} have={s.res} /></Btn>
-            <Btn small onClick={() => act(d => { const x = d.inventory.find(i => i.uid === it.uid); if (x) x.locked = !x.locked; })}>{it.locked ? '🔓 Sblocca' : '🔒 Blocca'}</Btn>
+            {equipped.has(it.uid) ? <Btn small onClick={() => act(d => unequip(d, it.slot))}>{T('Togli')}</Btn> : <Btn small kind="good" onClick={() => act(d => equip(d, it.uid))}>{T('Equipaggia')}</Btn>}
+            <Btn small onClick={() => act(d => upgradeItem(d, it.uid))} disabled={it.plus >= 15}>{T('Potenzia +')}{it.plus + 1} <Cost cost={upgradeCost(it)} have={s.res} /></Btn>
+            <Btn small onClick={() => act(d => { const x = d.inventory.find(i => i.uid === it.uid); if (x) x.locked = !x.locked; })}>{it.locked ? T('🔓 Sblocca') : T('🔒 Blocca')}</Btn>
             {!equipped.has(it.uid) && !it.locked && <>
-              <Btn small kind="bad" onClick={() => { act(d => salvage(d, it.uid)); setSel(null); }}>Smonta (⛓️{salvageValue(it).ferro})</Btn>
-              <Btn small kind="fate" onClick={() => { act(d => sellItem(d, it.uid)); setSel(null); }}>Vendi al Mercato</Btn>
+              <Btn small kind="bad" onClick={() => { act(d => salvage(d, it.uid)); setSel(null); }}>{T('Smonta (⛓️')}{salvageValue(it).ferro})</Btn>
+              <Btn small kind="fate" onClick={() => { act(d => sellItem(d, it.uid)); setSel(null); }}>{T('Vendi al Mercato')}</Btn>
             </>}
           </div>
         </div>
       )}
-      {items.length === 0 ? <Empty>Nessun oggetto. Scendi nei dungeon o forgia.</Empty> : (
+      {items.length === 0 ? <Empty>{T('Nessun oggetto. Scendi nei dungeon o forgia.')}</Empty> : (
         <div className="grid sm:grid-cols-2 gap-1.5 max-h-96 overflow-y-auto pr-1">
           {items.map(i => <ItemCard key={i.uid} it={i} compact equipped={equipped.has(i.uid)} selected={sel === i.uid} onClick={() => setSel(i.uid === sel ? null : i.uid)} />)}
         </div>
@@ -105,8 +106,8 @@ function Inventory({ state: s, act }: { state: GameState; act: Act }) {
 
 function Talents({ state: s, act }: { state: GameState; act: Act }) {
   return (
-    <Panel title={`Vie dei Talenti · ${s.hero.talentPoints} punti`} icon="🎓" right={<Btn small kind="ghost" onClick={() => act(d => respecTalents(d))}>Azzera ({100 * s.hero.level}⚱️)</Btn>}>
-      <p className="text-xs text-mist mb-3">Non sali di livello per diventare più forte: sali per diventare qualcuno. Ogni Via avvicina una fazione e ne allontana un'altra.</p>
+    <Panel title={T('Vie dei Talenti · {talentPoints} punti', { talentPoints: s.hero.talentPoints })} icon="🎓" right={<Btn small kind="ghost" onClick={() => act(d => respecTalents(d))}>{T('Azzera (')}{100 * s.hero.level}⚱️)</Btn>}>
+      <p className="text-xs text-mist mb-3">{T('Non sali di livello per diventare più forte: sali per diventare qualcuno. Ogni Via avvicina una fazione e ne allontana un\'altra.')}</p>
       <div className="grid sm:grid-cols-2 gap-3">
         {Object.entries(VIE).map(([via, v]) => (
           <div key={via} className="rounded-lg border border-stone-700 p-2">
@@ -132,23 +133,23 @@ function Talents({ state: s, act }: { state: GameState; act: Act }) {
 
 function Ascension({ state: s, act }: { state: GameState; act: Act }) {
   const [sel, setSel] = useState<string[]>([]);
-  if (!s.fardello) return <Panel title="Ascensione del Fardello" icon="⬆️"><Empty>Serve un Fardello.</Empty></Panel>;
+  if (!s.fardello) return <Panel title={T('Ascensione del Fardello')} icon="⬆️"><Empty>{T('Serve un Fardello.')}</Empty></Panel>;
   const F = FARDELLI[s.fardello];
   const paths = F.ascensions;
   if (s.ascension) {
     return (
-      <Panel title="Ascensione del Fardello" icon="⬆️">
-        <p className="text-sm text-bone mb-2">{s.ascension.hybrid ? 'Ascensione Parallela (ibrido)' : 'Ascensione'}: {s.ascension.paths.map(p => `${ASCENSIONS[p].icon} ${ASCENSIONS[p].name}`).join(' + ')}</p>
+      <Panel title={T('Ascensione del Fardello')} icon="⬆️">
+        <p className="text-sm text-bone mb-2">{s.ascension.hybrid ? T('Ascensione Parallela (ibrido)') : T('Ascensione')}: {s.ascension.paths.map(p => `${ASCENSIONS[p].icon} ${ASCENSIONS[p].name}`).join(' + ')}</p>
         {s.ascension.paths.map(p => <div key={p} className="text-xs text-mist mb-1">✔ {ASCENSIONS[p].perks.join(' · ')} — ✖ {ASCENSIONS[p].costs.join(' · ')}</div>)}
-        {s.ascension.hybrid && <p className="text-[11px] text-fate">Ibrido: ogni cammino conta al 60%, ma ne porti entrambi i costi.</p>}
+        {s.ascension.hybrid && <p className="text-[11px] text-fate">{T('Ibrido: ogni cammino conta al 60%, ma ne porti entrambi i costi.')}</p>}
       </Panel>
     );
   }
   const ready = canAscend(s);
   return (
-    <Panel title="Ascensione del Fardello" icon="⬆️">
-      <p className="text-xs text-mist mb-2">Oltre il livello: il Fardello evolve in forme più potenti e vincolanti. Scegli un cammino, oppure due per un'<b>Ascensione Parallela</b> (ibrido: richiede il Frammento del Patto Spezzato o 5 reliquie).</p>
-      {!ready && <p className="text-xs text-dissonance mb-2">Richiede livello 15 e il Cimitero conquistato (o 4 boss sconfitti).</p>}
+    <Panel title={T('Ascensione del Fardello')} icon="⬆️">
+      <p className="text-xs text-mist mb-2">{rich(T('Oltre il livello: il Fardello evolve in forme più potenti e vincolanti. Scegli un cammino, oppure due per un\'**Ascensione Parallela** (ibrido: richiede il Frammento del Patto Spezzato o 5 reliquie).'))}</p>
+      {!ready && <p className="text-xs text-dissonance mb-2">{T('Richiede livello 15 e il Cimitero conquistato (o 4 boss sconfitti).')}</p>}
       <div className="grid sm:grid-cols-3 gap-2">
         {paths.map(p => {
           const A = ASCENSIONS[p];
@@ -162,7 +163,7 @@ function Ascension({ state: s, act }: { state: GameState; act: Act }) {
           );
         })}
       </div>
-      {sel.length > 0 && <Btn kind="fate" className="mt-3" onClick={() => act(d => ascend(d, sel))}>{sel.length === 2 ? `Ascensione Parallela: ${sel.map(p => ASCENSIONS[p].name).join(' + ')}` : `Ascendi: ${ASCENSIONS[sel[0]].name}`}</Btn>}
+      {sel.length > 0 && <Btn kind="fate" className="mt-3" onClick={() => act(d => ascend(d, sel))}>{sel.length === 2 ? T('Ascensione Parallela: {name}', { name: sel.map(p => ASCENSIONS[p].name).join(' + ') }) : `Ascendi: ${ASCENSIONS[sel[0]].name}`}</Btn>}
     </Panel>
   );
 }
@@ -175,9 +176,9 @@ export default function Hero({ state: s, act }: { state: GameState; act: Act }) 
   return (
     <div className="space-y-4">
       <div className="grid lg:grid-cols-3 gap-4">
-        <Panel title={displayName(s)} icon={cls.icon} right={<Tag>Potenza {heroPower(s)}</Tag>}>
-          <p className="text-xs text-mist">{cls.name} · Livello {s.hero.level}{s.hero.paragon ? ` · Oltre il limite ✴${s.hero.paragon}` : ''}{s.aberration ? ' · 🦷 Aberrazione' : ''}</p>
-          {F && <p className="text-xs mt-1" style={{ color: F.color }}>{F.icon} {F.name} · peso {F.weight} ({F.weight <= 2 ? 'leggero: agisci prima' : F.weight >= 4 ? 'pesante: +10% danni' : 'medio'})</p>}
+        <Panel title={displayName(s)} icon={cls.icon} right={<Tag>{T('Potenza')}{' '}{heroPower(s)}</Tag>}>
+          <p className="text-xs text-mist">{cls.name} · {T('Livello {n}', { n: s.hero.level })}{s.hero.paragon ? T(' · Oltre il limite ✴{paragon}', { paragon: s.hero.paragon }) : ''}{s.aberration ? T(' · 🦷 Aberrazione') : ''}</p>
+          {F && <p className="text-xs mt-1" style={{ color: F.color }}>{F.icon} {F.name} · peso {F.weight} ({F.weight <= 2 ? T('leggero: agisci prima') : F.weight >= 4 ? T('pesante: +10% danni') : 'medio'})</p>}
           <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs mt-3">
             {Object.entries(st).map(([k, v]) => <div key={k} className="flex justify-between"><span className="text-mist">{STAT_LABELS[k]}</span><span className="text-bone">{Math.round(v * 10) / 10}</span></div>)}
           </div>
@@ -187,30 +188,30 @@ export default function Hero({ state: s, act }: { state: GameState; act: Act }) 
             </div>
           )}
         </Panel>
-        <Panel title="Equipaggiamento" icon="🛡️">
+        <Panel title={T('Equipaggiamento')} icon="🛡️">
           <div className="space-y-1">
             {SLOTS.map(sl => {
               const it: Item | undefined = s.inventory.find(i => i.uid === s.hero.equipped[sl]);
-              return it ? <ItemCard key={sl} it={it} compact equipped /> : <div key={sl} className="text-xs text-mist border border-dashed border-stone-800 rounded-lg p-2">{SLOT_INFO[sl].icon} {SLOT_INFO[sl].name}: vuoto</div>;
+              return it ? <ItemCard key={sl} it={it} compact equipped /> : <div key={sl} className="text-xs text-mist border border-dashed border-stone-800 rounded-lg p-2">{SLOT_INFO[sl].icon} {T('{slot}: vuoto', { slot: SLOT_INFO[sl].name })}</div>;
             })}
           </div>
         </Panel>
-        <Panel title="Abilità" icon="📜">
+        <Panel title={T('Abilità')} icon="📜">
           <div className="space-y-1">
             {heroSkills(s).map(id => { const k = SKILLS[id]; return k ? <div key={id} className="text-xs"><span className="text-bone">{k.icon} {k.name}</span> <span className="text-mist">— {k.desc}</span></div> : null; })}
           </div>
-          {F && <p className="text-[11px] text-fate mt-2">Eco: {F.echoName} — {F.echoDesc}</p>}
+          {F && <p className="text-[11px] text-fate mt-2">{T('Eco:')}{' '}{F.echoName} — {F.echoDesc}</p>}
         </Panel>
       </div>
       <div className="flex gap-2">
-        <Btn kind={sub === 'equip' ? 'ember' : 'ghost'} onClick={() => setSub('equip')}>Inventario e Fucina</Btn>
-        <Btn kind={sub === 'talenti' ? 'ember' : 'ghost'} onClick={() => setSub('talenti')}>Talenti {s.hero.talentPoints ? `(${s.hero.talentPoints})` : ''}</Btn>
-        <Btn kind={sub === 'ascensione' ? 'ember' : 'ghost'} onClick={() => setSub('ascensione')}>Ascensione</Btn>
+        <Btn kind={sub === 'equip' ? 'ember' : 'ghost'} onClick={() => setSub('equip')}>{T('Inventario e Fucina')}</Btn>
+        <Btn kind={sub === 'talenti' ? 'ember' : 'ghost'} onClick={() => setSub('talenti')}>{T('Talenti')}{' '}{s.hero.talentPoints ? `(${s.hero.talentPoints})` : ''}</Btn>
+        <Btn kind={sub === 'ascensione' ? 'ember' : 'ghost'} onClick={() => setSub('ascensione')}>{T('Ascensione')}</Btn>
       </div>
       {sub === 'equip' && <div className="grid lg:grid-cols-3 gap-4"><div className="lg:col-span-2"><Inventory state={s} act={act} /></div><Forge state={s} act={act} /></div>}
       {sub === 'talenti' && <Talents state={s} act={act} />}
       {sub === 'ascensione' && <Ascension state={s} act={act} />}
-      <p className="text-[10px] text-mist">Rarità: {RARITY_NAMES.join(' · ')}</p>
+      <p className="text-[10px] text-mist">{T('Rarità:')}{' '}{RARITY_NAMES.join(' · ')}</p>
     </div>
   );
 }

@@ -206,9 +206,10 @@ def(['silenzio'], 'violet', (f, k) => <>
 
 // ---------------- CLASSI ----------------
 def(['penitente'], 'bone', (f, k) => <>
-  <path d="M28 10h8v14h12v8H36v22h-8V32H16v-8h12z" fill={f} stroke={k} strokeWidth="1.5" />
-  <path d="M20 46c4-3 8-2 12 0s8 3 12 0" stroke="#9ca3af" strokeWidth="2" fill="none" />
-  <circle cx="32" cy="28" r="3" fill={k} />
+  <path d="M18 28h28c0 9-6 15-14 15s-14-6-14-15z" fill={f} stroke={k} strokeWidth="1.5" />
+  <path d="M24 43l-4 8h24l-4-8" fill={f} stroke={k} strokeWidth="1.4" />
+  <path d="M26 24c-3-4 1-7-1-11 4 2 5 6 3 10M33 24c-3-5 2-8 0-13 5 3 6 8 3 13M39 24c-2-3 1-5 0-8 3 2 3 5 1 8" fill="none" stroke="#9ca3af" strokeWidth="1.8" strokeLinecap="round" />
+  <path d="M20 31c8 2 16 2 24 0" stroke={k} strokeWidth="1.2" opacity=".6" />
 </>);
 def(['lama', 'combat'], 'iron', (f, k) => <>
   <path d="M46 10l-4 14-22 22-4-4 22-22z" fill={f} stroke={k} strokeWidth="1.4" />
@@ -315,6 +316,11 @@ def(['portale'], 'violet', (f, k) => <>
   <ellipse cx="32" cy="32" rx="14" ry="20" fill={k} stroke={f} strokeWidth="3" />
   <path d="M32 16c-6 4-8 10-6 16s8 8 6 16M32 16c6 4 8 10 6 16s-8 8-6 16" stroke={f} strokeWidth="1.4" fill="none" opacity=".8" />
   <circle cx="32" cy="32" r="4" fill="#fff" opacity=".9" />
+</>);
+
+def(['globo', 'lingua'], 'teal', (f, k) => <>
+  <circle cx="32" cy="32" r="18" fill={f} stroke={k} strokeWidth="1.5" />
+  <path d="M14 32h36M32 14c-7 6-7 30 0 36M32 14c7 6 7 30 0 36M17 23h30M17 41h30" fill="none" stroke={k} strokeWidth="1.4" />
 </>);
 
 export const ICON_NAMES = Object.keys(S);

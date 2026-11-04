@@ -1,3 +1,4 @@
+import { t as T } from '../i18n';
 import { useState } from 'react';
 import type { GameState } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -17,14 +18,14 @@ export function GuideBar({ state: s, act }: { state: GameState; act: Act }) {
         <Icon name="guida" size={34} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-amber-300/80">
-            Guida del Portatore · {idx + 1}/{TUTORIAL.length}
-            <button className="ml-auto normal-case tracking-normal text-mist hover:text-bone" onClick={() => setOpen(!open)}>{open ? 'riduci' : 'mostra'}</button>
+            {T('Guida del Portatore ·')}{' '}{idx + 1}/{TUTORIAL.length}
+            <button className="ml-auto normal-case tracking-normal text-mist hover:text-bone" onClick={() => setOpen(!open)}>{open ? T('riduci') : T('mostra')}</button>
           </div>
           <div className="text-sm text-bone font-semibold">{step.title}</div>
           {open && <div className="text-xs text-bone/70">{step.hint}</div>}
         </div>
         {step.tab && s.tab !== step.tab && !s.combat && (
-          <Btn small kind="ember" onClick={() => act(d => { d.tab = step.tab!; })}>Vai</Btn>
+          <Btn small kind="ember" onClick={() => act(d => { d.tab = step.tab!; })}>{T('Vai')}</Btn>
         )}
       </div>
       <div className="h-1 mt-1 rounded bg-black/50 overflow-hidden"><div className="h-full bg-gradient-to-r from-amber-600 to-ember" style={{ width: `${(idx / TUTORIAL.length) * 100}%` }} /></div>
@@ -44,10 +45,10 @@ export function UnlockCard({ state: s, act }: { state: GameState; act: Act }) {
         <div className="flex gap-3">
           <Icon name={u.icon} size={48} />
           <div className="flex-1 min-w-0">
-            <p className="text-[9px] uppercase tracking-[0.25em] text-amber-300">Nuova possibilità</p>
+            <p className="text-[9px] uppercase tracking-[0.25em] text-amber-300">{T('Nuova possibilità')}</p>
             <div className="text-sm text-bone font-semibold">{u.name}</div>
             <p className="text-xs text-bone/80 mt-1">{u.codex}</p>
-            <div className="text-right mt-2"><Btn small kind="ember" onClick={() => act(d => { d.codexQueue.shift(); })}>Ho capito</Btn></div>
+            <div className="text-right mt-2"><Btn small kind="ember" onClick={() => act(d => { d.codexQueue.shift(); })}>{T('Ho capito')}</Btn></div>
           </div>
         </div>
       </div>
@@ -57,12 +58,12 @@ export function UnlockCard({ state: s, act }: { state: GameState; act: Act }) {
     <Modal>
       <div className="flex flex-col items-center text-center">
         <div className="unlock-glow mb-3"><Icon name={u.icon} size={84} /></div>
-        <p className="text-[10px] uppercase tracking-[0.3em] text-amber-300">{u.kind === 'tab' ? 'Nuova sezione' : 'Nuova possibilità'}</p>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-amber-300">{u.kind === 'tab' ? T('Nuova sezione') : T('Nuova possibilità')}</p>
         <h2 className="text-2xl text-bone mb-3">{u.name}</h2>
         <p className="text-sm text-bone/80 leading-relaxed">{u.codex}</p>
         <div className="flex gap-2 mt-5">
-          {u.kind === 'tab' && <Btn kind="ember" onClick={() => act(d => { d.codexQueue.shift(); d.tab = u.id as GameState['tab']; d.newTabs = d.newTabs.filter(x => x !== u.id); })}>Apri ora</Btn>}
-          <Btn kind={u.kind === 'tab' ? 'ghost' : 'ember'} onClick={() => act(d => { d.codexQueue.shift(); })}>Ho capito</Btn>
+          {u.kind === 'tab' && <Btn kind="ember" onClick={() => act(d => { d.codexQueue.shift(); d.tab = u.id as GameState['tab']; d.newTabs = d.newTabs.filter(x => x !== u.id); })}>{T('Apri ora')}</Btn>}
+          <Btn kind={u.kind === 'tab' ? 'ghost' : 'ember'} onClick={() => act(d => { d.codexQueue.shift(); })}>{T('Ho capito')}</Btn>
         </div>
       </div>
     </Modal>
@@ -78,7 +79,7 @@ export function Codex({ state: s, onClose }: { state: GameState; onClose: () => 
   const cur = all.find(x => x.id === sel) || all[0];
   return (
     <Modal wide onClose={onClose}>
-      <h2 className="text-xl text-bone mb-3 flex items-center gap-2"><Icon name="diario" size={28} /> Codex del Portatore</h2>
+      <h2 className="text-xl text-bone mb-3 flex items-center gap-2"><Icon name="diario" size={28} />{' '}{T('Codex del Portatore')}</h2>
       <div className="grid sm:grid-cols-[200px_1fr] gap-4">
         <div className="space-y-1 max-h-[55vh] overflow-y-auto pr-1">
           {all.map(e => (
@@ -94,8 +95,8 @@ export function Codex({ state: s, onClose }: { state: GameState; onClose: () => 
           </div>
         )}
       </div>
-      <p className="text-[11px] text-mist mt-3">Nuove voci compaiono man mano che scopri la valle.</p>
-      <div className="text-right mt-3"><Btn kind="ember" onClick={onClose}>Chiudi</Btn></div>
+      <p className="text-[11px] text-mist mt-3">{T('Nuove voci compaiono man mano che scopri la valle.')}</p>
+      <div className="text-right mt-3"><Btn kind="ember" onClick={onClose}>{T('Chiudi')}</Btn></div>
     </Modal>
   );
 }
@@ -111,7 +112,7 @@ export function Tip({ id, state: s, act, title, children }: { id: string; state:
           <div className="text-sm text-amber-200 font-semibold">{title}</div>
           {children}
         </div>
-        <Btn small kind="ghost" onClick={() => act(d => { d.tipsSeen.push(id); })}>Capito ✕</Btn>
+        <Btn small kind="ghost" onClick={() => act(d => { d.tipsSeen.push(id); })}>{T('Capito ✕')}</Btn>
       </div>
     </div>
   );

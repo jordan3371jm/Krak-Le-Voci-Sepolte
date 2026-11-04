@@ -117,6 +117,8 @@ export interface CombatState {
   repositioned?: boolean;
   wordUsed?: boolean;
   reviveAvailable: boolean;
+  chain: number;        // Catena di Coerenza
+  bestChain: number;
   title: string;
 }
 
@@ -159,6 +161,7 @@ export interface DelveState {
   emotion: Emotion;
   pledged: number;
   ghostAlly?: boolean;
+  snap?: { t: number; coh: number; inc: number; corr: number; influence: number; factions: Record<string, number>; open: number; kept: number; broken: number };
   log: string[];
 }
 
@@ -328,6 +331,7 @@ export interface GameState {
   codexQueue: string[];
   tutorial: number;
   tipsSeen: string[];
+  lastReport: { title: string; good: boolean; lines: string[] } | null;
 
   modal: Modal | null;
   toasts: Toast[];

@@ -1,3 +1,4 @@
+import { t as T } from '../../i18n';
 import type { Combatant, CombatState, GameState, Nature, Skill, Status, StatusType } from '../types';
 import { CLASSES, COMPANIONS, DISSONANCE_SKILLS, FARDELLI } from '../data/core';
 import { BIOMES, ENEMIES, getSkill } from '../data/enemies';
@@ -57,7 +58,7 @@ export function startCombat(s: GameState, enemyIds: string[], o: CombatOpts) {
   }
   if (s.delve?.ghostAlly) {
     party.push({
-      uid: 'ghost', defId: 'ghost', name: 'Eroe Fantasma', icon: '👻', side: 'party', row: 'back',
+      uid: 'ghost', defId: 'ghost', name: T('Eroe Fantasma'), icon: '👻', side: 'party', row: 'back',
       hp: Math.round(st.maxHp * 0.6), maxHp: Math.round(st.maxHp * 0.6), atk: Math.round(st.atk * 0.8), def: 4, crit: 10, critDmg: 50, dodge: 15, lifesteal: 0, thorns: 0,
       speed: 8, statuses: [], skills: ['c_spettro'], cds: {}, tags: ['ghost'],
     });
@@ -72,6 +73,7 @@ export function startCombat(s: GameState, enemyIds: string[], o: CombatOpts) {
     kind: o.kind, party, enemies, round: 1, focus: hasTalent(s, 'focus_start') ? 2 : 0, phase: 'player',
     log: [], fx: [], sacrificeBank: 0, echoUsed: 0, damageDealt: 0,
     reviveAvailable: !!(s.ascension?.paths.includes('martire') || hasFlag(s, 'revive_ready')),
+    chain: 0, bestChain: 0,
     title: o.title,
   };
   s.combat = c;
@@ -83,9 +85,9 @@ export function startCombat(s: GameState, enemyIds: string[], o: CombatOpts) {
   const fastest = Math.max(...enemies.map(e => e.speed));
   if (heroInit < fastest && o.kind !== 'worldboss') {
     c.phase = 'enemy';
-    log(c, `💨 I nemici sono più rapidi: agiscono per primi!`);
+    log(c, T('💨 I nemici sono più rapidi: agiscono per primi!'));
   } else if (w <= 2) {
-    log(c, `🪶 Fardello leggero: agisci per primo.`);
+    log(c, T('🪶 Fardello leggero: agisci per primo.'));
   }
 }
 
@@ -129,7 +131,7 @@ function applyStatus(c: CombatState, target: Combatant, status: Status, source?:
   fx(c, target.uid, statusLabel(status.type), 'status');
 }
 export function statusLabel(t: StatusType) {
-  return ({ poison: '☠️ Veleno', burn: '🔥 Rogo', bleed: '🩸 Sanguina', weaken: '📉 Indebolito', vulnerable: '🎯 Vulnerabile', shield: '🛡️ Scudo', stun: '💫 Stordito', regen: '💚 Rigenera', taunt: '📣 Provoca', dodgeUp: '🌫️ Schivata', atkUp: '💢 Furia', defUp: '🧱 Difesa', hidden: '🤫 Invisibile' } as Record<StatusType, string>)[t];
+  return ({ poison: T('☠️ Veleno'), burn: T('🔥 Rogo'), bleed: T('🩸 Sanguina'), weaken: T('📉 Indebolito'), vulnerable: T('🎯 Vulnerabile'), shield: T('🛡️ Scudo'), stun: T('💫 Stordito'), regen: T('💚 Rigenera'), taunt: T('📣 Provoca'), dodgeUp: T('🌫️ Schivata'), atkUp: T('💢 Furia'), defUp: T('🧱 Difesa'), hidden: T('🤫 Invisibile') } as Record<StatusType, string>)[t];
 }
 
 interface DmgOpts { ignoreDef?: boolean; forceCrit?: boolean; mult?: number; noDodge?: boolean }
@@ -138,7 +140,7 @@ function dealDamage(s: GameState, c: CombatState, att: Combatant, tgt: Combatant
   const dodge = tgt.dodge + (st(tgt, 'dodgeUp')?.pot || 0);
   if (!o.noDodge && Math.random() * 100 < dodge) {
     fx(c, tgt.uid, 'Schivato!', 'miss');
-    log(c, `💨 ${tgt.name} schiva.`);
+    log(c, T('💨 {tgtName} schiva.', { tgtName: tgt.name }));
     return 0;
   }
   let dmg = raw * (o.mult ?? 1);
@@ -213,14 +215,23 @@ function coherence(s: GameState, c: CombatState, natures: Nature[], loud?: boole
   if (coh) {
     let gain = natures.includes('neutral') && natures.length === 1 ? 0.5 : 1.5;
     if (natures.includes('blood') && hasTalent(s, 'blood_res')) gain += 1;
-    s.resonance = Math.min(resonanceMax(s), s.resonance + gain * resMult);
+    // Catena di Coerenza: azioni coerenti consecutive amplificano la Risonanza
+    if (!(natures.includes('neutral') && natures.length === 1)) {
+      c.chain = (c.chain || 0) + 1;
+      c.bestChain = Math.max(c.bestChain || 0, c.chain);
+      if (c.chain >= 2) log(c, T('🔗 Catena di Coerenza ×{n}', { n: c.chain }));
+    }
+    const chainMult = 1 + 0.25 * Math.min(4, Math.max(0, (c.chain || 0) - 1));
+    s.resonance = Math.min(resonanceMax(s), s.resonance + gain * resMult * chainMult);
     s.influence += 0.3;
     s.totals.coherent = (s.totals.coherent || 0) + 1;
   }
   if (inc) {
+    if ((c.chain || 0) >= 2) log(c, T('⛓️ La Catena di Coerenza si spezza.'));
+    c.chain = 0;
     s.dissonance = Math.min(15, s.dissonance + (hasTalent(s, 'cheap_dis') ? 1 : 1.5));
     s.totals.incoherent = (s.totals.incoherent || 0) + 1;
-    if (Math.random() < 0.3) log(c, `〰️ Dissonanza: agisci contro il tuo Fardello.`);
+    if (Math.random() < 0.3) log(c, T('〰️ Dissonanza: agisci contro il tuo Fardello.'));
   }
   if (loud && s.fardello === 'silenzio') s.dissonance = Math.min(15, s.dissonance + 0.5);
   // Respiro della Corruzione
@@ -242,8 +253,8 @@ export function canUseSkill(s: GameState, skillId: string): { ok: boolean; why?:
     const cost = Math.max(1, sk.dissonanceCost - (hasTalent(s, 'cheap_dis') ? 1 : 0));
     if (s.dissonance < cost) return { ok: false, why: `Dissonanza ${cost}` };
   }
-  if (sk.betrayAlly && !alive(c.party).some(p => p.uid !== 'hero' && p.companionId)) return { ok: false, why: 'Nessun compagno' };
-  if (sk.burnSupply && s.res.provviste < 2 && (s.delve?.satchel.provviste || 0) < 2) return { ok: false, why: '2 Provviste' };
+  if (sk.betrayAlly && !alive(c.party).some(p => p.uid !== 'hero' && p.companionId)) return { ok: false, why: T('Nessun compagno') };
+  if (sk.burnSupply && s.res.provviste < 2 && (s.delve?.satchel.provviste || 0) < 2) return { ok: false, why: T('2 Provviste') };
   return { ok: true };
 }
 
@@ -260,7 +271,7 @@ export function playerAct(s: GameState, skillId: string, targetUid?: string) {
   if (sk.target === 'enemy') {
     const legal = legalTargets(c, sk, 'enemy');
     target = legal.find(e => e.uid === targetUid) || legal.sort((a, b) => a.hp - b.hp)[0];
-    if (targetUid && !legal.some(e => e.uid === targetUid)) log(c, `🚫 Bersaglio in retrovia: l'attacco in mischia colpisce la prima fila.`);
+    if (targetUid && !legal.some(e => e.uid === targetUid)) log(c, T('🚫 Bersaglio in retrovia: l\'attacco in mischia colpisce la prima fila.'));
   } else if (sk.target === 'ally') {
     target = alive(c.party).find(p => p.uid === targetUid) || alive(c.party).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
   }
@@ -332,14 +343,14 @@ export function playerAct(s: GameState, skillId: string, targetUid?: string) {
       const comp = s.companions.find(x => x.id === ally.companionId);
       if (comp) comp.trust = Math.max(0, comp.trust - 12);
       addFlag(s, 'betrayed');
-      log(c, `🗡️ Usi ${ally.name} come scudo! Turno extra. (Fiducia -12)`);
+      log(c, T('🗡️ Usi {allyName} come scudo! Turno extra. (Fiducia -12)', { allyName: ally.name }));
     }
   }
   if (sk.burnSupply) {
     if ((s.delve?.satchel.provviste || 0) >= 2) s.delve!.satchel.provviste -= 2; else s.res.provviste -= 2;
   }
   // Ascoltatori: i suoni li infuriano
-  if (sk.loud) for (const e of alive(c.enemies)) if (e.tags.includes('listener')) { applyStatus(c, e, { type: 'atkUp', dur: 2, pot: 30 }); log(c, `👂 ${e.name} sente il rumore e si infuria!`); }
+  if (sk.loud) for (const e of alive(c.enemies)) if (e.tags.includes('listener')) { applyStatus(c, e, { type: 'atkUp', dur: 2, pot: 30 }); log(c, T('👂 {eName} sente il rumore e si infuria!', { eName: e.name })); }
 
   coherence(s, c, sk.natures, sk.loud);
   if (sk.natures.includes('protect')) for (const p of c.party) if (p.companionId) { const comp = s.companions.find(x => x.id === p.companionId); if (comp) comp.trust = Math.min(100, comp.trust + 1); }
@@ -388,7 +399,7 @@ export function skipTurn(s: GameState) {
   const c = s.combat;
   if (!c || c.phase !== 'player') return;
   c.fx = [];
-  log(c, `💫 ${c.party[0].name} è stordito e perde il turno.`);
+  log(c, T('💫 {partyName} è stordito e perde il turno.', { partyName: c.party[0].name }));
   afterHeroAction(s, false);
 }
 
@@ -402,7 +413,7 @@ export function usePotion(s: GameState) {
   c.fx = [];
   heal(s, c, hero, hero, amt);
   hero.cds['__potion'] = 1;
-  log(c, `🧪 Pozione: ${hero.name} si cura.`);
+  log(c, T('🧪 Pozione: {heroName} si cura.', { heroName: hero.name }));
 }
 
 export function reposition(s: GameState) {
@@ -411,7 +422,7 @@ export function reposition(s: GameState) {
   const hero = c.party.find(p => p.uid === 'hero')!;
   hero.row = hero.row === 'front' ? 'back' : 'front';
   c.repositioned = true;
-  log(c, `↔️ ${hero.name} si sposta in ${hero.row === 'front' ? 'prima fila' : 'retrovia'}.`);
+  log(c, T('↔️ {heroName} si sposta in {retrovia}.', { heroName: hero.name, retrovia: hero.row === 'front' ? T('prima fila') : 'retrovia' }));
 }
 
 // Parola d'Ordine del Fardello (GDD §C)
@@ -419,14 +430,14 @@ export function speakWord(s: GameState, word: string): boolean {
   const c = s.combat;
   if (!c || !s.fardello || c.wordUsed) return false;
   const ok = word.trim().toLowerCase() === FARDELLI[s.fardello].secretWord.toLowerCase();
-  if (!ok) { log(c, `❔ "${word}" non risuona.`); return false; }
+  if (!ok) { log(c, T('❔ "{word}" non risuona.', { word: word })); return false; }
   c.wordUsed = true;
   const liars = alive(c.enemies).filter(e => e.tags.includes('liar'));
-  if (!liars.length) { log(c, `🗝️ La parola risuona, ma qui nessuno mente.`); s.resonance = Math.min(resonanceMax(s), s.resonance + 2); return true; }
+  if (!liars.length) { log(c, T('🗝️ La parola risuona, ma qui nessuno mente.')); s.resonance = Math.min(resonanceMax(s), s.resonance + 2); return true; }
   for (const l of liars) { applyStatus(c, l, { type: 'vulnerable', dur: 4, pot: 60 }); l.revealed = true; }
   s.factions.eretici += 3;
   addFlag(s, 'ombre_watch');
-  log(c, `🗝️ "${FARDELLI[s.fardello].secretWord}"! Le menzogne si spezzano: punti deboli rivelati. (Le Ombre del Mercato ti hanno sentito.)`);
+  log(c, T('🗝️ "{secretWord}"! Le menzogne si spezzano: punti deboli rivelati. (Le Ombre del Mercato ti hanno sentito.)', { secretWord: FARDELLI[s.fardello].secretWord }));
   return true;
 }
 
@@ -434,7 +445,7 @@ function afterHeroAction(s: GameState, extraTurn: boolean) {
   const c = s.combat!;
   checkPhases(s, c);
   if (checkEnd(s, c)) return;
-  if (extraTurn) { log(c, '⏩ Turno extra!'); return; }
+  if (extraTurn) { log(c, T('⏩ Turno extra!')); return; }
   companionsAct(s, c);
   checkPhases(s, c);
   if (checkEnd(s, c)) return;
@@ -446,13 +457,13 @@ function companionsAct(s: GameState, c: CombatState) {
     if (p.uid === 'hero') continue;
     if (st(p, 'stun')) continue;
     const comp = p.companionId ? s.companions.find(x => x.id === p.companionId) : undefined;
-    if (comp && comp.trust < 20 && Math.random() < 0.35) { log(c, `😶 ${p.name} esita: non si fida di te.`); continue; }
+    if (comp && comp.trust < 20 && Math.random() < 0.35) { log(c, T('😶 {pName} esita: non si fida di te.', { pName: p.name })); continue; }
     const ready = p.skills.map(id => getSkill(id)!).filter(sk => (p.cds[sk.id] || 0) <= 0);
     const hurt = alive(c.party).filter(x => x.hp / x.maxHp < 0.55).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
     let sk = ready.find(k => k.kind === 'heal' && hurt) || ready.find(k => k.kind === 'buff' && k.selfStatus?.type === 'taunt' && alive(c.party).some(x => x.uid === 'hero' && x.hp / x.maxHp < 0.5)) || ready.find(k => k.kind === 'damage') || ready[0];
     if (!sk) continue;
     p.cds[sk.id] = sk.cooldown;
-    if (sk.kind === 'heal' && hurt) { heal(s, c, p, hurt, p.atk * sk.power + hurt.maxHp * 0.06); log(c, `${sk.icon} ${p.name} cura ${hurt.name}.`); }
+    if (sk.kind === 'heal' && hurt) { heal(s, c, p, hurt, p.atk * sk.power + hurt.maxHp * 0.06); log(c, T('{sk} {pName} cura {hurtName}.', { sk: sk.icon, pName: p.name, hurtName: hurt.name })); }
     else if (sk.kind === 'buff') { if (sk.selfStatus) applyStatus(c, p, sk.selfStatus, p); log(c, `${sk.icon} ${p.name}: ${sk.name}`); }
     else {
       const legal = legalTargets(c, sk, 'enemy');
@@ -481,7 +492,7 @@ export function chooseIntent(s: GameState, e: Combatant) {
   if (sk.melee) { const front = targets.filter(p => p.row === 'front'); if (front.length) targets = front; }
   let t = taunter && (!sk.melee || taunter.row === 'front') ? taunter : pick(targets);
   if (s.ascension?.paths.includes('martire') && Math.random() < 0.5) t = targets.find(p => p.uid === 'hero') || t;
-  e.intent = { skillId: pickId, targetUid: sk.target === 'self' ? e.uid : t?.uid || 'hero', label: `${sk.icon} ${sk.name}${sk.target === 'allEnemies' ? ' (tutti)' : sk.target === 'self' ? '' : ` → ${t?.name || ''}`}` };
+  e.intent = { skillId: pickId, targetUid: sk.target === 'self' ? e.uid : t?.uid || 'hero', label: `${sk.icon} ${sk.name}${sk.target === 'allEnemies' ? T(' (tutti)') : sk.target === 'self' ? '' : ` → ${t?.name || ''}`}` };
 }
 
 export function intentVisible(s: GameState, e: Combatant): boolean {
@@ -500,7 +511,7 @@ export function enemyPhase(s: GameState) {
   const broken = s.promises.filter(p => p.status === 'broken').length;
   for (const e of order) {
     if (e.hp <= 0) continue;
-    if (st(e, 'stun')) { log(c, `💫 ${e.name} è stordito.`); continue; }
+    if (st(e, 'stun')) { log(c, T('💫 {eName} è stordito.', { eName: e.name })); continue; }
     if (!e.intent) chooseIntent(s, e);
     const sk = getSkill(e.intent!.skillId)!;
     e.cds[sk.id] = sk.cooldown;
@@ -549,12 +560,12 @@ function checkHeroDown(s: GameState, c: CombatState): boolean {
     c.reviveAvailable = false;
     hero.hp = Math.round(hero.maxHp * 0.5);
     s.flags = s.flags.filter(f => f !== 'revive_ready');
-    fx(c, 'hero', '🕯️ Risorgi!', 'echo');
-    log(c, `🕯️ ${hero.name} risorge dalle proprie ceneri!`);
+    fx(c, 'hero', T('🕯️ Risorgi!'), 'echo');
+    log(c, T('🕯️ {heroName} risorge dalle proprie ceneri!', { heroName: hero.name }));
     return false;
   }
   c.phase = 'lost';
-  log(c, `☠️ ${hero.name} cade.`);
+  log(c, T('☠️ {heroName} cade.', { heroName: hero.name }));
   return true;
 }
 
@@ -576,7 +587,7 @@ function endRound(s: GameState, c: CombatState) {
       p.hp = Math.max(1, p.hp - d);
       fx(c, p.uid, `🦠-${d}`, 'dmg');
     }
-    if (c.round === 1) log(c, '🦠 Il terreno corrotto ferisce chi sta in prima fila.');
+    if (c.round === 1) log(c, T('🦠 Il terreno corrotto ferisce chi sta in prima fila.'));
   }
   if (checkHeroDown(s, c)) return;
   checkPhases(s, c);
@@ -586,12 +597,12 @@ function endRound(s: GameState, c: CombatState) {
   // anti-stallo: il dungeon si stringe e i nemici si infuriano
   const enrageAt = c.kind === 'boss' || c.kind === 'shadow' || c.kind === 'trial' ? 22 : 15;
   if (c.round >= enrageAt && c.kind !== 'worldboss') {
-    if (c.round === enrageAt) log(c, '🩸 Il dungeon si stringe: i nemici si infuriano a ogni round!');
+    if (c.round === enrageAt) log(c, T('🩸 Il dungeon si stringe: i nemici si infuriano a ogni round!'));
     for (const e of alive(c.enemies)) e.atk = Math.round(e.atk * 1.12);
   }
   for (const e of alive(c.enemies)) chooseIntent(s, e);
   // il Colosso si ritira dopo 10 round
-  if (c.kind === 'worldboss' && c.round > 10) { c.phase = 'won'; log(c, '🗻 Il Colosso si ritira tra le nubi di cenere.'); return; }
+  if (c.kind === 'worldboss' && c.round > 10) { c.phase = 'won'; log(c, T('🗻 Il Colosso si ritira tra le nubi di cenere.')); return; }
   c.phase = 'player';
 }
 
@@ -627,7 +638,7 @@ function checkEnd(s: GameState, c: CombatState): boolean {
       s.bestiary[e.defId] = (s.bestiary[e.defId] || 0) + 1;
       s.totals.kills = (s.totals.kills || 0) + 1;
     }
-    log(c, '🏆 Vittoria!');
+    log(c, T('🏆 Vittoria!'));
     return true;
   }
   return false;
@@ -660,7 +671,7 @@ export function fleeCombat(s: GameState) {
   const c = s.combat;
   if (!c || c.kind === 'boss' || c.kind === 'trial' || c.kind === 'shadow') return;
   c.phase = 'lost';
-  c.log.push('🏃 Fuggi verso la superficie!');
+  c.log.push(T('🏃 Fuggi verso la superficie!'));
   s.flags.push('__fled');
   toast(s, 'Fuga!', 'bad');
 }
@@ -677,7 +688,7 @@ export function syncPartyBack(s: GameState) {
     comp.hp = Math.max(0, p.hp / p.maxHp);
     if (comp.trust <= 5 && !comp.left) {
       comp.left = true; comp.inParty = false;
-      toast(s, `${comp.icon} ${comp.name} non si fida più di te e ti abbandona.`, 'bad');
+      toast(s, T('{comp} {compName} non si fida più di te e ti abbandona.', { comp: comp.icon, compName: comp.name }), 'bad');
     }
   }
 }

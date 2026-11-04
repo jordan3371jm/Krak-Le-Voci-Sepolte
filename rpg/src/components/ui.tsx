@@ -1,3 +1,4 @@
+import { t as T } from '../i18n';
 import type { ReactNode } from 'react';
 import type { Item, Resources } from '../game/types';
 import { RARITY_BORDERS, RARITY_COLORS, RARITY_NAMES, RES_INFO, SLOT_INFO } from '../game/data/world';
@@ -68,7 +69,7 @@ export function Tag({ children, className = '' }: { children: ReactNode; classNa
   return <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded border border-stone-700 text-mist ${className}`}>{children}</span>;
 }
 
-export const STAT_LABELS: Record<string, string> = { maxHp: 'Salute', atk: 'Attacco', def: 'Difesa', crit: 'Critico %', critDmg: 'Danno critico %', dodge: 'Schivata %', lifesteal: 'Rubavita %', thorns: 'Rivalsa %', speed: 'Velocità' };
+export const STAT_LABELS: Record<string, string> = { maxHp: 'Salute', atk: 'Attacco', def: 'Difesa', crit: T('Critico %'), critDmg: T('Danno critico %'), dodge: T('Schivata %'), lifesteal: T('Rubavita %'), thorns: T('Rivalsa %'), speed: T('Velocità') };
 
 export function ItemCard({ it, onClick, selected, equipped, compact }: { it: Item; onClick?: () => void; selected?: boolean; equipped?: boolean; compact?: boolean }) {
   return (
@@ -77,7 +78,7 @@ export function ItemCard({ it, onClick, selected, equipped, compact }: { it: Ite
         <Sigil emoji={SLOT_INFO[it.slot].icon} size={34} tone={(['bone', 'teal', 'violet', 'gold', 'blood', 'teal'] as const)[it.rarity]} />
         <div className="min-w-0 flex-1">
           <div className={`text-xs font-semibold truncate ${RARITY_COLORS[it.rarity]}`}>{it.name}{it.plus ? ` +${it.plus}` : ''}{it.locked ? ' 🔒' : ''}</div>
-          <div className="text-[10px] text-mist">{RARITY_NAMES[it.rarity]} · Lv {it.ilvl}{equipped ? ' · equipaggiato' : ''}</div>
+          <div className="text-[10px] text-mist">{RARITY_NAMES[it.rarity]} · Lv {it.ilvl}{equipped ? T(' · equipaggiato') : ''}</div>
           {!compact && (
             <div className="text-[10px] text-bone/70 mt-0.5 flex flex-wrap gap-x-2">
               {Object.entries(it.stats).map(([k, v]) => <span key={k}>{STAT_LABELS[k] || k} +{Math.round((v || 0) * (1 + it.plus * 0.08) * 10) / 10}</span>)}
@@ -101,4 +102,10 @@ export function Modal({ children, onClose, wide }: { children: ReactNode; onClos
 
 export function Empty({ children }: { children: ReactNode }) {
   return <p className="text-xs text-mist italic py-2">{children}</p>;
+}
+
+// Testo tradotto con **grassetto**: i traduttori ricevono la frase intera.
+export function rich(text: string): ReactNode {
+  const parts = text.split('**');
+  return parts.map((p, i) => (i % 2 ? <b key={i}>{p}</b> : <span key={i}>{p}</span>));
 }
