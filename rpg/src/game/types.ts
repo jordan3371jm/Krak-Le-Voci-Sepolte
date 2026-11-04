@@ -333,6 +333,9 @@ export interface GameState {
   tipsSeen: string[];
   lastReport: { title: string; good: boolean; lines: string[] } | null;
 
+  talk: { npc: string; node: string; log: { who: string; text: string }[]; roll: { skill: string; die: number; bonus: number; dc: number; ok: boolean } | null } | null;
+  quests: Record<string, { stage: number; done?: boolean; outcome?: string }>;
+
   modal: Modal | null;
   toasts: Toast[];
 }

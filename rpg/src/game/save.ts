@@ -49,6 +49,8 @@ export function migrate(raw: any): GameState | null {
   if (out.combat && !out.combat.party) out.combat = null;
   if (out.combat) { out.combat.chain ??= 0; out.combat.bestChain ??= 0; }
   out.lastReport ??= null;
+  out.talk ??= null;
+  out.quests ??= {};
   return out as GameState;
 }
 

@@ -121,6 +121,9 @@ export function genDoors(s: GameState): RoomOption[] {
     if (out.some(o => o.type === t) && t !== 'combat') continue;
     out.push({ type: t, seed: Math.floor(r() * 1e9), hint: pick(ROOM_HINTS[t], r) });
   }
+  // Una missione secondaria attende qui: garantisce una porta-evento con un indizio.
+  const questEv = EVENTS.find(e => e.priority && e.where !== 'village' && (e.where === 'any' || e.where.includes(d.biome)) && (!e.minFloor || d.floor >= e.minFloor) && !hasFlag(s, `ev_${e.id}`) && (!e.cond || e.cond(s)));
+  if (questEv && !out.some(o => o.type === 'event')) out[out.length - 1] = { type: 'event', seed: Math.floor(r() * 1e9), hint: T('📜 Un indizio della tua missione') };
   return out;
 }
 
@@ -220,6 +223,8 @@ function ilvl(s: GameState) {
 function pickEvent(s: GameState, r: () => number): NarrEvent | null {
   const d = s.delve!;
   const pool = EVENTS.filter(e => e.where !== 'village' && (e.where === 'any' || e.where.includes(d.biome)) && (!e.minFloor || d.floor >= e.minFloor) && (!e.once || !hasFlag(s, `ev_${e.id}`)) && (!e.cond || e.cond(s)));
+  const prio = pool.filter(e => e.priority);
+  if (prio.length) pool.splice(0, pool.length, ...prio);
   if (!pool.length) return null;
   return pick(pool, r);
 }

@@ -15,6 +15,7 @@ import { heartbeat, sfx } from '../game/audio';
 import { Bar, Btn, Cost, Panel, Tag } from './ui';
 import { Icon, Sigil } from './icons';
 import { isUnlocked } from '../game/engine/onboarding';
+import { TalkersPanel } from './Talk';
 
 // ------------------------------------------------------------
 // La Notte del Portale: la prima scelta morale (crea il Fardello)
@@ -221,6 +222,8 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
               ))}
             </div>
           </Panel>}
+
+          {isUnlocked(s, 'f_volti') && <TalkersPanel state={s} act={act} />}
 
           {isUnlocked(s, 'f_stagno') && <Pond state={s} act={act} />}
         </div>

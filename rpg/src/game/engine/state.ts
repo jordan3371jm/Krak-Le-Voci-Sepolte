@@ -50,6 +50,7 @@ export function newGame(): GameState {
     settings: { music: true, musicVolume: 0.55, sfx: true, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
     fullscreen: false,
     unlocked: [], newTabs: [], codexQueue: [], tutorial: 0, tipsSeen: [], lastReport: null,
+    talk: null, quests: {},
     modal: null, toasts: [],
   };
 }

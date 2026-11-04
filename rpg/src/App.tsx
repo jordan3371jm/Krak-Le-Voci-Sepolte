@@ -14,6 +14,7 @@ import Combat from './components/Combat';
 import Hero from './components/Hero';
 import Compass from './components/Compass';
 import Modals from './components/Modals';
+import { TalkOverlay } from './components/Talk';
 import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from './components/Screens';
 
 export default function App() {
@@ -106,6 +107,7 @@ export default function App() {
         ))}
       </div>
       <Modals state={s} act={act} />
+      <TalkOverlay state={s} act={act} />
       {!s.modal && !s.combat && s.codexQueue.length > 0 && <UnlockCard state={s} act={act} />}
       {codex && <Codex state={s} onClose={() => setCodex(false)} />}
     </div>

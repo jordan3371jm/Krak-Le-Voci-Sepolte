@@ -26,6 +26,7 @@ export interface Effect {
   satchel?: Partial<Loot>;
   loseFragment?: boolean;
   companion?: string;
+  quest?: { id: string; stage: number };
 }
 
 export interface EventChoice {
@@ -45,6 +46,7 @@ export interface NarrEvent {
   cond?: (s: GameState) => boolean;
   once?: boolean;
   minFloor?: number;
+  priority?: boolean;
   choices: EventChoice[];
 }
 
@@ -52,6 +54,37 @@ const hasPromise = (s: GameState, id: string) => s.promises.some(p => p.defId ==
 const companionTrust = (s: GameState, id: string) => s.companions.find(c => c.id === id)?.trust ?? 100;
 
 export const EVENTS: NarrEvent[] = [
+  // ===================== MISSIONI SECONDARIE =====================
+  {
+    id: 'wren', title: t('La Cripta senza Nome'), icon: '🎀', where: ['cimitero'], once: true, minFloor: 3, priority: true,
+    cond: s => (s.quests.wren?.stage ?? 0) === 1,
+    text: t('Un nastro rosso legato a una lapide. Oltre, una cripta illuminata da candele: figure incappucciate spolverano nomi incisi. Una di loro si volta. È una ragazza, con gli occhi di Orsola. «Non sono persa,» dice Wren. «Qui qualcuno ricorda i morti. Lassù nessuno si ricorda nemmeno dei vivi.» Dietro di lei, una Signora fatta di polvere ti osserva.'),
+    choices: [
+      { text: t('Tua madre tiene una candela accesa da tre notti. Torna a casa con me.'), effect: { quest: { id: 'wren', stage: 2 }, flags: ['wren_home'], nature: 'protect', xp: 40 }, result: t('Wren esita a lungo. Poi slega il nastro dalla lapide. «Solo per dirle addio come si deve.» Ti segue verso la superficie.') },
+      { text: t('Hai scelto. Rispetto la tua scelta. Porterò il nastro a tua madre.'), effect: { quest: { id: 'wren', stage: 2 }, flags: ['wren_stay'], nature: 'faith', resonance: 2, xp: 40 }, result: t('Wren ti mette in mano il nastro. «Dille che sto bene. Dille che qui fa caldo.» La Signora di polvere china il capo verso di te.') },
+      { text: t('Lasciarla alla Signora delle Lapidi in cambio di un passaggio sicuro.'), effect: { quest: { id: 'wren', stage: 2 }, flags: ['wren_sold'], nature: 'betray', satchel: { cenere: 120 }, reliquie: 1, corruption: 6 }, result: t('La Signora sorride con una bocca piena di terra. Wren non capisce subito. Quando capisce, è già troppo tardi.') },
+    ],
+  },
+  {
+    id: 'funerale', title: t('Il Funerale senza Corpo'), icon: '⚱️', where: 'village', once: true,
+    cond: s => s.hero.level >= 3,
+    text: t('I contadini seppelliscono una bara vuota: un uomo scomparso nelle Paludi. La vedova ti chiede di dire due parole, perché “i portatori parlano con i morti”. Vesper, poco lontano, ascolta.'),
+    choices: [
+      { text: t('Dire la verità: nessuno sa dove sia.'), effect: { nature: 'protect', factions: { contadini: 3 }, xp: 20 }, result: t('Le tue parole sono semplici e vere. La vedova annuisce, grata. Qualcuno piange, finalmente.') },
+      { text: t('Raccontare una morte eroica che non è mai avvenuta.'), effect: { nature: 'silent', factions: { contadini: 5 }, dissonance: 1 }, result: t('Il villaggio avrà un eroe. La vedova avrà una storia. Tu avrai una bugia in più da portare.') },
+      { text: t('Lasciare la parola a Vesper.'), effect: { nature: 'blood', factions: { culto: 5, contadini: -3 } }, result: t('Vesper parla della Fonte che accoglie tutti. Due famiglie, quella notte, accendono una candela rossa.') },
+    ],
+  },
+  {
+    id: 'torneo', title: t('La Sfida alla Taverna'), icon: '🍺', where: 'village', once: true,
+    cond: s => s.flags.includes('met_orsola') && s.hero.level >= 5,
+    text: t('Alla locanda di Orsola un mercenario della Capitale sfida chiunque a braccio di ferro. Ha già vinto tre volte e insulta i contadini. Orsola ti guarda come per dire: “Fa’ qualcosa.”'),
+    choices: [
+      { text: t('Accettare la sfida.'), effect: { nature: 'protect', factions: { contadini: 4, capitale: -2 }, hp: -0.05, res: { cenere: 80 } }, result: t('È un duello lungo e brutale. Vinci di un soffio. La taverna esplode in un urlo. Il mercenario ti offre da bere, sportivamente.') },
+      { text: t('Scommettere contro i contadini.'), effect: { nature: 'betray', res: { cenere: 150 }, factions: { contadini: -4 } }, result: t('Vinci un bel gruzzolo. Orsola ti serve la birra più tiepida della valle.') },
+      { text: t('Sussurrare al mercenario che sua madre lo cerca alla porta.'), effect: { nature: 'silent', factions: { contadini: 3 }, xp: 25 }, result: t('Corre fuori. Non c’è nessuno. Quando torna, la taverna intera ride di lui. Se ne va senza finire la birra.') },
+    ],
+  },
   // ===================== DUNGEON =====================
   {
     id: 'lapidi', title: t('Le Lapidi dei Nomi'), icon: '🪦', where: ['cimitero'],

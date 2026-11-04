@@ -98,6 +98,7 @@ export function applyEffect(s: GameState, e: Effect, source = '') {
   if (e.nature) natureOutOfCombat(s, e.nature);
   if (e.prosperity) pushValley(s, { prosperity: e.prosperity });
   if (e.blight) pushValley(s, { blight: e.blight });
+  if (e.quest) { const was = s.quests[e.quest.id]?.stage ?? 0; s.quests[e.quest.id] = { ...(s.quests[e.quest.id] || {}), stage: e.quest.stage }; if (e.quest.stage !== was) toast(s, T('📜 Missione aggiornata'), 'info'); }
   if (e.companion) { const c = s.companions.find(c => c.id === e.companion); if (c) c.recruited = true; }
   stat(s, 'choices');
   if (source) chronicle(s, `${source}.`, 'choice');
