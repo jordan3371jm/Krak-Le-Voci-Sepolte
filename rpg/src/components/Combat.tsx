@@ -11,6 +11,7 @@ import { hasFlag } from '../game/engine/state';
 import { sfx } from '../game/audio';
 import { Bar, Btn, Tag, rich } from './ui';
 import { Icon, Sigil } from './icons';
+import { artFor } from './art';
 import { Tip } from './Guide';
 import { isUnlocked } from '../game/engine/onboarding';
 
@@ -32,7 +33,7 @@ function Unit({ u, s, targetable, onClick }: { u: Combatant; s: GameState; targe
         <span key={f.id} className={`fx-float text-sm ${f.kind === 'heal' ? 'text-green-300' : f.kind === 'crit' ? 'text-yellow-300 text-lg' : f.kind === 'miss' ? 'text-sky-300' : f.kind === 'echo' ? 'text-teal-200 text-lg' : f.kind === 'status' ? 'text-purple-300 text-xs' : 'text-red-300'}`} style={{ top: `${-4 - i * 14}px` }}>{f.text}</span>
       ))}
       <div className="flex items-center gap-2">
-        {u.uid === 'hero' ? <Icon name={s.aberration ? 'corruzione' : s.classId} size={46} /> : <Sigil emoji={u.icon} size={boss ? 56 : 44} tone={u.side === 'enemy' ? (boss ? 'blood' : 'ember') : 'teal'} />}
+        {u.uid === 'hero' ? <Icon name={s.aberration ? 'corruzione' : s.classId} size={46} /> : (artFor(u.defId) ? <img src={artFor(u.defId)} alt="" className={`rounded-full object-cover shrink-0 ${boss ? 'ring-2 ring-red-500/70' : 'ring-1 ring-ember/50'}`} style={{ width: boss ? 64 : 48, height: boss ? 64 : 48 }} /> : <Sigil emoji={u.icon} size={boss ? 56 : 44} tone={u.side === 'enemy' ? (boss ? 'blood' : 'ember') : 'teal'} />)}
         <div className="min-w-0 flex-1">
           <div className="text-xs text-bone truncate">{u.name}{u.row === 'back' ? <span className="text-[9px] text-mist">{' '}{T('· retrovia')}</span> : ''}</div>
           <Bar value={u.hp} max={u.maxHp} color={u.side === 'enemy' ? 'bg-gradient-to-r from-red-900 to-red-500' : 'bg-gradient-to-r from-emerald-800 to-emerald-500'} height="h-1.5" />
@@ -118,7 +119,7 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
       {intro && bossUnit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 animate-fade cursor-pointer" onClick={() => setIntro(null)}>
           <div className="text-center px-6 animate-rise max-w-lg">
-            <div className="flex justify-center mb-4"><Sigil emoji={bossUnit.icon} size={120} tone="blood" /></div>
+            <div className="flex justify-center mb-4">(artFor(bossUnit.defId) ? <img src={artFor(bossUnit.defId)} alt="" className="rounded-full ring-2 ring-red-500/70 shadow-2xl object-cover" style={{ width: 220, height: 220 }} /> : <Sigil emoji={bossUnit.icon} size={120} tone="blood" />)</div>
             <p className="text-[10px] uppercase tracking-[0.5em] text-red-400">{T('Si risveglia')}</p>
             <h2 className="text-3xl sm:text-4xl text-gradient-ember my-2">{bossUnit.name}</h2>
             <p className="text-sm text-bone/80 italic">{ENEMIES[bossUnit.defId]?.lore}</p>
