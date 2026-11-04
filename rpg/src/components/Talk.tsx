@@ -11,7 +11,7 @@ import { Panel } from './ui';
 import { Sigil } from './icons';
 import { portraitOf } from './portraits';
 
-function Face({ id, emoji, tone, size }: { id: string; emoji: string; tone: string; size: number }) {
+export function Face({ id, emoji, tone, size }: { id: string; emoji: string; tone: string; size: number }) {
   const src = portraitOf(id);
   if (src) return <img src={src} alt="" width={size} height={size} className="rounded-full ring-2 ring-ember/60 shadow-lg shrink-0" style={{ width: size, height: size }} />;
   return <Sigil emoji={emoji} size={size} tone={tone as any} />;

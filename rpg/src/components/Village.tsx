@@ -15,7 +15,7 @@ import { heartbeat, sfx } from '../game/audio';
 import { Bar, Btn, Cost, Panel, Tag } from './ui';
 import { Icon, Sigil } from './icons';
 import { isUnlocked } from '../game/engine/onboarding';
-import { TalkersPanel } from './Talk';
+import { TalkersPanel, Face } from './Talk';
 
 // ------------------------------------------------------------
 // La Notte del Portale: la prima scelta morale (crea il Fardello)
@@ -213,7 +213,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
             <div className="space-y-2">
               {NPCS.map(n => (
                 <button key={n.id} onClick={() => sfx.leitmotif(FACTIONS[n.faction].leitmotif)} className="w-full text-left flex gap-2 items-start rounded-lg p-2 hover:bg-white/5">
-                  <Sigil emoji={n.icon} size={40} tone={n.faction === 'culto' ? 'blood' : n.faction === 'guaritori' ? 'moss' : 'iron'} />
+                  <Face id={n.id} emoji={n.icon} size={44} tone={n.faction === 'culto' ? 'blood' : n.faction === 'guaritori' ? 'moss' : 'iron'} />
                   <div>
                     <div className="text-sm text-bone">{n.name} <span className="text-[10px] text-mist">· {FACTIONS[n.faction].name} · {T(repState(s, n.faction))}</span></div>
                     <p className="text-xs text-bone/70 italic">{npcLine(s, n.id)}</p>
