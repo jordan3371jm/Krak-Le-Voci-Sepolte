@@ -9,6 +9,7 @@ import { initAudio, sfx } from '../game/audio';
 import { Btn } from './ui';
 import { Icon } from './icons';
 import { LangPicker } from './LangPicker';
+import { BG } from './art';
 
 const VISION = [
   T('La notte in cui si aprì il portale, Hondovalle bruciava.'),
@@ -37,6 +38,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
         <div className="absolute top-4 right-4 z-10"><LangPicker /></div>
+        {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-60 pointer-events-none" style={{ backgroundImage: `radial-gradient(ellipse at center, rgba(5,4,6,.35), rgba(5,4,6,.92)), url(${BG.copertina})` }} />}
         <div className="absolute inset-0 bg-gradient-to-t from-red-950/60 via-transparent to-transparent animate-breathe pointer-events-none" />
         <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-orange-900/30 to-transparent animate-flicker pointer-events-none" />
         <p className="text-xs tracking-[0.4em] text-ember/80 mb-4 uppercase">{newCycle ? `Ciclo ${state.cycle.n}` : T('Un RPG che ricorda')}</p>

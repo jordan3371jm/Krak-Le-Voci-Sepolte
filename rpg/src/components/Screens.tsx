@@ -1,4 +1,5 @@
 import { t as T } from '../i18n';
+import { Pic } from './Pic';
 import { useEffect, useState } from 'react';
 import type { FactionId, GameState } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -34,7 +35,7 @@ export function Market({ state: s, act }: { state: GameState; act: Act }) {
               <div key={l.uid} className="rounded-lg border border-stone-700 p-2 bg-black/30">
                 {l.item && <ItemCard it={l.item} />}
                 {l.item && <p className="text-[10px] text-fate/70 italic mt-1">«{l.item.origin}»</p>}
-                {l.fragment && <div className="text-xs"><span className="text-lg">{FRAGMENTS[l.fragment].icon}</span> <b>{FRAGMENTS[l.fragment].name}</b><div className="text-mist">{FRAGMENTS[l.fragment].desc}</div></div>}
+                {l.fragment && <div className="text-xs"><Pic id={`frammento_${l.fragment}`} emoji={FRAGMENTS[l.fragment].icon} size={28} /> <b>{FRAGMENTS[l.fragment].name}</b><div className="text-mist">{FRAGMENTS[l.fragment].desc}</div></div>}
                 {l.res && <div className="text-xs">📦 {l.res.amount} {RES_INFO[l.res.key].name}</div>}
                 <div className="flex items-center justify-between mt-2 text-[11px]"><span className="text-mist">{T('da')}{' '}{l.seller}</span><Btn small kind="good" disabled={s.res.cenere < Math.round(l.price * pm)} onClick={() => act(d => buyListing(d, l.uid))}>⚱️{Math.round(l.price * pm)}</Btn></div>
               </div>
@@ -43,7 +44,7 @@ export function Market({ state: s, act }: { state: GameState; act: Act }) {
         </Panel>
         <Panel title={T('Vendi Frammenti')} icon="💠">
           {s.fragments.length === 0 ? <Empty>{T('Nessun frammento da vendere.')}</Empty> : (
-            <div className="flex flex-wrap gap-2">{s.fragments.map(f => <Btn key={f.uid} small onClick={() => act(d => sellFragment(d, f.uid))}>{FRAGMENTS[f.defId].icon} {FRAGMENTS[f.defId].name} · ⚱️{Math.round(FRAGMENTS[f.defId].value * 6 / pm)}</Btn>)}</div>
+            <div className="flex flex-wrap gap-2">{s.fragments.map(f => <Btn key={f.uid} small onClick={() => act(d => sellFragment(d, f.uid))}><Pic id={`frammento_${f.defId}`} emoji={FRAGMENTS[f.defId].icon} size={20} /> {FRAGMENTS[f.defId].name} · ⚱️{Math.round(FRAGMENTS[f.defId].value * 6 / pm)}</Btn>)}</div>
           )}
           <p className="text-[10px] text-mist mt-2">{T('Vendere frammenti oscuri incupisce la valle. Per vendere equipaggiamento, usa l\'Inventario dell\'Eroe.')}</p>
         </Panel>
@@ -82,7 +83,7 @@ export function Factions({ state: s }: { state: GameState }) {
           const st = repState(s, f);
           return (
             <div key={f} className="rounded-lg border border-stone-700 p-2">
-              <div className="flex justify-between text-sm"><span>{F.icon} {F.name}</span><span className={REP_COLORS[st]}>{T(st)} ({Math.round(v)})</span></div>
+              <div className="flex justify-between text-sm"><span className="flex items-center gap-1.5"><Pic id={`fazione_${F.id}`} emoji={F.icon} size={28} /> {F.name}</span><span className={REP_COLORS[st]}>{T(st)} ({Math.round(v)})</span></div>
               <div className="relative h-2 bg-black/60 rounded mt-1 border border-stone-800">
                 <div className="absolute top-0 bottom-0 left-1/2 w-px bg-stone-600" />
                 <div className={`absolute top-0 bottom-0 ${v >= 0 ? 'bg-resonance' : 'bg-dissonance'}`} style={{ left: v >= 0 ? '50%' : `${50 + v / 2}%`, width: `${Math.abs(v) / 2}%` }} />
@@ -114,7 +115,7 @@ export function Companions({ state: s, act }: { state: GameState; act: Act }) {
             return (
               <div key={c.id} className={`rounded-lg border p-2 ${c.left ? 'border-stone-800 opacity-40' : 'border-stone-700'}`}>
                 <div className="flex items-center gap-2">
-                  <span className="text-3xl">{c.icon}</span>
+                  <Pic id={c.id} emoji={c.icon} size={52} className="text-3xl" />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm text-bone">{c.name} <span className="text-[10px] text-mist">· {c.role} · Lv {c.level}</span></div>
                     <div className="text-[11px] text-mist italic">{def.bio}</div>
@@ -147,7 +148,7 @@ export function Companions({ state: s, act }: { state: GameState; act: Act }) {
         <div className="space-y-1.5">
           {EXPEDITIONS.map(e => (
             <button key={e.id} onClick={() => setLoc(e.id)} className={`w-full text-left rounded-lg border p-2 text-xs ${loc === e.id ? 'border-ember bg-ember/10' : 'border-stone-700'}`}>
-              <div className="flex justify-between"><span className="text-bone">{e.icon} {e.name}</span><span className="text-mist">{fmtTime(expeditionDuration(s, e.minutes))} · Lv {e.minLevel}+</span></div>
+              <div className="flex justify-between"><span className="text-bone flex items-center gap-1.5"><Pic id={e.id} emoji={e.icon} size={30} /> {e.name}</span><span className="text-mist">{fmtTime(expeditionDuration(s, e.minutes))} · Lv {e.minLevel}+</span></div>
               <div className="text-mist">{e.desc}</div>
               <div className="text-[10px] text-bone/60">{Object.entries(e.rewards).filter(([k]) => !k.endsWith('Chance')).map(([k, v]) => `${v} ${(RES_INFO as any)[k]?.name || k}`).join(' · ')}{e.rewards.itemChance ? T(' · oggetto {itemChance}%', { itemChance: Math.round(e.rewards.itemChance * 100) }) : ''}{e.rewards.fragmentChance ? T(' · frammento {fragmentChance}%', { fragmentChance: Math.round(e.rewards.fragmentChance * 100) }) : ''}</div>
             </button>

@@ -340,7 +340,7 @@ const EMOJI_MAP: Record<string, string> = {
 
 export function Icon({ name, size = 28, className = '', title, plain }: { name: string; size?: number; className?: string; title?: string; plain?: boolean }) {
   const id = useId().replace(/:/g, '');
-  const art = plain ? undefined : artFor(name);
+  const art = plain || size < 28 ? undefined : artFor(name);
   if (art) return <img src={art} alt={title || ''} title={title} width={size} height={size} className={`rounded-full ring-1 ring-ember/50 object-cover shrink-0 ${className}`} style={{ width: size, height: size }} />;
   const sym = S[name] || S[EMOJI_MAP[name]];
   if (!sym) return <Sigil emoji={name} size={size} className={className} />;

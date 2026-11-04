@@ -79,7 +79,7 @@ export default function App() {
   const corrupt = corruptedUI(s) && !s.settings.reduceFx;
   return (
     <div className={`min-h-screen noise ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
-      {s.delve && BG[s.delve.biome] && <div aria-hidden className="fixed inset-0 -z-0 pointer-events-none bg-cover bg-center opacity-35" style={{ backgroundImage: `linear-gradient(to bottom, rgba(5,4,6,.55), rgba(5,4,6,.9)), url(${BG[s.delve.biome]})` }} />}
+      {(() => { const k = s.delve ? s.delve.biome : s.tab === 'villaggio' ? 'villaggio' : ''; return k && BG[k] ? <div aria-hidden className="fixed inset-0 -z-0 pointer-events-none bg-cover bg-center opacity-35" style={{ backgroundImage: `linear-gradient(to bottom, rgba(5,4,6,.55), rgba(5,4,6,.9)), url(${BG[k]})` }} /> : null; })()}
       {corrupt && <div className="vignette vignette-corrupt" />}
       {s.fullscreen && !s.settings.reduceFx && <div className="vignette vignette-rite" />}
       <div className="sticky top-0 z-30">

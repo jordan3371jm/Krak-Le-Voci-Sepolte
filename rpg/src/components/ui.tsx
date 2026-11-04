@@ -1,4 +1,5 @@
 import { t as T } from '../i18n';
+import { Pic } from './Pic';
 import type { ReactNode } from 'react';
 import type { Item, Resources } from '../game/types';
 import { RARITY_BORDERS, RARITY_COLORS, RARITY_NAMES, RES_INFO, SLOT_INFO } from '../game/data/world';
@@ -58,7 +59,7 @@ export function Cost({ cost, have, extra }: { cost: Partial<Resources>; have?: R
     <span className="inline-flex flex-wrap gap-x-2 gap-y-0.5 text-[11px]">
       {Object.entries(cost).map(([k, v]) => {
         const ok = !have || have[k as keyof Resources] >= (v || 0);
-        return <span key={k} className={ok ? 'text-bone/80' : 'text-dissonance'}>{RES_INFO[k as keyof Resources].icon}{fmt(v || 0)}</span>;
+        return <span key={k} className={ok ? 'text-bone/80' : 'text-dissonance'}><Pic id={k} emoji={RES_INFO[k as keyof Resources].icon} size={14} />{fmt(v || 0)}</span>;
       })}
       {extra}
     </span>

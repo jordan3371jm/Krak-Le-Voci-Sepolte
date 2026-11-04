@@ -1,4 +1,5 @@
 import { t as T } from '../i18n';
+import { Pic } from './Pic';
 import { useEffect, useRef, useState } from 'react';
 import type { FactionId, FardelloId, GameState, ResKey } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -268,7 +269,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
           )}
           {isUnlocked(s, 'f_produzione') && <Panel title={T('Produzione')} icon="bottega">
             <div className="grid grid-cols-2 gap-1 text-xs">
-              {(Object.keys(prod) as ResKey[]).map(k => <div key={k} className={RES_INFO[k].color}>{RES_INFO[k].icon} {RES_INFO[k].name}: +{fmt(prod[k] * 60)}{T('/min')}</div>)}
+              {(Object.keys(prod) as ResKey[]).map(k => <div key={k} className={RES_INFO[k].color}><Pic id={k} emoji={RES_INFO[k].icon} size={16} /> {RES_INFO[k].name}: +{fmt(prod[k] * 60)}{T('/min')}</div>)}
             </div>
           </Panel>}
         </div>
@@ -280,7 +281,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
             <div className="space-y-2">
               {s.requests.map(r => (
                 <div key={r.uid} className="rounded-lg border border-stone-700 p-2 text-xs">
-                  <div className="flex justify-between"><span className="text-bone">{FACTIONS[r.faction].icon} {FACTIONS[r.faction].name}</span><span className="text-mist">{fmtTime(r.until - now)}</span></div>
+                  <div className="flex justify-between"><span className="text-bone flex items-center gap-1"><Pic id={`fazione_${r.faction}`} emoji={FACTIONS[r.faction].icon} size={20} /> {FACTIONS[r.faction].name}</span><span className="text-mist">{fmtTime(r.until - now)}</span></div>
                   <p className="text-bone/70 italic my-1">{r.text}</p>
                   <div className="flex items-center justify-between gap-2">
                     <span>{T('Chiede:')}{' '}<Cost cost={r.need} have={s.res} /></span>
