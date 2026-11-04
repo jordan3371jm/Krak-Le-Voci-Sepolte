@@ -9,6 +9,13 @@ import { displayName } from '../game/engine/state';
 import { sfx } from '../game/audio';
 import { Panel } from './ui';
 import { Sigil } from './icons';
+import { portraitOf } from './portraits';
+
+function Face({ id, emoji, tone, size }: { id: string; emoji: string; tone: string; size: number }) {
+  const src = portraitOf(id);
+  if (src) return <img src={src} alt="" width={size} height={size} className="rounded-full ring-2 ring-ember/60 shadow-lg shrink-0" style={{ width: size, height: size }} />;
+  return <Sigil emoji={emoji} size={size} tone={tone as any} />;
+}
 
 function tagFor(s: GameState, c: DChoice): { label: string; cls: string } | null {
   if (c.check) {
@@ -31,7 +38,7 @@ export function TalkOverlay({ state: s, act }: { state: GameState; act: Act }) {
     <div className="fixed inset-0 z-[60] bg-black/85 backdrop-blur-sm flex items-end sm:items-center justify-center p-2 sm:p-6">
       <div className="w-full max-w-3xl max-h-[92vh] flex flex-col rounded-2xl border border-ember/40 bg-gradient-to-b from-stone-950 to-black shadow-2xl animate-rise">
         <div className="flex items-center gap-3 p-4 border-b border-stone-800">
-          <Sigil emoji={tk.icon} size={56} tone={tk.tone as any} />
+          <Face id={tk.id} emoji={tk.icon} tone={tk.tone} size={72} />
           <div className="flex-1">
             <div className="text-lg text-bone font-display">{tk.name}</div>
             <div className="text-xs text-mist">{tk.title}{tk.faction ? ` · ${FACTIONS[tk.faction].name}` : ''}</div>
@@ -77,7 +84,7 @@ export function TalkersPanel({ state: s, act }: { state: GameState; act: Act }) 
           const news = npcHasNews(s, tk.id);
           return (
             <button key={tk.id} onClick={() => act(d => startTalk(d, tk.id))} className="w-full text-left flex gap-2 items-start rounded-lg p-2 hover:bg-white/5 border border-transparent hover:border-ember/40">
-              <Sigil emoji={tk.icon} size={40} tone={tk.tone as any} />
+              <Face id={tk.id} emoji={tk.icon} tone={tk.tone} size={44} />
               <div className="flex-1">
                 <div className="text-sm text-bone">{tk.name} <span className="text-[10px] text-mist">· {tk.title}</span> {news && <span className="ml-1 text-[10px] bg-ember text-black rounded px-1">{T('! nuovo')}</span>}</div>
                 <p className="text-xs text-bone/60 italic">{tk.bio}</p>
