@@ -1,0 +1,422 @@
+1nvqijd	2 Provisions
+2rj5eh	🚫 Cible à l'arrière : l'attaque au corps à corps frappe la première ligne.
+1oafd3f	🗡️ Tu te sers de {allyName} comme bouclier ! Tour supplémentaire. (Confiance -12)
+uv4ddc	👂 {eName} entend le bruit et entre en rage !
+1yksdlg	💫 {partyName} est étourdi et perd son tour.
+1pm4lib	🧪 Potion : {heroName} se soigne.
+dan8p0	↔️ {heroName} passe en {retrovia}.
+fxa4t	❔ « {word} » ne résonne pas.
+2ip9cq	🗝️ Le mot résonne, mais personne ici ne ment.
+8b96t8	🗝️ « {secretWord} » ! Les mensonges volent en éclats : points faibles révélés. (Les Ombres du Marché t'ont entendu.)
+1c9vswx	⏩ Tour supplémentaire !
+xminzo	😶 {pName} hésite : il ne te fait pas confiance.
+sj4uqp	{sk} {pName} soigne {hurtName}.
+1xq1og9	💫 {eName} est étourdi.
+14ykf0	🕯️ Tu te relèves !
+nueugu	🕯️ {heroName} renaît de ses propres cendres !
+9t9oxm	☠️ {heroName} tombe.
+jy42ji	🦠 Le sol corrompu blesse quiconque se tient en première ligne.
+jywh92	🩸 Le donjon se referme : les ennemis deviennent plus furieux à chaque manche !
+wu59ro	🗻 Le Colosse se retire dans les nuages de cendre.
+1rsoq1m	🏆 Victoire !
+1wvznww	🏃 Tu fuis vers la surface !
+1gafye5	{comp} {compName} ne te fait plus confiance et t'abandonne.
+f7mp3	Graine
+13ces9	Jamais visitée. Née de ton choix.
+1ry2ubm	Écho
+sl2ykx	Tu l'as conquise. Maintenant elle se souvient de tes visites.
+yd5bxq	Déclin
+os7571	Ignorée trop longtemps : elle s'est corrompue. Ennemis +20 %, butin +30 %.
+1fqp4qr	Pleine d'ennemis, de ressources et de secrets.
+mrrspn	Tu dois d'abord choisir ton Fardeau
+1cpq7iz	Conquiers d'abord le donjon précédent
+12ycko3	Il te faut au moins 1 Provision pour descendre
+1gmsykv	Tu es trop blessé. Repose-toi au village ou bois une potion.
+11v705l	Tu es descendu dans {BName} (étage {startFloor}). Thème du Miroir : {emotion}.
+vlk2gt	Tu entends des pas et des souffles
+hcz1fc	Odeur de sang frais
+ko9wuu	Des os qui craquent
+ckrs83	Une présence pesante
+1rdgg16	Quelqu'un t'attend
+7yamsu	Ici l'obscurité a un visage
+1q2uasq	Une voix t'appelle par ton nom
+1yc9zbv	Une lumière étrange
+1rl693w	Quelque chose à décider
+zom3im	Le sol semble respirer
+19qrzlb	Des fils fins dans le noir
+1p9pfdf	Silence suspect
+hc61dx	Une bougie allumée
+2y85ou	De l'air pur, pour une fois
+6v0aak	Un autel intact
+a8iael	Un reflet
+1kz6tvq	Un coffre solitaire
+oc800l	Des pièces éparpillées
+kubo2f	Un écho de pas qui ne sont pas les tiens
+16qbbhx	Un autre porteur est passé par ici
+8n1jmz	Un nom fraîchement gravé
+1l6pjlp	Ton Fardeau a une ombre
+1wxlu9i	Quelqu'un avec ton visage
+18gx6tg	Une forme que tu connais
+z51loj	Des chaînes qui tintent
+todggv	Quelqu'un répète tes promesses
+1phcnxu	Un chasseur te suit
+1h0tsx6	Ici bat le cœur du donjon
+cc2bpx	Il n'y a pas d'autre chemin
+12t4r9b	La fin de cette strate
+1qcub6a	Une lanterne qui se balance
+15a5irg	Quelqu'un marchande avec l'obscurité
+pl0kyy	Une Ombre du Marché
+jnhy8x	Combat
+1r6wqy8	Élite
+15zmr4	Événement
+4xlmws	Piège
+6prs9h	Sanctuaire
+7rhglj	Trésor
+17kdgc3	Écho de Porteur
+1gae8bc	Ombre du Fardeau
+10658d5	Chasseur
+fnhp9o	Boss
+cbf47b	Marchand d'Ombres
+kqjuh7	{shadowName} émerge de ton Fardeau. « Je suis ce que tu deviendras. »
+1uhg2he	Le Chasseur de Promesses porte tes paroles brisées accrochées à sa ceinture.
+14glr4q	Le sol se dérobe sous tes pieds.
+lyzr4b	Des lames d'os jaillissent des murs.
+10bymul	Un gaz verdâtre monte des fissures.
+1y0urqj	Un petit sanctuaire, intact. Ici le donjon retient son souffle.
+o719sb	Une Ombre du Marché t'offre des biens arrachés aux morts. Elle accepte la Cendre de la besace ou du village.
+19a5ff3	Le coffre ouvre ses mâchoires : c'est un mimique !
+ab6j6u	Étage {floor} · Mimique
+gzrjc6	Dans le coffre : {c} de Cendre et un peu de fer.
+1sbkqv9	 Un Éclat de Destin scintille au fond !
+gamgo3	{ownName} (ton Cycle {cycle})
+10iathk	L'Écho de {name} n'a pas trouvé la paix. Il te prend pour celui qui l'a trahi.
+10uf052	Écho de {name}
+42qs75	L'Écho de {name} marche avec toi jusqu'à la fin de la descente.
+1p04piw	{name} est devenu un marchand d'ombres. « J'ai mis quelque chose de côté pour celui qui viendrait après. »
+140iugf	Le corps de {name}. Il avait ouvert cette porte en sacrifiant sa santé, puis il est tombé. Tu termines ce qu'il a commencé : le donjon se souviendra de vous deux.
+tj5gb0	A appartenu à {name}, tombé à l'étage {floor}.
+4tdtma	Tu désamorces le mécanisme. Parmi les engrenages, un peu de fer.
+gofhvh	Le mécanisme se déclenche ! -{dmg} de santé.
+1gjrca3	Tu forces le passage en serrant les dents. -{dmg} de santé.
+100h2q3	Tu offres ton sang : le piège s'apaise. -{dmg} de santé, la corruption baisse.
+k7sbej	Tu passes devant le sanctuaire sans t'arrêter.
+qz7pm1	Il te faut 1 Provision pour te reposer
+1pyqbbn	Le Reliquaire exige 30 de Cendre
+hs0fxr	Tu consommes une provision et te reposes. Tes blessures se referment.
+1e8zjcv	Tu pries. Le Fardeau vibre, cohérent.
+2adr6y	Tu te purifies. La corruption recule.
+1n9jc6z	Pas assez de Cendre
+1ee896j	Étage {floor} · {title}
+9zj1ix	Les Voix du Chœur
+x5po0w	Le Chœur s'effondre. Les voix de ceux que tu aurais pu sauver t'entourent, en attente.
+1ngen21	Absorber les voix dans ton Fardeau
+1q9chhp	La douleur te traverse. Les voix trouvent la paix en toi.
+q19kd	Les faire taire à jamais
+1ig0sa6	Le silence que tu imposes est plus cruel que la mort.
+skf0yv	Les libérer dans la vallée
+1hart5g	Les voix se dispersent. Elles reviendront… mais pas maintenant. Elles te laissent la Voix des Survivants.
+1d6ifb0	Le Sang de la Mère
+1a571wu	La Mère de Vhalzareth gît dans la Source. « Prends ma place, enfant. Ou tue-moi pour de bon. »
+1wog40d	Prendre sa place
+a6xqlj	Le Culte s'agenouille. La Source bat désormais au rythme de ton cœur.
+1iepeq4	Sceller la Source
+1mxe2kk	La Source se tarit. Le marais respire, pour la première fois depuis des siècles.
+1f660u2	Vendre son sang aux Ombres
+2t1ri	Les Ombres du Marché paient bien. Très bien.
+3h5vgq	Le Silence du Cœur
+naarr4	Le Cœur de Krak cesse de battre. Toutes les voix enfouies se taisent. Tu sens la vallée attendre ton choix final.
+16c7n3n	Écouter la dernière voix
+1mukwig	La voix prononce ton nom. Puis se tait. Le Cycle peut prendre fin.
+308mhv	Tu as vaincu {shadowName}, l'Ombre de ton Fardeau.
+bt4nie	Tu as vaincu le Chasseur de Promesses : une promesse rompue a été rachetée.
+fcvfut	Tu as vaincu {bossIdName} à l'étage {floor}.
+1nepjst	🏆 {BName} conquis !
+aeu2vn	Tu es au fond de cette strate. Remonte à la surface.
+1boky7c	Tu as engagé {pledge} de santé max future pour continuer.
+1fkg8sn	⛓️ Engagement : -{pledge} santé max
+1pv0bfb	👁️ Un instant tu vois Tomas parmi les ombres…
+to8790	Résous d'abord la salle
+bxys9l	🎒 Butin sécurisé : {cenere} de cendre, {items} objets{reliquie}
+10ux5zv	, {reliquie} reliques
+ty72d2	Tu es remonté de {biomeName} à l'étage {floor} avec une besace pleine.
+1p0vu9q	🏃 Tu as fui : la moitié de la besace est perdue.
+5taqsr	Tu as fui {biomeName} à l'étage {floor}.
+1hyjxo0	Tu es tombé : l'engagement de {pledged} de santé max devient permanent (Elara peut le lever).
+14mh1we	☠️ Tu es tombé. La vallée te ramène à la surface. Tu as perdu la majeure partie de la besace.
+14tqwxg	Tu es tombé à l'étage {floor} de {biomeName}.
+1x6oenx	Tu as déjà affronté le Colosse 3 fois aujourd'hui
+1akbds1	Tu es trop blessé
+1orokxb	Boss mondial : Le Colosse de Cendre
+1cnqnqh	🗻 Le Colosse de Cendre
+18kxxvk	Tu as infligé {dmg} dégâts (palier {tier}). Récompenses : {cen} de cendre{oggetto}{reliquie}.
+4yunkl	, un objet
+q3im25	, {tier} reliques
+iskotm	Tu as vaincu le Tribunal des Échos : tes choix sont intégrés.
+1q3a78l	⚖️ Intégration
+1r563hp	Le Tribunal tombe. Accusation et défense ne font plus qu'un : tu es tous tes choix. Dissonance remise à zéro, +3 reliques.
+a6q4yc	Le Tribunal des Échos t'a condamné. Ton nom se corrompt.
+1x74kko	⚖️ Sentence
+1bdr5le	Tu tombes devant tes Fardeaux. Ton nom s'effrite : désormais la vallée l'écorchera.
+d2pb27	Tu es revenu vivant de l'étage {floor}.
+34w4on	Tu es tombé à l'étage {floor} : la vallée t'a ramené en surface.
+mbq9kw	Tu as agi {coh} fois en accord avec ton Fardeau et {inc} fois contre lui.
+1znrxd	La corruption en toi a augmenté de {n}.
+55qils	La corruption en toi a diminué de {n}.
+h6l5q	{faction} : réputation {sign}{n}.
+1lbi55y	Tu as tenu {n} promesses.
+1vds5ez	Tu as rompu {n} promesses. Quelqu'un va te traquer.
+k3h7t4	Promesse la plus proche de l'échéance : « {text} » ({n} expéditions).
+149e58s	Ton Fardeau est devenu si fort que son Ombre t'attend désormais dans les donjons.
+1esyavo	Le monde se souvient · {biome}
+199bqo1	⬆️ Niveau {level} ! +1 Point de Talent
+1xxvy1	Tu as atteint le niveau {level}.
+1jcdva7	✴️ Au-delà de la limite : Ascension {paragon}
+tvdsyz	{c} {cName} atteint le niveau {level}
+1ld1q00	🎓 Talent : {tName}
+14ji10k	Il te faut {cost} de Cendre
+blpg2i	Talents réinitialisés
+10ztqyy	Tu as trouvé {itName} ({rarity}).
+tfutlp	Le meilleur équipé dans chaque emplacement
+1mx1rqe	Recyclé : +{ferro} fer, +{cenere} cendre
+uy2p6p	{junk} objets communs et rares recyclés
+phdwea	Ressources insuffisantes
+1k2mxgb	Il te faut une Forge au village
+1dfb3kk	Ressources insuffisantes pour forger
+zo27x1	Forgé de main de maître à la Forge de Hondovalle.
+hzafkj	Forgé à la Forge de Hondovalle.
+377k0l	🔨 Forgé : {itName} ({rarity})
+10ad863	Il te faut l'Infirmerie d'Elara
+7jzdtx	Sac à potions plein
+1kzpl7v	Il te faut 2 provisions et 25 de cendre
+i0hwyh	🧪 Potion préparée
+e71sjc	Élixir de Force
+1yjjd3y	+20 % d'attaque pour la prochaine expédition
+zsk37b	Peau de Pierre
+14a3jlz	+40 % de défense pour la prochaine expédition
+192tg4o	Élixir de Vie
+1567dpq	+25 % de santé pour la prochaine expédition
+1d7invl	Clarté
+5dlbzj	Résonance +50 % pour la prochaine expédition
+rf1pcq	Il te faut l'Infirmerie niveau 2
+su5ler	{id} {idName} actif jusqu'à la fin de la prochaine expédition
+3w3ph4	L'Ascension Parallèle requiert un Éclat du Pacte Brisé ou 5 reliques
+1o0ltky	Ascension du Fardeau : {ibrido}{names}.
+oz0w6d	(hybride)
+1prl9a4	⬆️ Ascension : {names}
+edxleq	{cName} a perdu toute confiance en toi et est parti.
+1435qy1	{c} {cName} t'abandonne.
+r6swxa	Ton corps a changé : tu es une Aberration. Certains PNJ ne te parlent plus.
+clceyh	🦷 Tu es devenu une Aberration
+kl0dz2	Tu as promis : « {text} »
+1rwljxa	🔗 Promesse : {text}
+1b71qh3	Promesse tenue : « {text} »
+6l48e9	✨ Promesse tenue ! +3 Résonance, {fName}
+ksjq58	Promesse rompue : « {text} ». Un Chasseur de Promesses te cherche.
+m0dp2i	💔 Promesse rompue : {text}
+rbslev	Promesse rompue : « {text} »
+1chxql1	Tu as tué un garçon qui implorait grâce.
+3qw2bz	Tu t'es servi de tes compagnons comme boucliers.
+rnulq3	Tu as menti à la mère de Tomas.
+1h46zgg	Tu as vendu Ilyas deux fois.
+16bzmmy	Tu as agi {incoherent} fois contre ton propre Fardeau.
+1gzwvl2	Tu as épargné le déserteur.
+webag9	Tu as dit la vérité sur la mort de Tomas.
+9qwhf	Tu as libéré les voix du Chœur.
+ioec5w	Tu es resté fidèle à ton Fardeau {coherent} fois.
+1twvutn	Tu avoues tout. Tes Fardeaux te regardent et acquiescent. Tu es acquitté : Dissonance remise à zéro, +2 reliques.
+dovhvy	Tu avoues. Il y a trop d'accusations pour un acquittement, mais tu les acceptes comme une part de toi : Résonance pleine, le Fardeau est intégré.
+belvx5	Tes défenses l'emportent. Le Tribunal se dissout : +3 reliques.
+mvm457	Tu t'es défendu devant le Tribunal des Échos. Le Tribunal n'est pas d'accord.
+il7i9g	Tu renonces à ton Fardeau. Il se brise avec un bruit de verre. Tu perds son influence, gagnes 2 Points de Talent et une liberté qui fait peur.
+11nfcmu	ascension forcée
+y3ni53	Tu acceptes la sentence. Le Fardeau te dévore et te reconstruit : Ascension forcée en {pName}.
+1uvudsb	Tu acceptes la sentence. Ton nom s'effrite : la vallée l'écorchera.
+sh1ju6	Procès de Tes Propres Choix : {outcome}.
+1s384ix	Éclats sombres en recharge (anti-abus)
+1pv6lgz	Utilisé dans les Contrats du Destin
+rf36f4	L'éclat pourrit en toi : +20 corruption, +1 relique
+1p0rm09	L'éclat murmure : +3 Dissonance, +300 cendre
+1iw24cj	L'éclat assombrit le ciel : Éclipse pendant 30 minutes
+1oxrnz5	Tu as activé {fName}. {desc}
+l8argu	Maximum 3 contrats ouverts
+tsipsw	📜 Contrat du Destin : « Demain la vallée partagée sera en {prediction} »
+185rx5s	Le Contrat du Destin s'est réalisé ({prediction}) : influence narrative, +2 reliques.
+1beh1gv	📜 Contrat réalisé !
+1m7d226	Le Contrat du Destin a échoué (c'était {state}) : l'éclat s'est corrompu.
+1f03w0s	📜 Contrat échoué : éclat corrompu
+jajrr5	Guildes de Hondovalle
+1vm885t	{playerName} a acheté {what} à {seller} pour {price} de cendre.
+1ursg1j	{buyer} a acheté {itName} à {playerName} pour {price} de cendre. « {origin} »
+n4bv73	💰 Vendu à {buyer} : +{price}
+146x0f4	{buyer} a acheté {defName} à {playerName} pour {price} de cendre.{incupisce}
+luwec9	 La vallée s'assombrit.
+5p7lgg	Étoile allumée : {stName} ({consName}). {text}
+1wa0v9d	🌌 {consName} complète : {bonus}
+y1r099	Aucune étoile à lire ici : les autres ne s'allument que par des choix
+x5tkqy	Il te faut {cost} d'Intuition
+1cak94r	Il te faut 2 d'Intuition
+1d2hv7n	🕯️ L'interface est purifiée pendant 15 minutes
+jkznzp	Il te faut {cenere} de cendre et 1 relique
+3fo256	Elara a levé ton engagement de {pledgedMaxHp} de santé.
+1pgtmbs	🌿 Engagement levé
+lnrvrz	Il te faut 8 reliques et 3000 de cendre
+6vi658	Le rituel d'Elara t'a rendu un corps humain. Le prix fut énorme.
+1x2fv81	Tu es de nouveau humain
+1hto1jq	Il te faut 3 reliques
+6yq1l0	Tu as prononcé ton nom à l'Autel : {playerName}. La vallée s'en souvient de nouveau.
+1jkxv72	Fin : {endName}.
+1gbtjr3	Il te faut 1 relique
+18v5apc	Rêve de Sacrifice
+383bbx	Tu es retourné au portail. Tomas te tendait la main, mais tu n'as pas pu l'atteindre.
+1dz1jm9	La Dette Frappe
+a7f1v8	Vesper comptait des pièces d'os sur ton lit. « La dette grandit même pendant ton sommeil. »
+kahld0	Le Témoin Rêve
+1tctc1	Tu as revu la nuit de l'incendie. Cette fois tu as remarqué un visage de plus.
+13aca5k	Un PNJ t'a cherché
+4nvqu0	Pendant ton absence, un messager de {fName} a frappé à ta porte. Il a laissé un cadeau.
+12ytfm3	Une Promesse Expire dans le Sommeil
+li9fl3	Tu as rêvé de chaînes. Une de tes promesses est devenue plus urgente (une expédition de moins pour la tenir).
+34nm1d	Éclat dans la Réserve
+18s1aia	Au réveil, il y a dans la réserve un éclat que personne ne se souvient d'avoir apporté. Il est tiède. Il est corrompu.
+1rczyvo	Expédition Onirique
+14e1d5p	En rêve tu as visité une version corrompue d'un donjon déjà exploré. Tu t'es réveillé les poches pleines.
+4u48f3	Rêve : {title}.
+12mgluu	Bas-Hondovalle est ta base. Récolte à la main, construis des bâtiments et laisse-les produire des ressources seuls : le village travaille même jeu fermé.
+lzt8xz	Chaque bâtiment produit une ressource par seconde. Chaque exemplaire coûte 15 % de plus que le précédent. À 10, 25, 50 et 100 exemplaires apparaissent des améliorations qui doublent la production.
+1dzw5i2	Elara, Marcus et Vesper se souviennent de tes choix. Leurs paroles changent selon la réputation de leur faction, ton nom et ce que tu es devenu.
+10sdjf9	Ici tu vois combien le village produit par minute. Exploits, Souvenirs, cartes et l'état de la Vallée multiplient la production.
+136a60b	Les donjons sont des miroirs de ton Fardeau. Descendre coûte 1 Provision par étage. Ce que tu trouves va dans la Besace : il n'est à toi que si tu remontes à la surface. Si tu tombes, tu en perds les trois quarts. Tous les 5 étages, il y a un boss.
+z7y1ff	Équipement sur 7 emplacements, avec des raretés de Commun à Ancestral. Tu peux améliorer, recycler, vendre et forger. Chaque niveau donne un Point de Talent pour les Voies (Culte, Capitale, Paysans, Révolte).
+w07brm	Coffre et missions quotidiennes, les rêves de la Sauvegarde Vivante, les exploits (+2 % de production chacun), le bestiaire et la chronique de tout ce dont la vallée se souvient.
+yfh8ue	Étang des Voix
+1w9rrd6	Touche l'eau, attends que l'appât coule et touche de nouveau au bon moment. Chaque espèce pêchée est un souvenir de la vallée : +1 % de production pour toujours.
+1lccnhx	La carte est une constellation. Les choix allument des étoiles ; avec l'Intuition tu peux en lire d'autres. Ici tu trouves Promesses, Éclats de Destin, Contrats et l'état de la vallée partagée.
+hen7ct	Les factions demandent des ressources. Les livrer augmente leur réputation, mais la faction rivale en perd un peu.
+rfp98f	Huit factions, pas de karma unique. Chaque faction a une rivale. Les états (Ignoré, Toléré, De confiance, Adoré, Craint, Banni, Marqué) changent prix, dialogues, événements et fins.
+1j37nlu	Conteur
+21hssk	Toutes les 10 minutes le conteur raconte ton histoire : production ×2 pendant 90 secondes.
+ui0t5d	Kael et Lyra te suivent dans les donjons. Leur confiance monte quand tu protèges et s'effondre quand tu les utilises comme boucliers : sous 25 ils hésitent, à 0 ils partent. Tu peux les envoyer en expéditions qui durent des heures réelles, même jeu fermé.
+1pxh2wc	Actions de Dissonance
+6ta1ge	La Dissonance n'est pas qu'une pénalité : tu peux la dépenser en actions puissantes mais déstabilisantes (Pacte Sombre, Trahison Tactique, Bûcher des Provisions). Le monde le remarque.
+agxkoj	Ici on échange du destin : objets avec une histoire, Éclats de Destin et ressources. Les prix dépendent des Ombres du Marché. Chaque échange reste dans le Registre des Âmes.
+1ku2eyv	Tu peux laisser ton héros combattre seul : il utilise des compétences cohérentes avec ton Fardeau, l'Écho quand il est prêt et une potion sous le seuil choisi dans les Options. Il n'utilise jamais d'actions de Dissonance.
+1j12oev	Boss mondial
+13au06e	Chaque jour, tous les porteurs frappent le Colosse de Cendre. Tu as 3 tentatives de 10 manches : plus tu infliges de dégâts, meilleures sont les récompenses.
+1s68eva	Les reliques achètent des améliorations permanentes au Sanctuaire. Quand tu clos un Cycle, tu obtiens une fin, des Souvenirs permanents, et ton porteur devient un écho que les suivants rencontreront.
+1fnkeaj	Le Fardeau
+14f6fef	Ton premier choix est devenu une cicatrice mécanique. Chaque Fardeau a un poids (léger = tu agis en premier, lourd = tu frappes plus fort), un avantage, un coût, un Écho et une Ombre.
+6gf2hh	Résonance et Dissonance
+11oh7bx	Chaque action a une nature (protection, sacrifice, cruauté, trahison, silence, foi, sang). En combat une bordure VERTE indique une action cohérente avec ton Fardeau : elle charge la Résonance ; barre pleine, tu débloques l'Écho. Une bordure ROUGE indique une action contraire : elle accumule de la Dissonance. Aucun choix n'est mauvais : il est simplement le tien.
+1xwbvkl	Corruption
+frmpvz	Les actions impitoyables augmentent la Corruption, les protectrices la réduisent. Corruption élevée : ennemis plus forts, butin plus riche et, au-delà de 60 %, une interface qui commence à mentir (purifie-la à l'Autel).
+tnjma5	Certains choix créent une Promesse avec une échéance en expéditions. Tenue : Résonance et un Éclat. Rompue : Dissonance et un Chasseur de Promesses qui te cherchera dans les donjons.
+epd86a	Besace et Seuil de Retraite
+1qrb84e	Après chaque étage tu choisis : descendre plus bas (plus riche, plus risqué) ou remonter pour sécuriser la besace. Sans provisions, tu peux engager de la santé max future : si tu reviens tu en récupères la moitié, si tu tombes elle reste jusqu'à ce qu'Elara la lève.
+gf5247	Combat
+12qp42s	Choisis une compétence puis la cible. L'attaque de base donne de la Concentration (◆) ; les compétences fortes la consomment. Les attaques au corps à corps ne touchent que la première ligne. Au-dessus de chaque ennemi tu vois son prochain coup (⚠). Les potions ne consomment pas ton tour.
+1osk8n0	La Vallée Qui Respire
+v5unhk	La vallée a un état (Floraison, Calme, Tension, Corruption, Cendre, Éclipse, Renaissance) qui change la production, les ennemis et le butin. Bâtiments, promesses, corruption et éclats le font évoluer.
+1heh7f8	En activant le plein écran tu entres dans le Rite : +25 % de Résonance, murmures dans la musique et choix cachés dans les événements. Avec le son activé tu vois les mouvements des ennemis invisibles.
+eyhvgh	Affronte la Nuit du Portail
+uzx8sd	Lis les trois voix et choisis à laquelle répondre. Il n'y a pas de bon choix : chacun crée un Fardeau différent.
+oe2jkv	Récolte 10 de bois
+1m7bwx2	Touche « Couper » dans le panneau Récolte.
+dippjv	Construis une Scierie
+fkztvv	Dans le panneau Bâtiments. Elle produira du bois toute seule, même jeu fermé.
+1r9r7uz	Construis une Cabane des Cueilleurs
+1nil8s3	Les provisions servent à descendre dans les donjons : 1 par étage.
+1t78s2h	Descends dans le Cimetière des Trahis
+17doiwc	Ouvre l'onglet « Descente » et appuie sur « Descendre ».
+vvwx2w	Remporte ton premier combat
+ut7b5q	Choisis une porte avec des épées. En combat : compétence → cible. Bordure verte = cohérent avec ton Fardeau.
+r3h9xv	Remonte à la surface avec la besace
+1o7iobd	Après avoir nettoyé un étage tu peux descendre plus bas ou « Remonter à la surface ». Ce qui est dans la besace n'est en sécurité qu'une fois remonté.
+wpeyay	Équipe un objet
+lxx8a2	Ouvre « Héros », touche un objet et appuie sur « Équiper » (ou « Auto-équiper »).
+116fdu	Fais grandir Hondovalle jusqu'à 5 bâtiments
+15dzk7d	L'Atelier et la Carrière se débloquent en construisant des Scieries. Plus de bâtiments = plus d'événements et de requêtes.
+xv26d0	Vaincs le premier boss (étage 5)
+1ffkpza	Tous les 5 étages, il y a un boss. Améliore ton équipement et emporte des potions.
+1fx58pm	Ouvre la Boussole du Destin
+etcnzh	Tu y trouveras tes Promesses et les étoiles allumées par tes choix.
+9qp50g	Dépense un Point de Talent
+vauhxo	Dans « Héros » → Talents. Chaque Voie te rapproche d'une faction et t'éloigne d'une autre.
+ftpgqh	✔ {done} · Ensuite : {next}
+a8hjdl	✔ {done} · Le guide est terminé : maintenant la vallée est à toi.
+pbno7g	aucun Fardeau
+httiob	Héritage du Cycle {n}. {origin}
+ehh2cz	{playerName} arrive à Bas-Hondovalle. La vallée brûle. (Cycle {n})
+12606na	{origin} Désormais tu portes le Fardeau : {FName}.
+1dtb6z2	{F} {FName} : ton Fardeau a été forgé
+5muah3	Tu as construit {bName} à Hondovalle.
+1qepxgm	⚙️ {bName} : production ×2
+15r7m67	Aucune amélioration abordable
+unkpcs	Bon retour à Hondovalle
+3ss7jl	Tu as été absent {away}{h}. La vallée a continué à vivre.
+1bpwpjf	 (jusqu'à {capH}h comptées)
+1kpm8k3	🧭 {ready} compagnons sont revenus de leurs expéditions.
+8xp2gj	🌙 {dreams} rêves t'attendent dans le Journal.
+1bncjh2	🔥 {threatName} ont pillé le village : -{lostC} cendre, -{lostL} bois
+10zv2p1	{threatName} ont attaqué Hondovalle.
+p64kmv	Pillards de la Capitale
+1aoxnp8	Loups de Cendre
+g3m3t6	Fanatiques du Culte
+3xfo8c	Os Errants
+1wd7u5a	⚠️ Raid : {tName} ! Frappe-les ou laisse les tours s'en charger.
+jksm9a	🛒 Le marchand te donne aussi une potion !
+d27tm1	🛒 Marchand généreux : +{amt} {k}
+1v5va3i	Bénédiction de Cendre ×3
+sz32v5	🦌 Bénédiction : production ×3 pendant 30 s
+c14w94	Frénésie ×10
+1kjh7xr	🦌 Frénésie : récolte manuelle ×10 pendant 30 s
+1fjybwa	🦌 Source de clarté : Intuition au maximum
+m196iy	🛡️ {name} repoussés ! +{c} cendre
+1c4rgeh	Ballade du Conteur ×2
+1grdi9h	🎻 Le conteur raconte ton histoire : production ×2 pendant 90 s
+10zmhpl	Le Culte demande des offrandes pour l'autel de Vhalzareth.
+14adaqd	Le Capitaine Marcus réquisitionne des matériaux pour la garnison.
+11tcsy6	Les Guildes commandent des matières premières pour les métiers à tisser.
+qpmi6n	Les paysans demandent de l'aide pour reconstruire les granges.
+g3qre7	Elara a besoin de fournitures pour l'Infirmerie.
+1wn2zcm	Les Hérétiques cherchent du matériel pour une imprimerie clandestine.
+13e42os	Une silhouette sans visage commande des marchandises « sans poser de questions ».
+17mzx3f	Les Gardiens demandent de la pierre pour les sceaux.
+qmsbih	{faction} Requête accomplie pour {factionName}
+13tr0ym	{cName} doit être au moins niveau {minLevel}
+umwora	Aucune place libre : construis l'Auberge
+161z9aq	{c} {cName} part pour {LName}
+sjgudj	{n} reliques
+15y40do	un Éclat de Destin
+1n6ahjk	{c} {cName} revient de {LName} : {parts}
+1wgca1x	Il te faut l'Auberge des Voyageurs
+9o6qts	{cName} te rejoint.
+w89ggb	{c} {cName} rejoint le groupe
+1mb5y15	Maximum 2 compagnons par expédition
+40yshb	De l'Étang des Voix tu as pêché un souvenir : {fName}. « {lore} »
+1vneahv	🎣 Nouveau souvenir : {fName} ! +1 % de production
+19m57az	🎣 {fName} (déjà connu) : +cendre
+131ym0i	🎁 Coffre quotidien ouvert
+1x8nfdy	✅ Mission quotidienne accomplie
+1wgyn5z	🏺 Toutes les missions : +1 relique
+pml7te	🏆 Exploit : {aName} (+2 % de production)
+9f0m6a	Il te faut {c} reliques
+1yxvf0p	🏺 Le Sanctuaire accepte ton offrande
+td06ty	Calme
+1gwazvj	Éclipse
+1ph3tit	Renaissance
+3x6ep6	Ignoré
+lpezj7	Toléré
+k1ncmq	De confiance
+blpztx	Adoré
+g9sgn5	Craint
+105jup8	Banni
+18nss9f	Marqué
+htfaie	culpabilité
+mccyx0	peur
+1sgp6a5	ambition
+1nhebee	colère
+1ip3kme	isolement
+ssj8mb	acquittement
+9vwt72	intégration
+1tkzl20	rupture
+1phzwer	sentence
