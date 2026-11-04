@@ -15,6 +15,7 @@ import Hero from './components/Hero';
 import Compass from './components/Compass';
 import Modals from './components/Modals';
 import { TalkOverlay } from './components/Talk';
+import { BG } from './components/art';
 import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from './components/Screens';
 
 export default function App() {
@@ -78,6 +79,7 @@ export default function App() {
   const corrupt = corruptedUI(s) && !s.settings.reduceFx;
   return (
     <div className={`min-h-screen noise ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
+      {s.delve && BG[s.delve.biome] && <div aria-hidden className="fixed inset-0 -z-0 pointer-events-none bg-cover bg-center opacity-35" style={{ backgroundImage: `linear-gradient(to bottom, rgba(5,4,6,.55), rgba(5,4,6,.9)), url(${BG[s.delve.biome]})` }} />}
       {corrupt && <div className="vignette vignette-corrupt" />}
       {s.fullscreen && !s.settings.reduceFx && <div className="vignette vignette-rite" />}
       <div className="sticky top-0 z-30">
@@ -85,7 +87,7 @@ export default function App() {
         <Nav state={s} act={act} />
       </div>
       {!s.combat && <GuideBar state={s} act={act} />}
-      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16">
+      <main className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16">
         {s.combat ? <Combat state={s} act={act} /> : (
           <>
             {s.tab === 'villaggio' && <Village state={s} act={act} />}

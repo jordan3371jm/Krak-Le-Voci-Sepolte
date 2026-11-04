@@ -1,4 +1,5 @@
 import { t as T } from '../i18n';
+import { BG } from './art';
 import { useState } from 'react';
 import type { BiomeId, GameState } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -35,7 +36,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
           const cps = checkpoints(s, id);
           const sel = start[id] || 1;
           return (
-            <section key={id} className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg} ${unlocked ? '' : 'opacity-50'}`}>
+            <section key={id} className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg} ${unlocked ? '' : 'opacity-50'} bg-cover bg-center`} style={BG[id] ? { backgroundImage: `linear-gradient(to bottom, rgba(8,6,10,.72), rgba(8,6,10,.93)), url(${BG[id]})` } : undefined}>
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h3 className="text-lg text-bone flex items-center gap-2"><Sigil emoji={B.icon} size={36} tone="violet" /> {biomeName(s, id, B)}</h3>
