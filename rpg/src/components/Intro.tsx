@@ -59,7 +59,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 relative">
+    <div className="min-h-screen flex items-center justify-center px-4 pt-20 pb-10 sm:py-10 relative">
       <div className="absolute top-4 right-4 z-10"><LangPicker /></div>
       <div className="w-full max-w-3xl animate-rise">
         <h2 className="text-2xl text-center text-bone mb-1">{T('Chi porta il Fardello?')}</h2>
