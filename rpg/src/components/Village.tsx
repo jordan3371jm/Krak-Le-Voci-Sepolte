@@ -29,42 +29,79 @@ const NIGHT: { f: FardelloId; npc: string; icon: string; who: string; text: stri
   { f: 'silenzio', npc: 'Marcus', icon: '⚔️', who: T('Marcus, capitano della Capitale'), text: T('«Resta indietro, civile. Qui decidiamo noi.» Intorno a te la valle brucia. Puoi solo guardare, e ricordare ogni volto.'), choice: T('Non intervenire. Guardare. Ricordare.'), hint: T('Fardello leggero: agisci per primo, schivi, vedi ciò che è nascosto') },
 ];
 
-// Prima schermata di gioco: solo la notte, nient'altro.
+// Prima schermata di gioco: la Notte del Portale come dialogo.
+type PNode = { who?: number; text: string; choices: { text: string; go: string }[] };
+function portalTree(): Record<string, PNode> {
+  const other = { text: T('Ascoltare un\'altra voce'), go: 'start' };
+  return {
+    start: { text: T('Hondovalle brucia. Un portale di carne e metallo si apre sopra il pozzo. Tre voci ti chiamano nello stesso istante. Puoi rispondere a una sola. Nessuna è giusta. Tutte verranno ricordate.'), choices: [
+      { text: T('Correre da Kael, vicino al sigillo'), go: 'k1' }, { text: T('Avvicinarti a Vesper, tra il fumo'), go: 'v1' }, { text: T('Fermarti davanti a Marcus e ai suoi soldati'), go: 'm1' }] },
+    k1: { who: 0, text: NIGHT[0].text, choices: [{ text: T('Perché non lo fai tu?'), go: 'k2' }, { text: T('Non c\'è un altro modo?'), go: 'k3' }, { text: NIGHT[0].choice, go: 'c0' }, other] },
+    k2: { who: 0, text: T('«Perché è mio fratello!» Gli trema la voce. «E perché tu non hai nessuno da perdere, qui. Io sì.» Tomas ti guarda. Ha capito. Non scappa.'), choices: [{ text: T('Non c\'è un altro modo?'), go: 'k3' }, { text: NIGHT[0].choice, go: 'c0' }, other] },
+    k3: { who: 0, text: T('«Guarda il cielo. Guarda le case.» Il portale ruggisce e una casa intera sparisce dentro la luce. «Ogni respiro che sprechiamo, muore qualcuno.»'), choices: [{ text: T('Perché non lo fai tu?'), go: 'k2' }, { text: NIGHT[0].choice, go: 'c0' }, other] },
+    v1: { who: 1, text: NIGHT[1].text, choices: [{ text: T('Perché proprio Ilyas?'), go: 'v2' }, { text: T('Come so che l\'antidoto funziona?'), go: 'v3' }, { text: NIGHT[1].choice, go: 'c1' }, other] },
+    v2: { who: 1, text: T('«Perché ha visto cose che il Culto non vuole raccontate. E perché nessuno lo piangerà.» Sorride, lento. «Tranne te, forse. Lo vedo già nei tuoi occhi.»'), choices: [{ text: T('Come so che l\'antidoto funziona?'), go: 'v3' }, { text: NIGHT[1].choice, go: 'c1' }, other] },
+    v3: { who: 1, text: T('«Non lo sai.» Ti mette in mano una fiala calda, che pulsa come un cuore. «La fede è questo, fratello. Scegliere senza sapere.» Il bambino di Elara tossisce sangue.'), choices: [{ text: T('Perché proprio Ilyas?'), go: 'v2' }, { text: NIGHT[1].choice, go: 'c1' }, other] },
+    m1: { who: 2, text: NIGHT[2].text, choices: [{ text: T('Chi ha appiccato il fuoco?'), go: 'm2' }, { text: T('Posso aiutare?'), go: 'm3' }, { text: NIGHT[2].choice, go: 'c2' }, other] },
+    m2: { who: 2, text: T('«Non sono domande per un civile.» Ma i suoi occhi corrono, per un istante, verso una figura incappucciata tra le fiamme. Un occhio cucito di filo nero sul mantello. Ricorderai quel volto.'), choices: [{ text: T('Posso aiutare?'), go: 'm3' }, { text: NIGHT[2].choice, go: 'c2' }, other] },
+    m3: { who: 2, text: T('«Puoi restare vivo e tacere. È il miglior aiuto che un civile possa dare.» Dietro di lui, qualcuno grida il tuo nome. Poi smette.'), choices: [{ text: T('Chi ha appiccato il fuoco?'), go: 'm2' }, { text: NIGHT[2].choice, go: 'c2' }, other] },
+  };
+}
+
 export function PortalScreen({ act }: { act: Act }) {
-  const [sel, setSel] = useState<number | null>(null);
+  const [node, setNode] = useState('start');
+  const [seen, setSeen] = useState<string[]>([]);
   useEffect(() => { heartbeat(true); return () => heartbeat(false); }, []);
+  const tree = portalTree();
+  const commit = node.startsWith('c') ? +node.slice(1) : null;
+  const n = commit === null ? tree[node] : null;
+  const who = n?.who !== undefined ? NIGHT[n.who] : commit !== null ? NIGHT[commit] : null;
+  const go = (g: string) => { sfx.click(); setSeen(x => x.includes(node) ? x : [...x, node]); setNode(g); };
   return (
     <div className="min-h-screen portal-bg flex items-center justify-center px-4 py-10 relative">
       <Particles mode="portal" tint="190,110,255" />
       {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none kenburns" style={{ backgroundImage: `linear-gradient(rgba(5,4,6,.6), rgba(5,4,6,.95)), url(${BG.copertina})` }} />}
-      <div className="max-w-5xl w-full animate-rise relative">
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="unlock-glow mb-3"><Icon name="portale" size={96} /></div>
+      <div className="max-w-2xl w-full relative">
+        <div className="flex flex-col items-center text-center mb-6">
           <p className="text-[10px] uppercase tracking-[0.4em] text-amber-300/80">{T('Prologo')}</p>
           <h1 className="text-3xl sm:text-4xl text-gradient-ember title-beat">{T('La Notte del Portale')}</h1>
-          <p className="text-sm text-bone/80 italic mt-3 max-w-2xl">{T('Hondovalle brucia. Un portale di carne e metallo si apre sopra il pozzo. Tre voci ti chiamano nello stesso istante. Puoi rispondere a una sola. Nessuna è giusta. Tutte verranno ricordate.')}</p>
         </div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {NIGHT.map((n, i) => (
-            <button key={n.f} onClick={() => { sfx.click(); setSel(i); }} className={`text-left rounded-2xl border p-4 transition panel ${sel === i ? 'border-amber-500 ring-2 ring-amber-500/40 -translate-y-1' : 'border-stone-700 hover:border-amber-700/60'}`}>
-              <div className="flex flex-col items-center text-center gap-2 mb-3"><Face id={n.npc.toLowerCase()} emoji={n.icon} size={104} tone={n.f === 'silenzio' ? 'violet' : 'blood'} /><span className="text-sm text-bone font-display">{n.who}</span></div>
-              <p className="text-sm text-bone/85 mb-4 leading-relaxed">{n.text}</p>
-              <p className="text-sm font-semibold text-amber-200">{n.choice}</p>
-              <div className="mt-3 pt-3 border-t border-stone-800 flex items-center gap-2"><Icon name={n.f} size={40} /><div><p className="text-[10px] uppercase tracking-widest text-mist">{T('Fardello')}</p><p className="text-xs text-bone">{FARDELLI[n.f].name}</p></div></div>
-              <p className="text-[11px] text-mist/80 mt-1">{n.hint}</p>
-            </button>
-          ))}
-        </div>
-        <div className="mt-6 text-center min-h-[80px]">
-          {sel !== null && (
-            <div className="animate-rise">
-              <p className="text-xs text-mist mb-3 max-w-xl mx-auto">{FARDELLI[NIGHT[sel].f].origin}{' '}{T('Non potrai tornare indietro.')}</p>
-              <Btn kind="ember" onClick={() => { sfx.chain(); act(d => {
-                chooseFardello(d, NIGHT[sel].f);
-                d.modal = { kind: 'info', title: FARDELLI[NIGHT[sel].f].name, text: T('{description}\n\nLe azioni coerenti con il tuo Fardello caricano la Risonanza; quelle contrarie accumulano Dissonanza. Il mondo ricorderà entrambe.\n\nOra ricostruisci Hondovalle. La Guida in alto ti dirà cosa puoi fare, mai cosa scegliere.', { description: FARDELLI[NIGHT[sel].f].description }) };
-              }); }}>{T('Scegli. E porta il peso.')}</Btn>
+        <div key={node} className="panel rounded-2xl p-5 sm:p-6 animate-rise">
+          <div className="flex flex-col items-center text-center gap-2 mb-4">
+            {who ? <Face id={who.npc.toLowerCase()} emoji={who.icon} size={120} tone={who.f === 'silenzio' ? 'violet' : 'blood'} />
+              : <div className="unlock-glow"><Icon name="portale" size={110} /></div>}
+            {who && <span className="font-display text-bone">{who.who}</span>}
+          </div>
+          {n && <>
+            <p className={`text-[15px] leading-relaxed ${who ? 'text-bone/90' : 'text-bone/80 italic text-center'}`}>{n.text}</p>
+            <div className="mt-5 space-y-1.5">
+              {n.choices.map((c, i) => {
+                const isCommit = c.go.startsWith('c');
+                const visited = seen.includes(c.go);
+                return (
+                  <button key={i} onClick={() => go(c.go)} className={`w-full text-left rounded-lg border px-3 py-2 text-sm flex gap-2 items-center transition ${isCommit ? 'border-amber-600/70 text-amber-200 hover:bg-amber-900/20' : 'border-stone-700 text-bone hover:border-ember/70 hover:bg-white/5'} ${visited && !isCommit ? 'opacity-60' : ''}`}>
+                    <span className="text-ember">{i + 1}.</span>
+                    {isCommit && <Icon name={NIGHT[+c.go.slice(1)].f} size={30} />}
+                    <span className="flex-1">{c.text}</span>
+                  </button>
+                );
+              })}
             </div>
-          )}
+          </>}
+          {commit !== null && (() => { const N = NIGHT[commit]; const F = FARDELLI[N.f]; return (
+            <div className="text-center">
+              <p className="text-amber-200 font-semibold">{N.choice}</p>
+              <div className="flex items-center justify-center gap-3 my-4"><Icon name={N.f} size={72} /><div className="text-left"><p className="text-[10px] uppercase tracking-widest text-mist">{T('Fardello')}</p><p className="text-bone font-display">{F.name}</p><p className="text-[11px] text-mist">{N.hint}</p></div></div>
+              <p className="text-xs text-mist mb-4 max-w-md mx-auto">{F.origin}{' '}{T('Non potrai tornare indietro.')}</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Btn kind="ghost" onClick={() => go(`${'kvm'[commit]}1`)}>{T('Aspetta… non ancora')}</Btn>
+                <Btn kind="ember" onClick={() => { sfx.chain(); act(d => {
+                  chooseFardello(d, N.f);
+                  d.modal = { kind: 'info', title: F.name, text: T('{description}\n\nLe azioni coerenti con il tuo Fardello caricano la Risonanza; quelle contrarie accumulano Dissonanza. Il mondo ricorderà entrambe.\n\nOra ricostruisci Hondovalle. La Guida in alto ti dirà cosa puoi fare, mai cosa scegliere.', { description: F.description }) };
+                }); }}>{T('Scegli. E porta il peso.')}</Btn>
+              </div>
+            </div>
+          ); })()}
         </div>
       </div>
     </div>
@@ -264,39 +301,10 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
 
         {/* Persone, storie e servizi */}
         <div className="space-y-4">
-          {isUnlocked(s, 'f_volti') && <Panel title={T('Volti di Hondovalle')} icon="compagni">
-            <div className="space-y-2">
-              {NPCS.map(n => (
-                <button key={n.id} onClick={() => sfx.leitmotif(FACTIONS[n.faction].leitmotif)} className="w-full text-left flex gap-2 items-start rounded-lg p-2 hover:bg-white/5">
-                  <Face id={n.id} emoji={n.icon} size={44} tone={n.faction === 'culto' ? 'blood' : n.faction === 'guaritori' ? 'moss' : 'iron'} />
-                  <div>
-                    <div className="text-sm text-bone">{n.name} <span className="text-[10px] text-mist">· {FACTIONS[n.faction].name} · {T(repState(s, n.faction))}</span></div>
-                    <p className="text-xs text-bone/70 italic">{npcLine(s, n.id)}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </Panel>}
 
           {isUnlocked(s, 'f_volti') && <TalkersPanel state={s} act={act} />}
 
           {isUnlocked(s, 'f_stagno') && <Pond state={s} act={act} />}
-          {isUnlocked(s, 'f_richieste') && <Panel title={T('Richieste delle Fazioni')} icon="fazioni">
-            {s.requests.length === 0 && <p className="text-xs text-mist italic">{totalBuildings(s) < 4 ? T('Le fazioni ti noteranno quando il villaggio avrà 4 edifici.') : T('Nessuna richiesta, per ora. Ne arriveranno altre.')}</p>}
-            <div className="space-y-2">
-              {s.requests.map(r => (
-                <div key={r.uid} className="rounded-lg border border-stone-700 p-2 text-xs">
-                  <div className="flex justify-between"><span className="text-bone flex items-center gap-1"><Pic id={`fazione_${r.faction}`} emoji={FACTIONS[r.faction].icon} size={20} /> {FACTIONS[r.faction].name}</span><span className="text-mist">{fmtTime(r.until - now)}</span></div>
-                  <p className="text-bone/70 italic my-1">{r.text}</p>
-                  <div className="flex items-center justify-between gap-2">
-                    <span>{T('Chiede:')}{' '}<Cost cost={r.need} have={s.res} /></span>
-                    <Btn small kind="good" disabled={!canAfford(s, r.need)} onClick={() => act(d => completeRequest(d, r.uid))}>{T('Consegna')}</Btn>
-                  </div>
-                  <div className="text-[10px] text-mist mt-1">{T('Ricompensa: ⚱️{c} · reputazione +{rep} (−{down} {rival})', { c: r.reward.cenere || 0, rep: r.reward.rep, down: Math.round(r.reward.rep * 0.4), rival: FACTIONS[FACTIONS[r.faction].opposite].name })}{r.reward.reliquie ? ' · 🏺1' : ''}</div>
-                </div>
-              ))}
-            </div>
-          </Panel>}
 
           {(s.village.buildings.infermeria || 0) > 0 || s.hero.pledgedMaxHp > 0 || s.aberration ? <Panel title={T('Infermeria di Elara')} icon="infermeria">
             {!s.village.buildings.infermeria ? <p className="text-xs text-mist italic">{T('Costruisci l\'Infermeria per preparare pozioni ed elisir.')}</p> : (

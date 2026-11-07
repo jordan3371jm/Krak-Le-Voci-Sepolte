@@ -107,7 +107,7 @@ export default function App() {
             {s.tab === 'eroe' && <Hero state={s} act={act} />}
             {s.tab === 'bussola' && <Compass state={s} act={act} />}
             {s.tab === 'mercato' && <Market state={s} act={act} />}
-            {s.tab === 'fazioni' && <Factions state={s} />}
+            {s.tab === 'fazioni' && <Factions state={s} act={act} />}
             {s.tab === 'spedizioni' && <Companions state={s} act={act} />}
             {s.tab === 'diario' && <Journal state={s} act={act} />}
             {s.tab === 'eredita' && <Legacy state={s} act={act} />}

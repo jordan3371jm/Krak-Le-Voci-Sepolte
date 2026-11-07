@@ -1,4 +1,5 @@
 import { t as T } from '../i18n';
+import { useEffect, useRef, useState } from 'react';
 import type { GameState, ResKey, TabId } from '../game/types';
 import { RES_INFO, VALLEY_EFFECTS } from '../game/data/world';
 import { corruptedUI, displayName, fmt, intuitionCap, valleyState } from '../game/engine/state';
@@ -31,43 +32,74 @@ export default function HUD({ state: s, act, onFullscreen, onCodex, onSave }: { 
   const heroIcon = s.aberration ? 'corruzione' : s.fardello || 'portale';
   return (
     <header className="bg-black/85 backdrop-blur border-b border-amber-900/40">
-      <div className="max-w-6xl mx-auto px-3 py-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <Icon name={heroIcon} size={38} />
+      <div className="max-w-6xl mx-auto px-3 pt-2 flex items-center gap-3">
+        <div className="flex items-center gap-2 min-w-0 shrink-0">
+          <Icon name={heroIcon} size={42} />
           <div className="min-w-0">
-            <div className={`font-display text-sm text-bone truncate max-w-[140px] ${s.nameCorrupted ? 'animate-glitch text-fate' : ''}`}>{displayName(s)}</div>
-            <div className="text-[10px] text-mist">{T('Livello')}{' '}{s.hero.level}{s.hero.paragon ? ` ✴${s.hero.paragon}` : ''}{s.cycle.n > 1 ? T(' · Ciclo {n}', { n: s.cycle.n }) : ''}</div>
+            <div className={`font-display text-sm text-bone truncate max-w-[120px] sm:max-w-[160px] ${s.nameCorrupted ? 'animate-glitch text-fate' : ''}`}>{displayName(s)}</div>
+            <div className="text-[10px] text-mist whitespace-nowrap">{T('Livello')}{' '}{s.hero.level}{s.hero.paragon ? ` ✴${s.hero.paragon}` : ''}{s.cycle.n > 1 ? T(' · Ciclo {n}', { n: s.cycle.n }) : ''}</div>
           </div>
         </div>
-        <div className="w-28 sm:w-36 space-y-1">
-          <Bar value={s.hero.hp} max={st.maxHp} color="bg-gradient-to-r from-red-800 to-red-500" label={<><span>{T('Salute')}{' '}{lie(s.hero.hp, corrupt)}/{st.maxHp}</span>{s.hero.pledgedMaxHp > 0 && <span className="text-dissonance">{T('pegno −')}{s.hero.pledgedMaxHp}</span>}</>} />
-          <Bar value={s.hero.xp} max={xpForLevel(s.hero.level)} color="bg-fate/70" height="h-1" />
-        </div>
-        {s.fardello && (
-          <div className="w-28 sm:w-36 space-y-1" title={T('Risonanza / Dissonanza / Corruzione')}>
-            <Bar value={s.resonance} max={rmax} color={`bg-resonance ${s.resonance >= rmax ? 'res-glow' : ''}`} height="h-1.5" label={<><span className="text-resonance">{T('Risonanza')}{' '}{Math.floor(s.resonance)}/{rmax}</span>{s.dissonance >= 1 && <span className="text-dissonance">{T('Diss.')}{' '}{Math.floor(s.dissonance)}</span>}</>} />
-            <Bar value={s.corruption} max={100} color="bg-gradient-to-r from-purple-900 to-fuchsia-600" height="h-1" />
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 min-w-0 max-w-md">
+          <div className="space-y-1">
+            <Bar value={s.hero.hp} max={st.maxHp} color="bg-gradient-to-r from-red-800 to-red-500" label={<><span>{T('Salute')}{' '}{lie(s.hero.hp, corrupt)}/{st.maxHp}</span>{s.hero.pledgedMaxHp > 0 && <span className="text-dissonance">{T('pegno −')}{s.hero.pledgedMaxHp}</span>}</>} />
+            <Bar value={s.hero.xp} max={xpForLevel(s.hero.level)} color="bg-fate/70" height="h-1" />
           </div>
-        )}
-        <div className={`flex flex-wrap gap-x-3 gap-y-1 text-xs items-center ${corrupt ? 'corruptible' : ''}`}>
-          {keys.map(k => (
-            <span key={k} className={`flex items-center gap-1 ${RES_INFO[k].color} ${corrupt ? 'corrupt-num' : ''}`} title={`${RES_INFO[k].name}${prod[k] ? ` · +${fmt(prod[k])}/s` : ''}`}>
-              <Icon name={k} size={22} />
-              <span>{lie(s.res[k], corrupt)}{k === 'intuizione' ? `/${intuitionCap(s)}` : ''}{prod[k] > 0 && k !== 'intuizione' && <span className="text-[9px] text-mist"> +{fmt(prod[k])}/s</span>}</span>
-            </span>
-          ))}
-          {s.reliquie > 0 && <span className="flex items-center gap-1 text-yellow-200" title={T('Reliquie')}><Icon name="reliquie" size={22} />{s.reliquie}</span>}
-          {isUnlocked(s, 'discesa') && <span className="flex items-center gap-1 text-red-300" title={T('Pozioni')}><Icon name="pozione" size={22} />{s.potions}</span>}
+          {s.fardello && (
+            <div className="space-y-1 hidden sm:block" title={T('Risonanza / Dissonanza / Corruzione')}>
+              <Bar value={s.resonance} max={rmax} color={`bg-resonance ${s.resonance >= rmax ? 'res-glow' : ''}`} height="h-1.5" label={<><span className="text-resonance">{T('Risonanza')}{' '}{Math.floor(s.resonance)}/{rmax}</span>{s.dissonance >= 1 && <span className="text-dissonance">{T('Diss.')}{' '}{Math.floor(s.dissonance)}</span>}</>} />
+              <Bar value={s.corruption} max={100} color="bg-gradient-to-r from-purple-900 to-fuchsia-600" height="h-1" />
+            </div>
+          )}
         </div>
-        <div className="ml-auto flex items-center gap-1.5">
-          {s.fardello && <span className={`text-xs ${VE.color} hidden sm:inline`} title={VE.desc}>{VE.icon} {T(vs)}</span>}
-          <LangPicker compact onBeforeChange={onSave} />
-          <button className={iconBtn} title={T('Codex: come funziona')} onClick={onCodex}><Icon name="diario" size={28} plain /></button>
-          <button className={`${iconBtn} ${s.settings.music ? '' : 'opacity-40'}`} title={s.settings.music ? T('Musica attiva') : T('Musica spenta')} onClick={() => act(d => { d.settings.music = !d.settings.music; })}><Icon name="musica" size={28} plain /></button>
-          <button className={`${iconBtn} ${s.fullscreen ? 'border-blood bg-blood/30' : ''}`} title={T('Il Rito (schermo intero)')} onClick={onFullscreen}><Icon name="rito" size={28} plain /></button>
+        <div className="ml-auto flex items-center gap-2 shrink-0">
+          {s.fardello && <span className={`text-xs ${VE.color} hidden md:inline whitespace-nowrap`} title={VE.desc}>{VE.icon} {T(vs)}</span>}
+          <GameMenu state={s} act={act} onFullscreen={onFullscreen} onCodex={onCodex} onSave={onSave} />
         </div>
       </div>
+      <div className={`max-w-6xl mx-auto px-3 py-1.5 flex gap-1.5 overflow-x-auto no-scrollbar ${corrupt ? 'corruptible' : ''}`}>
+        {keys.map(k => (
+          <div key={k} className={`shrink-0 flex items-center gap-1.5 rounded-full bg-white/[.03] border border-stone-800 pl-0.5 pr-2.5 py-0.5 ${RES_INFO[k].color} ${corrupt ? 'corrupt-num' : ''}`} title={`${RES_INFO[k].name}${prod[k] ? ` · +${fmt(prod[k])}/s` : ''}`}>
+            <Icon name={k} size={30} />
+            <div className="leading-none">
+              <div className="text-sm tabular-nums min-w-[2.6em]">{lie(s.res[k], corrupt)}{k === 'intuizione' ? `/${intuitionCap(s)}` : ''}</div>
+              {prod[k] > 0 && k !== 'intuizione' && <div className="text-[9px] text-mist tabular-nums">+{fmt(prod[k])}/s</div>}
+            </div>
+          </div>
+        ))}
+        {s.reliquie > 0 && <div className="shrink-0 flex items-center gap-1.5 rounded-full bg-white/[.03] border border-stone-800 pl-0.5 pr-2.5 py-0.5 text-yellow-200" title={T('Reliquie')}><Icon name="reliquie" size={30} /><span className="text-sm tabular-nums">{s.reliquie}</span></div>}
+        {isUnlocked(s, 'discesa') && <div className="shrink-0 flex items-center gap-1.5 rounded-full bg-white/[.03] border border-stone-800 pl-1 pr-2.5 py-0.5 text-red-300" title={T('Pozioni')}><Icon name="pozione" size={26} /><span className="text-sm tabular-nums">{s.potions}</span></div>}
+      </div>
     </header>
+  );
+}
+
+// Menu di gioco: un solo pulsante che apre tutte le impostazioni rapide (spazio per aggiungerne altre in futuro)
+function GameMenu({ state: s, act, onFullscreen, onCodex, onSave }: { state: GameState; act: Act; onFullscreen: () => void; onCodex: () => void; onSave?: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: PointerEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    window.addEventListener('pointerdown', close);
+    return () => window.removeEventListener('pointerdown', close);
+  }, [open]);
+  const row = 'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-bone hover:bg-white/5 text-left';
+  return (
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen(!open)} title={T('Menu')} className={`w-11 h-11 flex flex-col items-center justify-center gap-[5px] rounded-full border transition ${open ? 'border-amber-500 bg-amber-900/30' : 'border-stone-700 hover:border-amber-500/70'}`}>
+        <span className="block w-5 h-[2px] bg-bone/80 rounded" /><span className="block w-5 h-[2px] bg-bone/80 rounded" /><span className="block w-5 h-[2px] bg-bone/80 rounded" />
+      </button>
+      {open && (
+        <div className="absolute right-0 z-50 mt-2 w-64 rounded-xl border border-amber-800/60 bg-black/95 p-1.5 shadow-2xl animate-rise">
+          <div className="px-3 py-2"><LangPicker onBeforeChange={onSave} /></div>
+          <button className={row} onClick={() => { setOpen(false); onCodex(); }}><Icon name="diario" size={28} plain />{T('Codex: come funziona')}</button>
+          <button className={row} onClick={() => act(d => { d.settings.music = !d.settings.music; })}><span className={s.settings.music ? '' : 'opacity-40'}><Icon name="musica" size={28} plain /></span>{s.settings.music ? T('Musica attiva') : T('Musica spenta')}</button>
+          <button className={row} onClick={() => { setOpen(false); onFullscreen(); }}><Icon name="rito" size={28} plain />{T('Il Rito (schermo intero)')}</button>
+          {onSave && <button className={row} onClick={() => { onSave(); setOpen(false); }}><Icon name="opzioni" size={28} plain />{T('💾 Salva ora')}</button>}
+        </div>
+      )}
+    </div>
   );
 }
 

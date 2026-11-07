@@ -79,7 +79,7 @@ export function fmt(n: number): string {
   const a = Math.abs(n);
   if (a >= 1e9) return (n / 1e9).toFixed(2) + 'G';
   if (a >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-  if (a >= 1e4) return (n / 1e3).toFixed(1) + 'K';
+  if (a >= 1e3) return (n / 1e3).toFixed(a >= 1e5 ? 0 : 1).replace(/\.0$/, '') + 'K';
   if (a >= 100) return Math.floor(n).toString();
   if (a >= 10) return n.toFixed(1).replace(/\.0$/, '');
   return n.toFixed(a < 1 && a > 0 ? 2 : 1).replace(/\.0+$/, '');

@@ -1,3 +1,6 @@
+import { totalBuildings, completeRequest } from '../game/engine/village';
+import { canAfford } from '../game/engine/state';
+import { Cost } from './ui';
 import { t as T } from '../i18n';
 import { Pic } from './Pic';
 import { useEffect, useState } from 'react';
@@ -72,8 +75,26 @@ const REP_EFFECTS: Record<FactionId, string> = {
   ombre: T('Prezzi del Mercato delle Anime e Contratti di Fato.'),
   guardiani: T('Sigilli di Krak: la valle respira meglio.'),
 };
-export function Factions({ state: s }: { state: GameState }) {
+export function Factions({ state: s, act }: { state: GameState; act: Act }) {
+  const now = Date.now();
   return (
+    <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 items-start">
+          <Panel title={T('Richieste delle Fazioni')} icon="fazioni">
+            {s.requests.length === 0 && <p className="text-xs text-mist italic">{totalBuildings(s) < 4 ? T('Le fazioni ti noteranno quando il villaggio avrà 4 edifici.') : T('Nessuna richiesta, per ora. Ne arriveranno altre.')}</p>}
+            <div className="space-y-2">
+              {s.requests.map(r => (
+                <div key={r.uid} className="rounded-lg border border-stone-700 p-2 text-xs">
+                  <div className="flex justify-between"><span className="text-bone flex items-center gap-1"><Pic id={`fazione_${r.faction}`} emoji={FACTIONS[r.faction].icon} size={20} /> {FACTIONS[r.faction].name}</span><span className="text-mist">{fmtTime(r.until - now)}</span></div>
+                  <p className="text-bone/70 italic my-1">{r.text}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <span>{T('Chiede:')}{' '}<Cost cost={r.need} have={s.res} /></span>
+                    <Btn small kind="good" disabled={!canAfford(s, r.need)} onClick={() => act(d => completeRequest(d, r.uid))}>{T('Consegna')}</Btn>
+                  </div>
+                  <div className="text-[10px] text-mist mt-1">{T('Ricompensa: ⚱️{c} · reputazione +{rep} (−{down} {rival})', { c: r.reward.cenere || 0, rep: r.reward.rep, down: Math.round(r.reward.rep * 0.4), rival: FACTIONS[FACTIONS[r.faction].opposite].name })}{r.reward.reliquie ? ' · 🏺1' : ''}</div>
+                </div>
+              ))}
+            </div>
+          </Panel>
     <Panel title={T('Reputazione nella Valle')} icon="⚖️">
       <p className="text-xs text-mist mb-3">{T('Niente karma unico. Guadagnare reputazione con una fazione spesso danneggia la sua rivale. Lo stato (Ignorato, Tollerato, Fidato, Temuto, Adorato, Bandito, Marchiato) cambia dialoghi, prezzi, eventi e finali.')}</p>
       <div className="grid sm:grid-cols-2 gap-3">
@@ -95,6 +116,7 @@ export function Factions({ state: s }: { state: GameState }) {
         })}
       </div>
     </Panel>
+    </div>
   );
 }
 

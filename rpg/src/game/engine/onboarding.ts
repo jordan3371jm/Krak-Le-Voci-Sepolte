@@ -38,7 +38,7 @@ export const UNLOCKS: UnlockDef[] = [
     codex: t('La mappa è una costellazione. Le scelte accendono stelle; con l\'Intuizione puoi leggerne altre. Qui trovi Promesse, Frammenti di Fato, Contratti e lo stato della valle condivisa.') },
   { id: 'f_richieste', kind: 'feature', name: t('Richieste delle Fazioni'), icon: 'fazioni', cond: s => totalBuildings(s) >= 4,
     codex: t('Le fazioni chiedono risorse. Consegnarle aumenta la loro reputazione, ma la fazione rivale ne perde un po\'.') },
-  { id: 'fazioni', kind: 'tab', name: t('Fazioni'), icon: 'fazioni', cond: s => totalBuildings(s) >= 5 || (s.totals.requests || 0) > 0,
+  { id: 'fazioni', kind: 'tab', name: t('Fazioni'), icon: 'fazioni', cond: s => totalBuildings(s) >= 4 || (s.totals.requests || 0) > 0,
     codex: t('Otto fazioni, nessun karma unico. Ogni fazione ha una rivale. Gli stati (Ignorato, Tollerato, Fidato, Adorato, Temuto, Bandito, Marchiato) cambiano prezzi, dialoghi, eventi e finali.') },
   { id: 'f_cantastorie', kind: 'feature', name: t('Cantastorie'), icon: 'cantastorie', cond: s => totalBuildings(s) >= 6,
     codex: t('Ogni 10 minuti il cantastorie racconta la tua storia: produzione ×2 per 90 secondi.') },
