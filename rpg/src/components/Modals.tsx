@@ -9,6 +9,8 @@ import { addFlag, fillText } from '../game/engine/state';
 import { heartbeat, sfx } from '../game/audio';
 import { Btn, Modal } from './ui';
 import { Icon } from './icons';
+import { adMode, showRewarded } from '../game/platform';
+import { addRes, toast } from '../game/engine/state';
 
 export default function Modals({ state: s, act }: { state: GameState; act: Act }) {
   const m = s.modal;
@@ -73,6 +75,12 @@ export default function Modals({ state: s, act }: { state: GameState; act: Act }
       {m.title && <h2 className="text-xl text-bone mb-2 text-center">{m.title}</h2>}
       {m.text && <p className="text-sm text-bone/85 whitespace-pre-line mb-3">{m.text}</p>}
       {m.lines?.map((l, i) => <p key={i} className="text-xs text-bone/70 mb-1">{l}</p>)}
+      {m.kind === 'welcome' && m.double && (
+        <div className="mt-3 rounded-lg border border-amber-600/50 bg-amber-950/30 p-3 text-center">
+          <p className="text-xs text-amber-100 mb-2">{adMode() === 'none' ? T('La valle ti offre un dono di bentornato: +50% di ciò che ha prodotto mentre eri via.') : T('Guarda una breve pubblicità per raddoppiare ciò che la valle ha prodotto mentre eri via.')}</p>
+          <Btn kind="ember" onClick={() => { const g = adMode() === 'none' ? Object.fromEntries(Object.entries(m.double!).map(([k, v]) => [k, Math.floor((v || 0) / 2)])) : m.double!; showRewarded('double_offline').then(ok => { if (ok) act(d => { addRes(d, g, false); d.modal = null; if (adMode() !== 'none') toast(d, T('✨ Produzione offline raddoppiata!'), 'good'); }); }); }}>{adMode() === 'none' ? T('🎁 Accetta il dono (+50%)') : T('📺 Raddoppia (pubblicità)')}</Btn>
+        </div>
+      )}
       <div className="text-center mt-4"><Btn kind="ember" onClick={close}>{T('Continua')}</Btn></div>
     </Modal>
   );

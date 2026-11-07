@@ -19,6 +19,8 @@ import {
   buySanctuary, claimDailyChest, claimMission, collectExpedition, expeditionDuration, expeditionSlots, missionProgress, recruit, sanctuaryCost, sendExpedition, toggleParty,
 } from '../game/engine/village';
 import { deleteSave, exportCode, importCode } from '../game/save';
+import { GIFT_LIKES, giftableItems, giveGift, nextGiftScene } from '../game/engine/features';
+import { RARITY_COLORS, SLOT_INFO } from '../game/data/world';
 import { LangPicker } from './LangPicker';
 import { Bar, Btn, Empty, ItemCard, Panel, Tag, rich } from './ui';
 
@@ -127,6 +129,8 @@ export function Companions({ state: s, act }: { state: GameState; act: Act }) {
   const now = Date.now();
   const [loc, setLoc] = useState(EXPEDITIONS[0].id);
   const busy = s.companions.filter(c => c.mission).length;
+  const [giftFor, setGiftFor] = useState<string | null>(null);
+  const gifts = giftableItems(s).sort((a, b) => b.rarity - a.rarity).slice(0, 10);
   return (
     <div className="grid lg:grid-cols-2 gap-4">
       <Panel title={T('Compagni')} icon="👥" right={<span className="text-xs text-mist">{T('In gruppo:')}{' '}{s.companions.filter(c => c.inParty).length}/2</span>}>
@@ -156,10 +160,20 @@ export function Companions({ state: s, act }: { state: GameState; act: Act }) {
                   {!c.recruited && !c.left && <Btn small kind="good" onClick={() => act(d => recruit(d, c.id))}>{T('Recluta · ⚱️')}{def.recruitCost?.cenere}{def.recruitCost?.reliquie ? ` 🏺${def.recruitCost.reliquie}` : ''}</Btn>}
                   {c.recruited && !c.left && !c.mission && <Btn small kind={c.inParty ? 'ember' : 'default'} disabled={!!s.delve} onClick={() => act(d => toggleParty(d, c.id))}>{c.inParty ? T('✔ Nel gruppo') : T('Porta con te')}</Btn>}
                   {c.recruited && !c.left && !c.mission && !s.delve && <Btn small onClick={() => act(d => sendExpedition(d, c.id, loc))}>{T('🧭 Manda in spedizione')}</Btn>}
+                  {c.recruited && !c.left && <Btn small kind={giftFor === c.id ? 'ember' : 'default'} onClick={() => setGiftFor(giftFor === c.id ? null : c.id)}>{T('🎁 Fai un dono')}{c.gifts ? ` · ${c.gifts}` : ''}</Btn>}
                   {c.mission && (c.mission.end <= now
                     ? <Btn small kind="good" onClick={() => act(d => collectExpedition(d, c.id))}>{T('Raccogli il bottino (')}{EXPEDITIONS.find(e => e.id === c.mission!.locId)?.name})</Btn>
                     : <Tag>{T('In {place} · torna tra {time}', { place: EXPEDITIONS.find(e => e.id === c.mission!.locId)?.name || '', time: fmtTime(c.mission.end - now) })}</Tag>)}
                 </div>
+                {giftFor === c.id && (
+                  <div className="mt-2 rounded-lg border border-amber-700/40 bg-black/40 p-2">
+                    <p className="text-[11px] text-mist mb-1">{T('Ama ricevere:')} {(GIFT_LIKES[c.id] || []).map(x => SLOT_INFO[x].icon + ' ' + SLOT_INFO[x].name).join(', ')} · {nextGiftScene(c) ? T('Prossima scena privata al dono n. {n}', { n: nextGiftScene(c)! }) : T('Hai visto tutte le sue scene private.')}</p>
+                    {gifts.length ? <div className="grid sm:grid-cols-2 gap-1">{gifts.map(it => (
+                      <button key={it.uid} onClick={() => act(d => giveGift(d, c.id, it.uid))} className="text-left text-xs rounded border border-stone-700 hover:border-ember px-2 py-1 flex justify-between gap-2">
+                        <span className={RARITY_COLORS[it.rarity]}>{it.name}</span>{(GIFT_LIKES[c.id] || []).includes(it.slot) && <span title={T('Lo adora')}>💛</span>}
+                      </button>))}</div> : <p className="text-xs text-mist">{T('Non hai oggetti da donare (quelli equipaggiati o bloccati non si possono dare).')}</p>}
+                  </div>
+                )}
               </div>
             );
           })}

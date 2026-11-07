@@ -91,7 +91,7 @@ export function companionStats(s: GameState, id: string) {
   const def = COMPANIONS.find(c => c.id === id)!;
   const c = s.companions.find(c => c.id === id)!;
   const L = c.level - 1;
-  const legacy = 1 + s.cycle.memorieTotal * 0.015;
+  const legacy = (1 + s.cycle.memorieTotal * 0.015) * (s.flags.includes('gift3_' + id) ? 1.1 : 1);
   return {
     maxHp: Math.round((def.base.maxHp + L * 9) * legacy),
     atk: Math.round((def.base.atk + L * 1.8) * legacy),

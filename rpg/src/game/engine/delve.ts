@@ -9,6 +9,8 @@ import { addFlag, addRes, chronicle, emptyLoot, hasFlag, lootMult, stat, toast }
 import { addItem, clampHeroHp, companionXp, gainXp, heroStats, makeItem, rollRarity } from './hero';
 import { startCombat, syncPartyBack } from './combat';
 import { applyEffect, checkPromises, checkTrial, randomFragment, pushValley } from './meta';
+import { dailyMods, ensureDailyRun, finishDailyRun, krakEnemyMult, krakLootMult, krakOn, makePuzzle, maybeKrakWakes, tickOmens, villageVoices } from './features';
+import { todayKey } from '../rng';
 
 // ------------------------------------------------------------
 // Ciclo di vita del dungeon: Seme → Fioritura → Decadimento → Eco
@@ -44,13 +46,15 @@ function mirrorEmotion(s: GameState): Emotion {
 // ------------------------------------------------------------
 // Ingresso
 // ------------------------------------------------------------
-export function enterDelve(s: GameState, biome: BiomeId, startFloor = 1) {
+export function enterDelve(s: GameState, biome: BiomeId, startFloor = 1, daily = false) {
   if (s.delve) return;
+  if (daily) { ensureDailyRun(s); if (s.dailyRun.tries >= 3) { toast(s, T('Hai già tentato la Sfida del giorno 3 volte. Torna domani.'), 'bad'); return; } }
   if (!s.fardello) { toast(s, T('Prima devi scegliere il tuo Fardello'), 'bad'); return; }
   if (!biomeUnlocked(s, biome)) { toast(s, T('Conquista prima il dungeon precedente'), 'bad'); return; }
   if (s.res.provviste < 1) { toast(s, T('Serve almeno 1 Provvista per scendere'), 'bad'); return; }
   if (s.hero.hp < heroStats(s).maxHp * 0.15) { toast(s, T('Sei troppo ferito. Riposa al villaggio o bevi una pozione.'), 'bad'); return; }
   s.res.provviste -= 1;
+  s.lostSatchel = null;
   const emotion = mirrorEmotion(s);
   const r = mulberry32(hashStr(`${s.createdAt}-${biome}-${s.biomes[biome].visits}`));
   const pool = Object.entries(DUNGEON_MODIFIERS);
@@ -59,7 +63,8 @@ export function enterDelve(s: GameState, biome: BiomeId, startFloor = 1) {
   if (matching.length) mods.push(pick(matching, r));
   while (mods.length < 2) { const k = pick(pool, r)[0]; if (!mods.includes(k)) mods.push(k); }
   const d: DelveState = { biome, floor: startFloor, startFloor, satchel: emptyLoot(), doors: [], room: null, floorCleared: false, modifiers: mods, emotion, pledged: 0, log: [],
-    snap: { t: Date.now(), coh: s.totals.coherent || 0, inc: s.totals.incoherent || 0, corr: s.corruption, influence: s.influence, factions: { ...s.factions }, open: s.promises.filter(p => p.status === 'open').length, kept: s.promises.filter(p => p.status === 'kept').length, broken: s.promises.filter(p => p.status === 'broken').length } };
+    snap: { t: Date.now(), coh: s.totals.coherent || 0, inc: s.totals.incoherent || 0, corr: s.corruption, influence: s.influence, factions: { ...s.factions }, open: s.promises.filter(p => p.status === 'open').length, kept: s.promises.filter(p => p.status === 'kept').length, broken: s.promises.filter(p => p.status === 'broken').length, bosses: s.totals.bosses || 0, cenere: s.totals.cenereEarned || 0 } };
+  if (daily) { d.daily = true; d.modifiers = dailyMods(); s.dailyRun.tries++; }
   // frammenti attivati per la prossima spedizione
   if (hasFlag(s, 'ghost_next')) { d.ghostAlly = true; s.flags = s.flags.filter(f => f !== 'ghost_next'); }
   if (hasFlag(s, 'voce_next')) { addFlag(s, 'revive_ready'); s.flags = s.flags.filter(f => f !== 'voce_next'); }
@@ -90,9 +95,10 @@ const ROOM_HINTS: Record<RoomType, string[]> = {
   hunter: [T('Catene che tintinnano'), T('Qualcuno ripete le tue promesse'), T('Un cacciatore ti segue')],
   boss: [T('Il cuore del dungeon batte qui'), T('Non c\'è altra strada'), T('La fine di questo strato')],
   merchant: [T('Una lanterna oscillante'), T('Qualcuno contratta col buio'), T('Un\'Ombra del Mercato')],
+  puzzle: [T('Candele che si accendono da sole'), T('Un sigillo incrinato'), T('Simboli che ti fissano')],
 };
-export const ROOM_ICONS: Record<RoomType, string> = { combat: '⚔️', elite: '💀', event: '❓', trap: '🕸️', shrine: '🕯️', treasure: '💰', ghost: '👤', shadow: '🖤', hunter: '🔗', boss: '👑', merchant: '🎭' };
-export const ROOM_NAMES: Record<RoomType, string> = { combat: T('Scontro'), elite: T('Élite'), event: T('Evento'), trap: T('Trappola'), shrine: T('Santuario'), treasure: T('Tesoro'), ghost: T('Eco di Portatore'), shadow: T('Ombra del Fardello'), hunter: T('Cacciatore'), boss: T('Boss'), merchant: T('Mercante Ombra') };
+export const ROOM_ICONS: Record<RoomType, string> = { combat: '⚔️', elite: '💀', event: '❓', trap: '🕸️', shrine: '🕯️', treasure: '💰', ghost: '👤', shadow: '🖤', hunter: '🔗', boss: '👑', merchant: '🎭', puzzle: '🕯️' };
+export const ROOM_NAMES: Record<RoomType, string> = { combat: T('Scontro'), elite: T('Élite'), event: T('Evento'), trap: T('Trappola'), shrine: T('Santuario'), treasure: T('Tesoro'), ghost: T('Eco di Portatore'), shadow: T('Ombra del Fardello'), hunter: T('Cacciatore'), boss: T('Boss'), merchant: T('Mercante Ombra'), puzzle: T('Enigma') };
 
 function bossAt(s: GameState): string | null {
   const d = s.delve!;
@@ -103,14 +109,14 @@ function bossAt(s: GameState): string | null {
 
 export function genDoors(s: GameState): RoomOption[] {
   const d = s.delve!;
-  const r = mulberry32(hashStr(`${s.createdAt}-${d.biome}-${s.biomes[d.biome].visits}-${d.floor}`));
+  const r = mulberry32(hashStr(d.daily ? `krak-daily-${todayKey()}-${d.floor}` : `${s.createdAt}-${d.biome}-${s.biomes[d.biome].visits}-${d.floor}`));
   if (bossAt(s)) return [{ type: 'boss', seed: r() * 1e9, hint: pick(ROOM_HINTS.boss, r) }];
   const broken = s.promises.filter(p => p.status === 'broken').length;
   const shadowReady = s.influence >= 40 && !hasFlag(s, `shadow_floor_${d.floor}`);
   const mod = d.modifiers;
   const w: [RoomType, number][] = [
     ['combat', 40], ['event', 22], ['trap', mod.includes('claustrofobia') ? 14 : 7], ['shrine', mod.includes('reliquiario') ? 14 : 7],
-    ['treasure', mod.includes('reliquiario') ? 10 : 5], ['elite', d.floor >= 3 ? 9 : 0], ['ghost', mod.includes('eco_vuota') ? 12 : 6],
+    ['treasure', mod.includes('reliquiario') ? 10 : 5], ['elite', d.floor >= 3 ? (krakOn(s, 6) ? 20 : 9) : 0], ['puzzle', d.floor >= 2 ? 8 : 0], ['ghost', mod.includes('eco_vuota') ? 12 : 6],
     ['merchant', 4], ['shadow', shadowReady ? 7 : 0], ['hunter', broken ? 5 + broken * 3 : 0],
   ];
   const n = mod.includes('claustrofobia') ? 2 : 3;
@@ -121,6 +127,8 @@ export function genDoors(s: GameState): RoomOption[] {
     if (out.some(o => o.type === t) && t !== 'combat') continue;
     out.push({ type: t, seed: Math.floor(r() * 1e9), hint: pick(ROOM_HINTS[t], r) });
   }
+  // la prima discesa di sempre: il primo scontro è subito dietro una porta
+  if (!(s.totals.delves || 0) && d.floor === 1 && !out.some(o => o.type === 'combat')) out[0] = { type: 'combat', seed: Math.floor(r() * 1e9), hint: pick(ROOM_HINTS.combat, r) };
   // Una missione secondaria attende qui: garantisce una porta-evento con un indizio.
   const questEv = EVENTS.find(e => e.priority && e.where !== 'village' && (e.where === 'any' || e.where.includes(d.biome)) && (!e.minFloor || d.floor >= e.minFloor) && !hasFlag(s, `ev_${e.id}`) && (!e.cond || e.cond(s)));
   if (questEv && !out.some(o => o.type === 'event')) out[out.length - 1] = { type: 'event', seed: Math.floor(r() * 1e9), hint: T('📜 Un indizio della tua missione') };
@@ -133,7 +141,7 @@ export function genDoors(s: GameState): RoomOption[] {
 function biomeScale(s: GameState) {
   const d = s.delve!;
   const B = BIOMES[d.biome];
-  return B.scale * (1 + biomeLifecycle(s, d.biome).enemy);
+  return B.scale * (1 + biomeLifecycle(s, d.biome).enemy) * krakEnemyMult(s);
 }
 
 function encounter(s: GameState, r: () => number): string[] {
@@ -173,7 +181,7 @@ export function chooseDoor(s: GameState, idx: number) {
       const id = bossAt(s)!;
       const ids = [id];
       if (d.floor >= 10 && d.biome !== 'cimitero' && d.floor !== B.depth) ids.push(pick(B.normal, r));
-      startCombat(s, ids, { floor: d.floor, scale, title: title(`Boss: ${ENEMIES[id].name}`), kind: 'boss' });
+      startCombat(s, ids, { floor: d.floor, scale: scale * (krakOn(s, 9) ? 1.25 : 1), title: title(`Boss: ${ENEMIES[id].name}`), kind: 'boss' });
       break;
     }
     case 'shadow': {
@@ -212,6 +220,43 @@ export function chooseDoor(s: GameState, idx: number) {
       break;
     }
     case 'ghost': openGhost(s, r); break;
+    case 'puzzle':
+      room.puzzle = makePuzzle(d.floor, r);
+      room.text = room.puzzle.mode === 'candele'
+        ? T('Quattro candele nere. Si accendono una alla volta, in un ordine che sembra una preghiera. Ripetilo.')
+        : T('Un sigillo di Krak è incrinato. I simboli pulsano in sequenza: ricomponili nello stesso ordine prima che si spezzi.');
+      break;
+  }
+}
+
+/** Enigma: il giocatore ripete la sequenza mostrata. */
+export function puzzlePress(s: GameState, sym: number) {
+  const d = s.delve;
+  const room = d?.room;
+  const P = room?.puzzle;
+  if (!d || !room || !P || room.resolved) return;
+  P.input.push(sym);
+  const i = P.input.length - 1;
+  if (P.seq[i] !== sym) {
+    const st = heroStats(s);
+    const dmg = Math.round(st.maxHp * 0.15);
+    s.hero.hp = Math.max(1, s.hero.hp - dmg);
+    s.corruption = Math.min(100, s.corruption + 4);
+    room.text = P.mode === 'candele' ? T('Le candele si spengono tutte insieme. Nel buio, qualcosa ti morde. -{dmg} salute.', { dmg }) : T('Il sigillo si spezza tra le tue dita. Una scheggia di Krak ti entra nel sangue. -{dmg} salute.', { dmg });
+    room.resolved = true;
+    clearFloor(s);
+    return;
+  }
+  if (P.input.length >= P.seq.length) {
+    const n = P.seq.length;
+    d.satchel.cenere += Math.round((30 + d.floor * 12) * n / 3 * lootMult(s));
+    if (n >= 5 || Math.random() < 0.25) d.satchel.reliquie += 1;
+    s.corruption = Math.max(0, s.corruption - 5);
+    gainXp(s, 15 + d.floor * 3);
+    if (Math.random() < 0.35) d.satchel.items.push(makeItem(ilvl(s) + 1, rollRarity(1)));
+    room.text = P.mode === 'candele' ? T('Le candele ardono insieme, ferme. Sotto l’altare trovi ciò che qualcuno ha nascosto. La corruzione arretra.') : T('Il sigillo si richiude con un sospiro. Krak, per un attimo, tace. Tra le crepe brilla qualcosa.');
+    room.resolved = true;
+    clearFloor(s);
   }
 }
 
@@ -237,7 +282,7 @@ function openTreasure(s: GameState, r: () => number) {
     startCombat(s, [pick(BIOMES[d.biome].normal, r), pick(BIOMES[d.biome].normal, r)], { floor: d.floor, scale: biomeScale(s), title: T('Piano {floor} · Mimic', { floor: d.floor }), kind: 'delve' });
     return;
   }
-  const m = lootMult(s) * (1 + biomeLifecycle(s, d.biome).loot);
+  const m = lootMult(s) * krakLootMult(s) * (1 + biomeLifecycle(s, d.biome).loot);
   const c = Math.round((25 + d.floor * 8) * BIOMES[d.biome].scale * m);
   d.satchel.cenere += c;
   d.satchel.ferro += Math.round((4 + d.floor) * m);
@@ -283,7 +328,7 @@ export function resolveTrap(s: GameState, how: 'disarm' | 'endure' | 'blood') {
   const d = s.delve;
   if (!d?.room || d.room.type !== 'trap' || d.room.resolved) return;
   const st = heroStats(s);
-  const half = s.hero.talents.includes('co3') ? 0.5 : 1;
+  const half = (s.hero.talents.includes('co3') ? 0.5 : 1) * (krakOn(s, 5) ? 1.5 : 1);
   if (how === 'disarm') {
     const chance = Math.min(0.9, 0.35 + st.dodge / 100 + st.speed / 50);
     if (Math.random() < chance) { d.room.text = T('Disinneschi il meccanismo. Tra gli ingranaggi, un po\' di ferro.'); d.satchel.ferro += 8 + d.floor; gainXp(s, 10 + d.floor * 2); }
@@ -312,7 +357,7 @@ export function useShrine(s: GameState, how: 'rest' | 'pray' | 'purify' | 'leave
       s.res.cenere -= 30;
     }
     if (d.satchel.provviste >= 1) d.satchel.provviste--; else s.res.provviste--;
-    s.hero.hp = Math.min(st.maxHp, s.hero.hp + Math.round(st.maxHp * 0.45));
+    s.hero.hp = Math.min(st.maxHp, s.hero.hp + Math.round(st.maxHp * (krakOn(s, 2) ? 0.3 : 0.45)));
     for (const c of s.companions) if (c.inParty && c.hp > 0) c.hp = Math.min(1, c.hp + 0.45);
     d.room.text = T('Consumi una provvista e riposi. Le ferite si chiudono.');
     for (const c of s.companions) if (c.inParty) { c.weight = Math.max(0, (c.weight || 0) - 30); if (c.weight < 25) c.mood = null; }
@@ -557,6 +602,7 @@ export function descend(s: GameState, pledge = false) {
     toast(s, T('⛓️ Pegno: -{pledge} salute massima', { pledge: cost.pledge }), 'bad');
   } else return;
   if (d.modifiers.includes('decimo')) s.res.cenere = Math.max(0, s.res.cenere - 5);
+  if (krakOn(s, 8) && Math.random() < 0.2 && s.res.provviste >= 1) { s.res.provviste--; toast(s, T('🍞 Una provvista è marcita nella bisaccia.'), 'bad'); }
   d.floor++;
   d.room = null;
   d.floorCleared = false;
@@ -594,8 +640,12 @@ function fleeDelve(s: GameState) {
 function deathInDelve(s: GameState) {
   const d = s.delve!;
   const L = d.satchel;
-  addRes(s, { cenere: Math.round(L.cenere / 4), legno: Math.round(L.legno / 4), pietra: Math.round(L.pietra / 4), ferro: Math.round(L.ferro / 4) });
-  if (L.items.length) addItem(s, L.items.sort((a, b) => b.rarity - a.rarity)[0]);
+  const keep = krakOn(s, 7) ? 0 : 0.25;
+  addRes(s, { cenere: Math.round(L.cenere * keep), legno: Math.round(L.legno * keep), pietra: Math.round(L.pietra * keep), ferro: Math.round(L.ferro * keep) });
+  const items = [...L.items].sort((a, b) => b.rarity - a.rarity);
+  if (items.length && !krakOn(s, 7)) addItem(s, items.shift()!);
+  const lost = { cenere: Math.round(L.cenere * (1 - keep)), legno: Math.round(L.legno * (1 - keep)), pietra: Math.round(L.pietra * (1 - keep)), ferro: Math.round(L.ferro * (1 - keep)), items };
+  s.lostSatchel = lost.cenere + lost.legno + lost.pietra + lost.ferro + lost.items.length > 0 ? lost : null;
   s.hero.deaths++;
   s.hero.hp = Math.round(heroStats(s).maxHp * 0.3);
   s.valley.blight = Math.min(100, s.valley.blight + 2);
@@ -619,7 +669,11 @@ function endDelve(s: GameState, success: boolean) {
   pushValley(s, success ? { prosperity: 1 } : { blight: 1 });
   for (const p of s.promises) if (p.status === 'open') p.deadlineDelves--;
   checkPromises(s);
+  const extra = [...tickOmens(s, d, success), ...(d.daily ? finishDailyRun(s, d) : [])];
   s.lastReport = buildReport(s, d, success);
+  if (s.lastReport) { s.lastReport.lines.splice(1, 0, ...extra); s.lastReport.voices = villageVoices(s, d, success); }
+  if (success) s.lostSatchel = null;
+  maybeKrakWakes(s);
   s.tab = 'villaggio';
   const ev = EVENTS.filter(e => e.where === 'village' && (!e.once || !hasFlag(s, `ev_${e.id}`)) && (!e.cond || e.cond(s)));
   if (ev.length && Math.random() < 0.85) {

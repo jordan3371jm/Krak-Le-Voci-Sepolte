@@ -1,4 +1,5 @@
 import { t as T } from '../i18n';
+import { glitchLabel } from './KrakWake';
 import { useEffect, useRef, useState } from 'react';
 import type { GameState, ResKey, TabId } from '../game/types';
 import { RES_INFO, VALLEY_EFFECTS } from '../game/data/world';
@@ -135,7 +136,7 @@ export function Nav({ state: s, act }: { state: GameState; act: Act }) {
             <button key={t.id} onClick={() => act(d => { d.tab = t.id; d.newTabs = d.newTabs.filter(x => x !== t.id); if (t.id === 'bussola' && !d.flags.includes('seen_bussola')) d.flags.push('seen_bussola'); })}
               className={`relative shrink-0 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm flex items-center gap-1.5 border-b-2 transition ${s.tab === t.id ? 'border-amber-500 text-bone' : 'border-transparent text-mist hover:text-bone'}`}>
               <span className={isNew ? 'tab-new' : ''}><Icon name={t.icon} size={30} /></span>
-              <span className="hidden sm:inline">{t.name}</span>
+              <span className={`hidden sm:inline ${s.glitchUntil > now ? 'text-red-400 italic' : ''}`}>{glitchLabel(s, tabs.indexOf(t), t.name)}</span>
               {isNew && <span title={T('nuovo')} className="absolute top-1 left-1.5 w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,.9)]" />}
               {!!badge[t.id] && <span className="absolute top-0.5 right-0.5 text-[9px] bg-ember text-white rounded-full px-1 leading-4">{badge[t.id]}</span>}
             </button>

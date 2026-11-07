@@ -51,6 +51,11 @@ export function migrate(raw: any): GameState | null {
   out.lastReport ??= null;
   out.talk ??= null;
   out.quests ??= {};
+  out.krak ??= { level: 0, max: out.cycle?.n > 1 ? 1 : 0 };
+  out.omens ??= [];
+  out.dailyRun ??= { day: '', best: 0, tries: 0, allBest: 0 };
+  out.glitchUntil ??= 0;
+  out.lostSatchel ??= null;
   return out as GameState;
 }
 

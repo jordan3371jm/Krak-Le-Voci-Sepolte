@@ -511,6 +511,8 @@ export function startNewCycle(s: GameState, cardId: string, heirloomUid: string 
   n.legacies = [legacy, ...s.legacies].slice(0, 20);
   n.settings = s.settings;
   n.market.history = s.market.history.slice(0, 30);
+  n.krak = { level: s.krak?.level || 0, max: Math.min(10, Math.max(s.krak?.max || 0, (s.krak?.level || 0) + 1, 1)) };
+  n.dailyRun = s.dailyRun;
   n.cycle = { n: s.cycle.n + 1, memorie: s.cycle.memorie + gain, memorieTotal: s.cycle.memorieTotal + gain, sanctuary: s.cycle.sanctuary, card: cardId, cardOffer: [], heirloom: heirloom ? { ...heirloom, locked: true } : null };
   n.valley.rebirthUntil = Date.now() + 3600_000;
   n.valley.prosperity = 45; n.valley.blight = 15;

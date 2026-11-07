@@ -19,6 +19,10 @@ import { isUnlocked } from '../game/engine/onboarding';
 import { TalkersPanel, Face } from './Talk';
 import { BG } from './art';
 import { Particles } from './Atmosphere';
+import { OmensPanel } from './Delve';
+import { TALKERS } from '../game/data/dialogues';
+import { recoverSatchel } from '../game/engine/features';
+import { adMode, showRewarded } from '../game/platform';
 
 // ------------------------------------------------------------
 // La Notte del Portale: la prima scelta morale (crea il Fardello)
@@ -193,11 +197,31 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
             <div className="flex-1 min-w-0">
               <h3 className="text-base text-amber-100">{s.lastReport.title}</h3>
               <ul className="mt-1 space-y-0.5 text-xs text-bone/85">{s.lastReport.lines.map((l, i) => <li key={i}>{l}</li>)}</ul>
+              {!!s.lastReport.voices?.length && (
+                <div className="mt-3 space-y-2 border-t border-amber-900/40 pt-2">
+                  <div className="text-[10px] uppercase tracking-widest text-mist">{T('Hondovalle ne parla')}</div>
+                  {s.lastReport.voices.map(v => { const tk = TALKERS.find(x => x.id === v.id); return tk ? (
+                    <div key={v.id} className="flex gap-2 items-start animate-rise">
+                      <Face id={tk.id} emoji={tk.icon} tone={tk.tone} size={40} />
+                      <div className="text-xs"><b className="text-amber-100">{tk.name}</b><p className="italic text-bone/85">«{v.text}»</p></div>
+                    </div>) : null; })}
+                </div>
+              )}
+              {s.lostSatchel && (
+                <div className="mt-3 rounded-lg border border-dissonance/50 bg-red-950/30 p-2 flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-bone/85 flex-1">{T('La tua bisaccia è rimasta laggiù: {c} cenere e {n} oggetti.', { c: fmt(s.lostSatchel.cenere), n: s.lostSatchel.items.length })}</span>
+                  {adMode() === 'none'
+                    ? <Btn small kind="ember" disabled={s.res.provviste < 2} onClick={() => act(d => { d.res.provviste -= 2; recoverSatchel(d); })}>{T('🎒 Torna a prenderla (🍞2)')}</Btn>
+                    : <Btn small kind="ember" onClick={() => showRewarded('recover_satchel').then(ok => { if (ok) act(d => recoverSatchel(d)); })}>{T('📺 Recuperala (pubblicità)')}</Btn>}
+                </div>
+              )}
             </div>
             <Btn small kind="ghost" onClick={() => act(d => { d.lastReport = null; })}>✕</Btn>
           </div>
         </section>
       )}
+
+      <OmensPanel state={s} />
 
       {/* Scena del villaggio */}
       <section className="panel rounded-xl p-4 relative overflow-hidden min-h-[150px]">

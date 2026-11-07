@@ -134,7 +134,7 @@ export interface Loot {
   fragments: string[];
 }
 
-export type RoomType = 'combat' | 'elite' | 'event' | 'trap' | 'shrine' | 'treasure' | 'ghost' | 'shadow' | 'hunter' | 'boss' | 'merchant';
+export type RoomType = 'combat' | 'elite' | 'event' | 'trap' | 'shrine' | 'treasure' | 'ghost' | 'shadow' | 'hunter' | 'boss' | 'merchant' | 'puzzle';
 
 export interface RoomOption { type: RoomType; seed: number; hint: string }
 
@@ -147,6 +147,7 @@ export interface ActiveRoom {
   ghostKind?: 'ally' | 'enemy' | 'merchant' | 'corpse';
   bossChoice?: Item[];
   merchantItems?: { item: Item; price: number }[];
+  puzzle?: { seq: number[]; input: number[]; mode: 'candele' | 'sigillo' };
 }
 
 export interface DelveState {
@@ -161,7 +162,8 @@ export interface DelveState {
   emotion: Emotion;
   pledged: number;
   ghostAlly?: boolean;
-  snap?: { t: number; coh: number; inc: number; corr: number; influence: number; factions: Record<string, number>; open: number; kept: number; broken: number };
+  daily?: boolean;
+  snap?: { t: number; coh: number; inc: number; corr: number; influence: number; factions: Record<string, number>; open: number; kept: number; broken: number; bosses?: number; cenere?: number };
   log: string[];
 }
 
@@ -242,6 +244,7 @@ export interface Modal {
   title?: string;
   text?: string;
   lines?: string[];
+  double?: Partial<Resources>;
 }
 
 export interface Toast { id: number; text: string; kind: 'info' | 'good' | 'bad' | 'fate' }
@@ -334,7 +337,13 @@ export interface GameState {
   codexQueue: string[];
   tutorial: number;
   tipsSeen: string[];
-  lastReport: { title: string; good: boolean; lines: string[] } | null;
+  lastReport: { title: string; good: boolean; lines: string[]; voices?: { id: string; text: string }[] } | null;
+
+  krak: { level: number; max: number };
+  omens: { id: string; left: number; biome: BiomeId; floor: number }[];
+  dailyRun: { day: string; best: number; tries: number; allBest: number };
+  glitchUntil: number;
+  lostSatchel: { cenere: number; legno: number; pietra: number; ferro: number; items: Item[] } | null;
 
   talk: { npc: string; node: string; log: { who: string; text: string }[]; roll: { skill: string; die: number; bonus: number; dc: number; ok: boolean } | null } | null;
   quests: Record<string, { stage: number; done?: boolean; outcome?: string }>;

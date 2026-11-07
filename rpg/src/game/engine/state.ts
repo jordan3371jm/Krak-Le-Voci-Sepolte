@@ -50,6 +50,7 @@ export function newGame(): GameState {
     settings: { music: true, musicVolume: 0.55, sfx: true, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
     fullscreen: false,
     unlocked: [], newTabs: [], codexQueue: [], tutorial: 0, tipsSeen: [], lastReport: null,
+    krak: { level: 0, max: 0 }, omens: [], dailyRun: { day: '', best: 0, tries: 0, allBest: 0 }, glitchUntil: 0, lostSatchel: null,
     talk: null, quests: {},
     modal: null, toasts: [],
   };

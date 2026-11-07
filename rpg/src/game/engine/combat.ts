@@ -195,6 +195,7 @@ function bark(id: string, k: 'broken' | 'virtue') { const b = BARKS[id]?.[k] || 
 export function addWeight(s: GameState, c: CombatState | null, compId: string, v: number) {
   const comp = s.companions.find(x => x.id === compId);
   if (!comp || comp.left) return;
+  if (v > 0) v *= (s.flags.includes('gift2_' + compId) ? 0.75 : 1) * ((s.krak?.level || 0) >= 3 ? 1.5 : 1);
   comp.weight = Math.max(0, Math.min(100, (comp.weight || 0) + v));
   if (comp.weight >= 100 && !comp.mood && c) {
     const p = c.party.find(x => x.companionId === compId);

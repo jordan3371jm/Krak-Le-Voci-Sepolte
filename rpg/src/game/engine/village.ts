@@ -202,15 +202,17 @@ export function catchUp(s: GameState) {
   const before = { ...s.res };
   tick(s, counted, now, true);
   const lines: string[] = [];
+  const gains: Partial<Record<ResKey, number>> = {};
   for (const k of Object.keys(before) as ResKey[]) {
     const d = s.res[k] - before[k];
-    if (d >= 1) lines.push(`+${Math.floor(d)} ${RES_INFO[k].name}`);
+    if (d >= 1) { lines.push(`+${Math.floor(d)} ${RES_INFO[k].name}`); gains[k] = Math.floor(d); }
   }
   const hours = away / 3600_000;
   generateDreams(s, hours);
   const ready = s.companions.filter(c => c.mission && c.mission.end <= now).length;
   s.modal = {
     kind: 'welcome',
+    double: away >= 10 * 60_000 && Object.keys(gains).length ? gains : undefined,
     title: T('Bentornato a Hondovalle'),
     text: T('Sei stato via {away}{h}. La valle ha continuato a vivere.', { away: fmtAway(away), h: away > counted ? T(' (contano fino a {capH}h)', { capH: capH }) : '' }),
     lines: [
