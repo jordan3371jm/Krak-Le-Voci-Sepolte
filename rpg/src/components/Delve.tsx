@@ -1,5 +1,5 @@
 import { t as T } from '../i18n';
-import { BG } from './art';
+import { BG, artOr } from './art';
 import { useEffect, useRef, useState } from 'react';
 import type { BiomeId, GameState } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -26,13 +26,13 @@ import { hasLeaderboard } from '../game/platform';
 export function OmensPanel({ state: s }: { state: GameState }) {
   if (!s.omens.length) return null;
   return (
-    <Panel title={T('Presagi')} icon="👁️">
+    <Panel title={T('Presagi')} icon={artOr('presagi', '👁️')}>
       <div className="space-y-2">
         {s.omens.map(o => {
           const def = OMENS.find(x => x.id === o.id)!;
           return (
             <div key={o.id} className={`flex gap-3 items-start rounded-lg border p-2 ${o.left <= 1 ? 'border-dissonance/70 bg-red-950/30 animate-breathe' : 'border-fate/40 bg-black/40'}`}>
-              <div className="text-2xl">{def.icon}</div>
+              {artOr('omen_' + o.id, '') ? <Icon name={'omen_' + o.id} size={52} /> : <div className="text-2xl">{def.icon}</div>}
               <div className="flex-1 text-xs text-bone/85">{omenText(s, o)}</div>
               <div className="text-center shrink-0"><div className={`text-2xl font-black ${o.left <= 1 ? 'text-dissonance' : 'text-ember'}`}>{o.left}</div><div className="text-[9px] uppercase text-mist">{T('discese')}</div></div>
             </div>
@@ -88,7 +88,7 @@ function KrakPanel({ state: s, act }: { state: GameState; act: Act }) {
   if (!s.krak || s.krak.max < 1) return null;
   const L = s.krak.level;
   return (
-    <Panel title={T('Livelli di Krak')} icon="💀" right={<span className="text-xs text-mist">{T('Sbloccati: {n}/10', { n: s.krak.max })}</span>}>
+    <Panel title={T('Livelli di Krak')} icon={artOr('krak_livelli', '💀')} right={<span className="text-xs text-mist">{T('Sbloccati: {n}/10', { n: s.krak.max })}</span>}>
       <p className="text-xs text-bone/70 mb-2">{T('Krak ricorda che sei tornato. Ogni livello aggiunge una regola crudele e rende il bottino più ricco. Superare un Ciclo al livello più alto ne sblocca un altro.')}</p>
       <div className="flex flex-wrap gap-1 mb-2">
         {Array.from({ length: s.krak.max + 1 }, (_, i) => (
@@ -108,7 +108,7 @@ function DailyPanel({ state: s, act }: { state: GameState; act: Act }) {
   const run = s.dailyRun.day === today ? s.dailyRun : { best: 0, tries: 0, allBest: s.dailyRun.allBest || 0 };
   const mods = dailyMods(today);
   return (
-    <Panel title={T('Sfida del giorno')} icon="🗓️" right={<span className="text-xs text-mist">{T('Tentativi: {n}/3', { n: run.tries })}</span>}>
+    <Panel title={T('Sfida del giorno')} icon={artOr('sfida', '🗓️')} right={<span className="text-xs text-mist">{T('Tentativi: {n}/3', { n: run.tries })}</span>}>
       <p className="text-xs text-bone/70 mb-2">{T('Oggi il Cimitero dei Traditi è uguale per tutti i portatori: stesse porte, stessi nemici, stesse maledizioni. Scendi più in fondo che puoi.')}</p>
       <div className="flex flex-wrap gap-1 mb-2">{mods.map(m => <Tag key={m} className="border-fate/50 text-purple-200"><span title={DUNGEON_MODIFIERS[m].desc}>{DUNGEON_MODIFIERS[m].name}</span></Tag>)}</div>
       <div className="flex flex-wrap items-center gap-3">
@@ -228,7 +228,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
             <div className={`grid gap-3 ${d.doors.length === 1 ? '' : d.doors.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
               {d.doors.map((o, i) => (
                 <button key={i} onClick={() => { sfx.door(); act(x => chooseDoor(x, i)); }} className="rounded-xl border border-stone-700 hover:border-ember bg-black/50 p-4 text-center transition hover:-translate-y-0.5">
-                  <div className="flex justify-center mb-2"><Icon name={lie && o.type !== 'boss' ? 'event' : o.type === 'puzzle' ? '🕯️' : o.type} size={64} /></div>
+                  <div className="flex justify-center mb-2"><Icon name={lie && o.type !== 'boss' ? 'event' : o.type === 'puzzle' ? artOr('puzzle', '🕯️') : o.type} size={64} /></div>
                   <div className="text-sm text-bone">{lie && o.type !== 'boss' ? '???' : ROOM_NAMES[o.type]}</div>
                   <div className="text-[11px] text-mist italic mt-1">«{o.hint}»</div>
                 </button>
@@ -240,7 +240,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
 
         {/* Stanza */}
         {room && (
-          <Panel title={ev && !postBoss ? ev.title : ROOM_NAMES[room.type]} icon={ev && !postBoss ? ev.icon : room.type === 'puzzle' ? '🕯️' : room.type}>
+          <Panel title={ev && !postBoss ? ev.title : ROOM_NAMES[room.type]} icon={ev && !postBoss ? ev.icon : room.type === 'puzzle' ? artOr('puzzle', '🕯️') : room.type}>
             {room.text && <p className="text-sm text-bone/85 mb-3 whitespace-pre-line">{room.text}</p>}
             {room.type === 'event' && ev && !room.resolved && (
               <>

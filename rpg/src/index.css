@@ -159,3 +159,38 @@ button { font-family: inherit; }
 }
 .krak-glitch { animation: krak-glitch 3.2s infinite steps(1); }
 .krak-glitch::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255,0,0,.04) 0 2px, transparent 2px 4px); }
+
+/* ===================== La Notte del Portale ===================== */
+.portal-ring { position: absolute; top: -18vmin; left: 50%; width: 92vmin; height: 92vmin; transform: translateX(-50%); border-radius: 50%; pointer-events: none; z-index: 1;
+  background: conic-gradient(from 0deg, rgba(168,85,247,.0), rgba(168,85,247,.55), rgba(251,146,60,.35), rgba(220,38,38,.5), rgba(168,85,247,.0));
+  -webkit-mask: radial-gradient(circle, transparent 46%, #000 48%, #000 56%, transparent 66%); mask: radial-gradient(circle, transparent 46%, #000 48%, #000 56%, transparent 66%);
+  filter: blur(6px); opacity: .55; animation: ringspin 28s linear infinite; mix-blend-mode: screen; }
+@keyframes ringspin { to { transform: translateX(-50%) rotate(360deg); } }
+.voice-wash { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 30% 40%, rgba(var(--vc), .22), transparent 60%); transition: background .6s; }
+.voice-card { position: relative; border-radius: 1.25rem; padding: 1.4rem 1rem 1.1rem; border: 1px solid rgba(var(--vc), .35); overflow: hidden; cursor: pointer;
+  background: linear-gradient(180deg, rgba(var(--vc), .10), rgba(8,6,10,.88) 55%); box-shadow: 0 10px 40px rgba(0,0,0,.55), inset 0 0 40px rgba(var(--vc), .06);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, opacity .35s, filter .35s, border-color .35s; }
+.voice-card:hover, .voice-card:focus-visible { transform: translateY(-6px) scale(1.02); border-color: rgba(var(--vc), .85); box-shadow: 0 18px 60px rgba(var(--vc), .28), inset 0 0 60px rgba(var(--vc), .12); outline: none; }
+@media (hover: hover) { .voice-grid:hover .voice-card:not(:hover) { opacity: .55; filter: grayscale(.5) brightness(.8); } }
+.voice-cta { color: rgb(var(--vc)); letter-spacing: .04em; opacity: .85; }
+.voice-card:hover .voice-cta { opacity: 1; text-shadow: 0 0 12px rgba(var(--vc), .7); }
+.voice-halo { position: absolute; inset: -18px; border-radius: 50%; background: radial-gradient(circle, rgba(var(--vc), .45), transparent 65%); filter: blur(6px); animation: halo 3.6s ease-in-out infinite; }
+@keyframes halo { 0%, 100% { opacity: .55; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.06); } }
+.voice-panel { border: 1px solid rgba(var(--vc), .4); background: linear-gradient(135deg, rgba(var(--vc), .10), rgba(8,6,10,.92) 45%); box-shadow: 0 20px 70px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.02) inset; backdrop-filter: blur(3px); }
+.choice-commit { border-color: rgba(var(--vc), .75); color: #fde68a; background: linear-gradient(90deg, rgba(var(--vc), .16), transparent); }
+.choice-commit:hover { background: linear-gradient(90deg, rgba(var(--vc), .3), rgba(var(--vc), .05)); box-shadow: 0 0 24px rgba(var(--vc), .25); }
+.fardello-reveal { width: fit-content; border-radius: 50%; animation: reveal 1.4s cubic-bezier(.2,.8,.2,1) both, fglow 3.2s ease-in-out 1.4s infinite; }
+@keyframes reveal { 0% { opacity: 0; transform: scale(.6) rotate(-12deg); filter: blur(10px) brightness(2); } 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes fglow { 0%, 100% { box-shadow: 0 0 30px 4px rgba(var(--vc), .35); } 50% { box-shadow: 0 0 70px 14px rgba(var(--vc), .6); } }
+.seal-flash { position: fixed; inset: 0; z-index: 90; pointer-events: none; background: radial-gradient(circle, #fff 0%, rgba(var(--vc), .9) 35%, #000 80%); animation: sealflash 1.4s ease-in forwards; }
+@keyframes sealflash { 0% { opacity: 0; } 35% { opacity: .95; } 100% { opacity: 1; background: #000; } }
+.seal-shake { animation: shake .5s linear 2; }
+@media (prefers-reduced-motion: reduce) { .portal-ring, .voice-halo, .fardello-reveal { animation: none; } }
+
+/* Scelta della classe */
+.class-card { position: relative; border-radius: 1rem; border: 1px solid rgba(var(--cc), .3); background: linear-gradient(180deg, rgba(var(--cc), .10), rgba(8,6,10,.9) 60%); transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s, border-color .3s, opacity .3s, filter .3s; }
+.class-card:hover { transform: translateY(-4px); border-color: rgba(var(--cc), .7); }
+.class-card.sel { border-color: rgb(var(--cc)); box-shadow: 0 0 0 1px rgba(var(--cc), .6), 0 18px 60px rgba(var(--cc), .35), inset 0 0 50px rgba(var(--cc), .12); transform: translateY(-6px) scale(1.02); }
+.class-card:not(.sel) { opacity: .78; filter: saturate(.75); }
+.class-card .halo { position: absolute; left: 50%; top: 18px; width: 150px; height: 150px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(circle, rgba(var(--cc), .5), transparent 65%); filter: blur(8px); opacity: 0; transition: opacity .4s; }
+.class-card.sel .halo { opacity: 1; animation: halo 3.6s ease-in-out infinite; }

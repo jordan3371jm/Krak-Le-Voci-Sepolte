@@ -16,7 +16,7 @@ import { heartbeat, sfx } from '../game/audio';
 import { Bar, Btn, Cost, Panel, Tag } from './ui';
 import { Icon, Sigil } from './icons';
 import { isUnlocked } from '../game/engine/onboarding';
-import { TalkersPanel, Face } from './Talk';
+import { TalkersPanel, Face, Typewriter } from './Talk';
 import { BG } from './art';
 import { Particles } from './Atmosphere';
 import { OmensPanel } from './Delve';
@@ -59,63 +59,116 @@ function portalTree(): Record<string, PNode> {
   };
 }
 
+const VOICE_UI = [
+  { rgb: '251,146,60', tag: T('«Aiutami a chiuderlo!»'), place: T('Vicino al sigillo') },
+  { rgb: '220,38,38', tag: T('«Il Culto può salvare il bambino.»'), place: T('Tra il fumo') },
+  { rgb: '167,139,250', tag: T('«Resta indietro, civile.»'), place: T('Davanti ai soldati') },
+];
+
 export function PortalScreen({ act }: { act: Act }) {
   const [node, setNode] = useState('start');
   const [seen, setSeen] = useState<string[]>([]);
+  const [sealing, setSealing] = useState(false);
   useEffect(() => { heartbeat(true); return () => heartbeat(false); }, []);
   const tree = portalTree();
   const commit = node.startsWith('c') ? +node.slice(1) : null;
   const n = commit === null ? tree[node] : null;
-  const who = n?.who !== undefined ? NIGHT[n.who] : commit !== null ? NIGHT[commit] : null;
+  const wi = n?.who !== undefined ? n.who : commit;
+  const who = wi !== null && wi !== undefined ? NIGHT[wi] : null;
+  const ui = wi !== null && wi !== undefined ? VOICE_UI[wi] : null;
   const go = (g: string) => { sfx.click(); setSeen(x => x.includes(node) ? x : [...x, node]); setNode(g); };
+  const bg = BG.portale || BG.copertina;
+  const seal = (N: typeof NIGHT[number], F: typeof FARDELLI[FardelloId]) => {
+    if (sealing) return;
+    setSealing(true); sfx.chain(); sfx.door();
+    window.setTimeout(() => act(d => {
+      chooseFardello(d, N.f);
+      d.modal = { kind: 'info', title: F.name, text: T('{description}\n\nLe azioni coerenti con il tuo Fardello caricano la Risonanza; quelle contrarie accumulano Dissonanza. Il mondo ricorderà entrambe.\n\nOra ricostruisci Hondovalle. La Guida in alto ti dirà cosa puoi fare, mai cosa scegliere.', { description: F.description }) };
+    }), 1400);
+  };
   return (
-    <div className="min-h-screen portal-bg flex items-center justify-center px-4 py-10 relative">
-      <Particles mode="portal" tint="190,110,255" />
-      {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none kenburns" style={{ backgroundImage: `linear-gradient(rgba(5,4,6,.6), rgba(5,4,6,.95)), url(${BG.copertina})` }} />}
-      <div className="max-w-2xl w-full relative">
-        <div className="flex flex-col items-center text-center mb-6">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-amber-300/80">{T('Prologo')}</p>
-          <h1 className="text-3xl sm:text-4xl text-gradient-ember title-beat">{T('La Notte del Portale')}</h1>
-        </div>
-        <div key={node} className="panel rounded-2xl p-5 sm:p-6 animate-rise">
-          <div className="flex flex-col items-center text-center gap-2 mb-4">
-            {who ? <Face id={who.npc.toLowerCase()} emoji={who.icon} size={120} tone={who.f === 'silenzio' ? 'violet' : 'blood'} />
-              : <div className="unlock-glow"><Icon name="portale" size={110} /></div>}
-            {who && <span className="font-display text-bone">{who.who}</span>}
+    <div className={`min-h-screen portal-bg relative overflow-hidden flex flex-col items-center px-4 pt-10 pb-12 ${sealing ? 'seal-shake' : ''}`} style={ui ? { ['--vc' as any]: ui.rgb } : undefined}>
+      {bg && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-45 pointer-events-none kenburns" style={{ backgroundImage: `linear-gradient(rgba(5,4,6,.35), rgba(5,4,6,.92) 75%), url(${bg})` }} />}
+      <div aria-hidden className="portal-ring" />
+      {ui && <div aria-hidden className="voice-wash" />}
+      <Particles mode="portal" tint={ui ? ui.rgb : '190,110,255'} />
+      <div className="relative z-10 flex flex-col items-center text-center mb-6">
+        <p className="text-[10px] uppercase tracking-[0.5em] text-amber-300/80">{T('Prologo')}</p>
+        <h1 className="text-3xl sm:text-5xl text-gradient-ember title-beat leading-tight">{T('La Notte del Portale')}</h1>
+        <p className="mt-2 text-xs sm:text-sm text-bone/60 italic tracking-wide">{T('Tre voci. Una sola risposta.')}</p>
+      </div>
+
+      {/* Inizio: le tre voci come carte */}
+      {node === 'start' && n && (
+        <div key="start" className="relative z-10 w-full max-w-5xl animate-rise">
+          <p className="text-center text-[15px] sm:text-base text-bone/85 italic max-w-2xl mx-auto leading-relaxed mb-6">{n.text}</p>
+          <div className="voice-grid grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {NIGHT.map((N, i) => (
+              <button key={N.f} onClick={() => go(n.choices[i].go)} className="voice-card group text-center" style={{ ['--vc' as any]: VOICE_UI[i].rgb }}>
+                <div className="relative mx-auto w-fit"><span aria-hidden className="voice-halo" /><Face id={N.npc.toLowerCase()} emoji={N.icon} size={132} tone={N.f === 'silenzio' ? 'violet' : 'blood'} /></div>
+                <div className="mt-3 font-display text-lg text-bone">{N.who}</div>
+                <div className="text-[10px] uppercase tracking-[0.3em] text-mist mt-0.5">{VOICE_UI[i].place}</div>
+                <p className="mt-3 text-sm italic text-bone/85">{VOICE_UI[i].tag}</p>
+                <div className="mt-4 text-xs voice-cta">{n.choices[i].text} ›</div>
+              </button>
+            ))}
           </div>
-          {n && <>
-            <p className={`text-[15px] leading-relaxed ${who ? 'text-bone/90' : 'text-bone/80 italic text-center'}`}>{n.text}</p>
-            <div className="mt-5 space-y-1.5">
-              {n.choices.map((c, i) => {
-                const isCommit = c.go.startsWith('c');
-                const visited = seen.includes(c.go);
-                return (
-                  <button key={i} onClick={() => go(c.go)} className={`w-full text-left rounded-lg border px-3 py-2 text-sm flex gap-2 items-center transition ${isCommit ? 'border-amber-600/70 text-amber-200 hover:bg-amber-900/20' : 'border-stone-700 text-bone hover:border-ember/70 hover:bg-white/5'} ${visited && !isCommit ? 'opacity-60' : ''}`}>
-                    <span className="text-ember">{i + 1}.</span>
-                    {isCommit && <Icon name={NIGHT[+c.go.slice(1)].f} size={30} />}
-                    <span className="flex-1">{c.text}</span>
-                  </button>
-                );
-              })}
+        </div>
+      )}
+
+      {/* Dialogo con una voce */}
+      {n && who && ui && (
+        <div key={node} className="relative z-10 w-full max-w-4xl animate-rise">
+          <div className="voice-panel rounded-2xl p-5 sm:p-7 grid sm:grid-cols-[180px_1fr] gap-5 items-start">
+            <div className="flex flex-col items-center text-center">
+              <div className="relative"><span aria-hidden className="voice-halo" /><Face id={who.npc.toLowerCase()} emoji={who.icon} size={160} tone={who.f === 'silenzio' ? 'violet' : 'blood'} /></div>
+              <span className="font-display text-bone mt-3">{who.who}</span>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-mist">{ui.place}</span>
             </div>
-          </>}
-          {commit !== null && (() => { const N = NIGHT[commit]; const F = FARDELLI[N.f]; return (
-            <div className="text-center">
-              <p className="text-amber-200 font-semibold">{N.choice}</p>
-              <p className="text-sm text-bone/80 italic mt-3 max-w-lg mx-auto leading-relaxed">{AFTER[N.f]}</p>
-              <div className="flex items-center justify-center gap-3 my-4"><Icon name={N.f} size={72} /><div className="text-left"><p className="text-[10px] uppercase tracking-widest text-mist">{T('Fardello')}</p><p className="text-bone font-display">{F.name}</p><p className="text-[11px] text-mist">{N.hint}</p></div></div>
-              <p className="text-xs text-mist mb-4 max-w-md mx-auto">{F.origin}{' '}{T('Non potrai tornare indietro.')}</p>
-              <div className="flex flex-wrap justify-center gap-2">
-                <Btn kind="ghost" onClick={() => go(`${'kvm'[commit]}1`)}>{T('Aspetta… non ancora')}</Btn>
-                <Btn kind="ember" onClick={() => { sfx.chain(); act(d => {
-                  chooseFardello(d, N.f);
-                  d.modal = { kind: 'info', title: F.name, text: T('{description}\n\nLe azioni coerenti con il tuo Fardello caricano la Risonanza; quelle contrarie accumulano Dissonanza. Il mondo ricorderà entrambe.\n\nOra ricostruisci Hondovalle. La Guida in alto ti dirà cosa puoi fare, mai cosa scegliere.', { description: F.description }) };
-                }); }}>{T('Scegli. E porta il peso.')}</Btn>
+            <div>
+              <div className="text-[16px] sm:text-[17px] leading-relaxed text-bone/95 min-h-[5.5em]"><Typewriter text={n.text} instant={false} /></div>
+              <div className="mt-5 space-y-2">
+                {n.choices.map((c, i) => {
+                  const isCommit = c.go.startsWith('c');
+                  const back = c.go === 'start';
+                  const visited = seen.includes(c.go);
+                  return (
+                    <button key={i} onClick={() => go(c.go)} className={`w-full text-left rounded-xl border px-4 py-2.5 text-sm flex gap-3 items-center transition ${isCommit ? 'choice-commit' : back ? 'border-stone-800 text-mist hover:text-bone hover:border-stone-600' : 'border-stone-700 text-bone hover:border-[rgb(var(--vc))] hover:bg-white/5'} ${visited && !isCommit && !back ? 'opacity-55' : ''}`}>
+                      {isCommit ? <Icon name={NIGHT[+c.go.slice(1)].f} size={34} /> : <span className="text-[rgb(var(--vc))] w-4">{back ? '↺' : '›'}</span>}
+                      <span className="flex-1">{c.text}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          ); })()}
+          </div>
+          <div className="flex justify-center gap-3 mt-4">
+            {NIGHT.map((N, i) => <button key={N.f} title={N.who} onClick={() => go(`${'kvm'[i]}1`)} className={`rounded-full transition ${i === wi ? 'ring-2 ring-[rgb(var(--vc))] scale-110' : 'opacity-45 hover:opacity-90 grayscale'}`}><Face id={N.npc.toLowerCase()} emoji={N.icon} size={40} tone="ember" /></button>)}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Il sigillo: la scelta diventa Fardello */}
+      {commit !== null && (() => { const N = NIGHT[commit]; const F = FARDELLI[N.f]; return (
+        <div key={node} className="relative z-10 w-full max-w-2xl text-center animate-rise">
+          <p className="text-amber-200 text-lg sm:text-xl font-display">{N.choice}</p>
+          <p className="text-[15px] text-bone/85 italic mt-3 leading-relaxed"><Typewriter text={AFTER[N.f]} instant={false} /></p>
+          <div className="fardello-reveal mx-auto mt-6 mb-2"><Icon name={N.f} size={184} /></div>
+          <p className="text-[10px] uppercase tracking-[0.45em] text-mist">{T('Il tuo Fardello')}</p>
+          <h2 className="text-3xl sm:text-4xl text-gradient-ember title-beat font-display">{F.name}</h2>
+          <p className="text-xs text-bone/70 mt-1">{N.hint}</p>
+          <div className="grid sm:grid-cols-2 gap-2 mt-4 text-left text-xs">
+            <div className="rounded-lg border border-teal-800/60 bg-teal-950/30 p-2"><b className="text-teal-200">{T('Dono')}</b><p className="text-bone/80">{F.advantage}</p></div>
+            <div className="rounded-lg border border-red-900/60 bg-red-950/30 p-2"><b className="text-red-200">{T('Prezzo')}</b><p className="text-bone/80">{F.mechCost} {F.socialCost}</p></div>
+          </div>
+          <p className="text-[11px] text-mist mt-3">{T('Non potrai tornare indietro.')}</p>
+          <div className="flex flex-wrap justify-center gap-3 mt-4">
+            <Btn kind="ghost" disabled={sealing} onClick={() => go(`${'kvm'[commit]}1`)}>{T('Aspetta… non ancora')}</Btn>
+            <Btn kind="ember" disabled={sealing} onClick={() => seal(N, F)}>{T('Scegli. E porta il peso.')}</Btn>
+          </div>
+        </div>
+      ); })()}
+      {sealing && <div aria-hidden className="seal-flash" />}
     </div>
   );
 }

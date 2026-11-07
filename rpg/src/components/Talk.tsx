@@ -28,7 +28,7 @@ function tagFor(s: GameState, c: DChoice): { label: string; cls: string } | null
   return null;
 }
 
-function Typewriter({ text, instant }: { text: string; instant: boolean }) {
+export function Typewriter({ text, instant }: { text: string; instant: boolean }) {
   const [n, setN] = useState(instant ? text.length : 0);
   useEffect(() => {
     if (instant) { setN(text.length); return; }
