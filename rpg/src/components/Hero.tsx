@@ -13,6 +13,7 @@ import { sellItem } from '../game/engine/meta';
 import { displayName } from '../game/engine/state';
 import { sfx } from '../game/audio';
 import { Btn, Cost, Empty, ItemCard, Panel, STAT_LABELS, Tag, rich } from './ui';
+import { Icon } from './icons';
 
 function Forge({ state: s, act }: { state: GameState; act: Act }) {
   const [slot, setSlot] = useState<Slot>('arma');
@@ -177,6 +178,7 @@ export default function Hero({ state: s, act }: { state: GameState; act: Act }) 
     <div className="space-y-4">
       <div className="grid lg:grid-cols-3 gap-4">
         <Panel title={displayName(s)} icon={cls.icon} right={<Tag>{T('Potenza')}{' '}{heroPower(s)}</Tag>}>
+          <div className="flex items-center gap-3 mb-2"><Icon name={s.aberration ? 'corruzione' : s.classId} size={84} />{F && <Icon name={s.fardello!} size={52} />}</div>
           <p className="text-xs text-mist">{cls.name} · {T('Livello {n}', { n: s.hero.level })}{s.hero.paragon ? T(' · Oltre il limite ✴{paragon}', { paragon: s.hero.paragon }) : ''}{s.aberration ? T(' · 🦷 Aberrazione') : ''}</p>
           {F && <p className="text-xs mt-1" style={{ color: F.color }}>{F.icon} {F.name} · peso {F.weight} ({F.weight <= 2 ? T('leggero: agisci prima') : F.weight >= 4 ? T('pesante: +10% danni') : 'medio'})</p>}
           <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs mt-3">

@@ -104,7 +104,7 @@ export function Nav({ state: s, act }: { state: GameState; act: Act }) {
               className={`relative shrink-0 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm flex items-center gap-1.5 border-b-2 transition ${s.tab === t.id ? 'border-amber-500 text-bone' : 'border-transparent text-mist hover:text-bone'}`}>
               <span className={isNew ? 'tab-new' : ''}><Icon name={t.icon} size={30} /></span>
               <span className="hidden sm:inline">{t.name}</span>
-              {isNew && <span className="absolute top-0 left-1 text-[8px] uppercase tracking-wider bg-amber-500 text-black rounded px-1">{T('nuovo')}</span>}
+              {isNew && <span title={T('nuovo')} className="absolute top-1 left-1.5 w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,.9)]" />}
               {!!badge[t.id] && <span className="absolute top-0.5 right-0.5 text-[9px] bg-ember text-white rounded-full px-1 leading-4">{badge[t.id]}</span>}
             </button>
           );

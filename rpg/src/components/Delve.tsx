@@ -58,6 +58,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
                     </select>
                   )}
                   <Btn kind="ember" disabled={!s.fardello || !!s.delve || s.res.provviste < 1} onClick={() => { sfx.door(); act(d => enterDelve(d, id as BiomeId, sel)); }}>{T('Scendi (🍞1)')}</Btn>
+                  {s.fardello && !s.delve && s.res.provviste < 1 && <p className="basis-full text-[11px] text-amber-300/90 mt-1">{T('Ti serve 1 provvista per scendere: premi «Raccogli» al villaggio o costruisci una Capanna dei Raccoglitori.')}</p>}
                   {s.hero.level < B.minLevel && <span className="text-[11px] text-dissonance">{T('Sei di livello')}{' '}{s.hero.level}: pericoloso.</span>}
                 </div>
               ) : <p className="text-xs text-mist mt-3">{T('🔒 Conquista')}{' '}{BIOMES[B.requires!].name}{' '}{T('per sbloccarlo.')}</p>}

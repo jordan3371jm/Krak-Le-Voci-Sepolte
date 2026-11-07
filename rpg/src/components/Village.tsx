@@ -17,6 +17,7 @@ import { Bar, Btn, Cost, Panel, Tag } from './ui';
 import { Icon, Sigil } from './icons';
 import { isUnlocked } from '../game/engine/onboarding';
 import { TalkersPanel, Face } from './Talk';
+import { BG } from './art';
 
 // ------------------------------------------------------------
 // La Notte del Portale: la prima scelta morale (crea il Fardello)
@@ -32,8 +33,9 @@ export function PortalScreen({ act }: { act: Act }) {
   const [sel, setSel] = useState<number | null>(null);
   useEffect(() => { heartbeat(true); return () => heartbeat(false); }, []);
   return (
-    <div className="min-h-screen portal-bg flex items-center justify-center px-4 py-10">
-      <div className="max-w-5xl w-full animate-rise">
+    <div className="min-h-screen portal-bg flex items-center justify-center px-4 py-10 relative">
+      {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none" style={{ backgroundImage: `linear-gradient(rgba(5,4,6,.6), rgba(5,4,6,.95)), url(${BG.copertina})` }} />}
+      <div className="max-w-5xl w-full animate-rise relative">
         <div className="flex flex-col items-center text-center mb-8">
           <div className="unlock-glow mb-3"><Icon name="portale" size={96} /></div>
           <p className="text-[10px] uppercase tracking-[0.4em] text-amber-300/80">{T('Prologo')}</p>
@@ -43,10 +45,10 @@ export function PortalScreen({ act }: { act: Act }) {
         <div className="grid md:grid-cols-3 gap-4">
           {NIGHT.map((n, i) => (
             <button key={n.f} onClick={() => { sfx.click(); setSel(i); }} className={`text-left rounded-2xl border p-4 transition panel ${sel === i ? 'border-amber-500 ring-2 ring-amber-500/40 -translate-y-1' : 'border-stone-700 hover:border-amber-700/60'}`}>
-              <div className="flex items-center gap-3 mb-3"><Sigil emoji={n.icon} size={44} tone={n.f === 'silenzio' ? 'violet' : 'blood'} /><span className="text-xs text-mist">{n.who}</span></div>
+              <div className="flex flex-col items-center text-center gap-2 mb-3"><Face id={n.npc.toLowerCase()} emoji={n.icon} size={104} tone={n.f === 'silenzio' ? 'violet' : 'blood'} /><span className="text-sm text-bone font-display">{n.who}</span></div>
               <p className="text-sm text-bone/85 mb-4 leading-relaxed">{n.text}</p>
               <p className="text-sm font-semibold text-amber-200">{n.choice}</p>
-              <p className="text-[11px] text-mist mt-2 flex items-center gap-1.5"><Icon name={n.f} size={22} /> {FARDELLI[n.f].name}</p>
+              <div className="mt-3 pt-3 border-t border-stone-800 flex items-center gap-2"><Icon name={n.f} size={40} /><div><p className="text-[10px] uppercase tracking-widest text-mist">{T('Fardello')}</p><p className="text-xs text-bone">{FARDELLI[n.f].name}</p></div></div>
               <p className="text-[11px] text-mist/80 mt-1">{n.hint}</p>
             </button>
           ))}
@@ -176,7 +178,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
             </span>
           ))}
           {s.valley.blight > 60 && <span title={T('Case bruciate')}>🏚️</span>}
-          {s.companions.filter(c => c.recruited && !c.mission && !c.left).map(c => <span key={c.id} title={c.name}><Sigil emoji={c.icon} size={34} /></span>)}
+          {s.companions.filter(c => c.recruited && !c.mission && !c.left).map(c => <span key={c.id} title={c.name}><Face id={c.id} emoji={c.icon} size={34} tone="teal" /></span>)}
         </div>
         {/* eventi */}
         <div className="relative flex flex-wrap gap-2 mt-3">
@@ -193,7 +195,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
       </section>
 
       <div className="grid lg:grid-cols-3 gap-4">
-        {/* Raccolta & PNG */}
+        {/* Raccolta e produzione */}
         <div className="space-y-4">
           <Panel title={T('Raccolta')} icon="legno">
             <div className="grid grid-cols-3 gap-2">
@@ -210,23 +212,12 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
             </Btn>}
           </Panel>
 
-          {isUnlocked(s, 'f_volti') && <Panel title={T('Volti di Hondovalle')} icon="compagni">
-            <div className="space-y-2">
-              {NPCS.map(n => (
-                <button key={n.id} onClick={() => sfx.leitmotif(FACTIONS[n.faction].leitmotif)} className="w-full text-left flex gap-2 items-start rounded-lg p-2 hover:bg-white/5">
-                  <Face id={n.id} emoji={n.icon} size={44} tone={n.faction === 'culto' ? 'blood' : n.faction === 'guaritori' ? 'moss' : 'iron'} />
-                  <div>
-                    <div className="text-sm text-bone">{n.name} <span className="text-[10px] text-mist">· {FACTIONS[n.faction].name} · {T(repState(s, n.faction))}</span></div>
-                    <p className="text-xs text-bone/70 italic">{npcLine(s, n.id)}</p>
-                  </div>
-                </button>
-              ))}
+          {isUnlocked(s, 'f_produzione') && <Panel title={T('Produzione')} icon="bottega">
+            <div className="grid grid-cols-2 gap-1 text-xs">
+              {(Object.keys(prod) as ResKey[]).map(k => <div key={k} className={RES_INFO[k].color}><Pic id={k} emoji={RES_INFO[k].icon} size={16} /> {RES_INFO[k].name}: +{fmt(prod[k] * 60)}{T('/min')}</div>)}
             </div>
           </Panel>}
 
-          {isUnlocked(s, 'f_volti') && <TalkersPanel state={s} act={act} />}
-
-          {isUnlocked(s, 'f_stagno') && <Pond state={s} act={act} />}
         </div>
 
         {/* Edifici */}
@@ -267,15 +258,27 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
               </div>
             </Panel>
           )}
-          {isUnlocked(s, 'f_produzione') && <Panel title={T('Produzione')} icon="bottega">
-            <div className="grid grid-cols-2 gap-1 text-xs">
-              {(Object.keys(prod) as ResKey[]).map(k => <div key={k} className={RES_INFO[k].color}><Pic id={k} emoji={RES_INFO[k].icon} size={16} /> {RES_INFO[k].name}: +{fmt(prod[k] * 60)}{T('/min')}</div>)}
-            </div>
-          </Panel>}
         </div>
 
-        {/* Servizi */}
+        {/* Persone, storie e servizi */}
         <div className="space-y-4">
+          {isUnlocked(s, 'f_volti') && <Panel title={T('Volti di Hondovalle')} icon="compagni">
+            <div className="space-y-2">
+              {NPCS.map(n => (
+                <button key={n.id} onClick={() => sfx.leitmotif(FACTIONS[n.faction].leitmotif)} className="w-full text-left flex gap-2 items-start rounded-lg p-2 hover:bg-white/5">
+                  <Face id={n.id} emoji={n.icon} size={44} tone={n.faction === 'culto' ? 'blood' : n.faction === 'guaritori' ? 'moss' : 'iron'} />
+                  <div>
+                    <div className="text-sm text-bone">{n.name} <span className="text-[10px] text-mist">· {FACTIONS[n.faction].name} · {T(repState(s, n.faction))}</span></div>
+                    <p className="text-xs text-bone/70 italic">{npcLine(s, n.id)}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </Panel>}
+
+          {isUnlocked(s, 'f_volti') && <TalkersPanel state={s} act={act} />}
+
+          {isUnlocked(s, 'f_stagno') && <Pond state={s} act={act} />}
           {isUnlocked(s, 'f_richieste') && <Panel title={T('Richieste delle Fazioni')} icon="fazioni">
             {s.requests.length === 0 && <p className="text-xs text-mist italic">{totalBuildings(s) < 4 ? T('Le fazioni ti noteranno quando il villaggio avrà 4 edifici.') : T('Nessuna richiesta, per ora. Ne arriveranno altre.')}</p>}
             <div className="space-y-2">
