@@ -89,3 +89,63 @@ button { font-family: inherit; }
 /* emoji incastonati: tono antico, coerente con le icone */
 .sigil-glyph { filter: sepia(.55) saturate(1.25) contrast(1.05) drop-shadow(0 1px 1px #000) drop-shadow(0 0 4px rgba(245, 181, 68, .35)); line-height: 1; }
 .portal-bg { background: radial-gradient(ellipse at 50% 20%, rgba(120, 40, 160, .35), transparent 55%), radial-gradient(ellipse at 50% 110%, rgba(196, 66, 26, .45), transparent 60%), #070507; }
+
+/* ===================== Atmosfera inquietante ===================== */
+@keyframes kenburns { 0% { transform: scale(1.06) translate(0, 0) } 100% { transform: scale(1.16) translate(-2%, -1.5%) } }
+.kenburns { animation: kenburns 46s ease-in-out infinite alternate; will-change: transform; }
+@keyframes fogDrift { 0% { transform: translateX(-12%) } 100% { transform: translateX(12%) } }
+.fog { position: absolute; inset: -20% -30%; opacity: .32; background:
+  radial-gradient(ellipse 40% 22% at 20% 80%, rgba(160,150,170,.22), transparent 70%),
+  radial-gradient(ellipse 35% 18% at 70% 90%, rgba(120,110,140,.2), transparent 70%),
+  radial-gradient(ellipse 30% 15% at 50% 65%, rgba(140,120,120,.14), transparent 70%); }
+.fog-a { animation: fogDrift 38s ease-in-out infinite alternate; }
+.fog-b { animation: fogDrift 55s ease-in-out infinite alternate-reverse; top: -10%; opacity: .22; }
+
+@keyframes whisper { 0% { opacity: 0; filter: blur(6px); letter-spacing: .4em } 25% { opacity: .55; filter: blur(0); letter-spacing: .08em } 70% { opacity: .45 } 100% { opacity: 0; filter: blur(4px); letter-spacing: .25em } }
+.whisper { color: rgba(214, 160, 160, .9); text-shadow: 0 0 12px rgba(140, 20, 20, .8); animation: whisper 6.5s ease-in-out forwards; font-family: 'Cinzel', serif; }
+
+@keyframes blink { 0%, 100% { transform: scaleY(0) } 8%, 60% { transform: scaleY(1) } 66% { transform: scaleY(.1) } 72% { transform: scaleY(1) } 90% { transform: scaleY(1) } }
+@keyframes eyesLife { 0% { opacity: 0 } 10% { opacity: .85 } 85% { opacity: .85 } 100% { opacity: 0 } }
+.eyes { animation: eyesLife 4.2s ease-in-out forwards; }
+.eye { width: 14px; height: 6px; border-radius: 50%; background: radial-gradient(ellipse at center, #ffdf8a 0%, #e0582a 45%, rgba(120,20,10,0) 75%); box-shadow: 0 0 10px 2px rgba(230, 80, 30, .55); animation: blink 4.2s ease-in-out forwards; }
+
+/* Ritratti vivi: respirano e, di rado, si incrinano */
+@keyframes alive { 0%, 100% { transform: scale(1); filter: saturate(1) } 50% { transform: scale(1.035); filter: saturate(1.1) } }
+@keyframes uncanny { 0%, 94%, 100% { filter: none; transform: translate(0) } 95% { filter: grayscale(1) contrast(1.6) brightness(.7); transform: translate(1px, -1px) } 96% { filter: hue-rotate(160deg) saturate(2); transform: translate(-2px, 1px) } 97% { filter: grayscale(1) invert(.15); transform: translate(1px, 0) } }
+.portrait-alive { animation: alive 6s ease-in-out infinite; }
+.portrait-uncanny { animation: alive 6s ease-in-out infinite, uncanny 13s steps(1) infinite; }
+
+/* Combattimento */
+@keyframes hitFlash { 0% { box-shadow: inset 0 0 0 999px rgba(220, 38, 38, .45) } 100% { box-shadow: inset 0 0 0 999px rgba(220, 38, 38, 0) } }
+@keyframes hitShake { 0%, 100% { transform: translate(0) } 20% { transform: translate(-6px, 2px) rotate(-.6deg) } 40% { transform: translate(5px, -2px) rotate(.5deg) } 60% { transform: translate(-3px, 1px) } 80% { transform: translate(2px, 0) } }
+.hit { animation: hitShake .38s ease-out, hitFlash .5s ease-out; }
+@keyframes healGlow { 0% { box-shadow: 0 0 0 0 rgba(45, 212, 191, .7) } 100% { box-shadow: 0 0 0 14px rgba(45, 212, 191, 0) } }
+.healed { animation: healGlow .7s ease-out; }
+@keyframes ashOut { 0% { filter: none; opacity: 1; transform: none } 100% { filter: grayscale(1) blur(2px) brightness(.4); opacity: .35; transform: translateY(4px) scale(.98) } }
+.dead { animation: ashOut 1.2s ease-out forwards; }
+@keyframes threat { 0%, 100% { box-shadow: 0 0 0 1px rgba(220, 38, 38, .25), 0 0 14px rgba(220, 38, 38, .15) } 50% { box-shadow: 0 0 0 1px rgba(220, 38, 38, .6), 0 0 26px rgba(220, 38, 38, .35) } }
+.threat { animation: threat 2.6s ease-in-out infinite; }
+@keyframes screenJolt { 0%, 100% { transform: none } 25% { transform: translate(3px, -2px) } 50% { transform: translate(-3px, 2px) } 75% { transform: translate(2px, 1px) } }
+.jolt { animation: screenJolt .35s ease-out; }
+
+/* Ingresso dei pannelli, uno dopo l'altro */
+@keyframes panelIn { from { opacity: 0; transform: translateY(14px); filter: blur(3px) } to { opacity: 1; transform: none; filter: none } }
+.stagger > * { animation: panelIn .55s ease-out both; }
+.stagger > *:nth-child(2) { animation-delay: .08s } .stagger > *:nth-child(3) { animation-delay: .16s } .stagger > *:nth-child(4) { animation-delay: .24s } .stagger > *:nth-child(5) { animation-delay: .32s }
+
+/* Testo che si scrive da solo */
+.typing::after { content: '▍'; margin-left: 2px; color: rgba(245, 181, 68, .8); animation: flicker .8s steps(2) infinite; }
+
+/* Bottoni: brace al passaggio */
+.panel button:not(:disabled):hover { box-shadow: 0 0 18px rgba(196, 66, 26, .18); }
+
+/* Battito del titolo */
+@keyframes titleBeat { 0%, 100% { filter: drop-shadow(0 0 6px rgba(196, 66, 26, .25)) } 12% { filter: drop-shadow(0 0 18px rgba(196, 66, 26, .8)) } 24% { filter: drop-shadow(0 0 6px rgba(196, 66, 26, .25)) } 34% { filter: drop-shadow(0 0 14px rgba(196, 66, 26, .6)) } }
+.title-beat { animation: titleBeat 2.8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) { .kenburns, .fog, .portrait-alive, .portrait-uncanny, .threat, .title-beat { animation: none !important } }
+.stagger-root .panel { animation: panelIn .5s ease-out both; }
+.stagger-root .grid > *:nth-child(2) .panel, .stagger-root .grid > .panel:nth-child(2) { animation-delay: .07s }
+.stagger-root .grid > *:nth-child(3) .panel, .stagger-root .grid > .panel:nth-child(3) { animation-delay: .14s }
+@keyframes lowHp { 0%, 100% { opacity: .25 } 14% { opacity: .85 } 28% { opacity: .3 } 40% { opacity: .7 } }
+.vignette-low { background: radial-gradient(ellipse at center, transparent 45%, rgba(150, 10, 10, .6) 100%); animation: lowHp 1.4s ease-in-out infinite; }

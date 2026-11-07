@@ -1,5 +1,5 @@
 import { t as T } from '../i18n';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { GameState } from '../game/types';
 import type { Act } from '../game/useGame';
 import { DIALOGUES, TALKERS, type DChoice } from '../game/data/dialogues';
@@ -13,7 +13,7 @@ import { portraitOf } from './portraits';
 
 export function Face({ id, emoji, tone, size }: { id: string; emoji: string; tone: string; size: number }) {
   const src = portraitOf(id);
-  if (src) return <img src={src} alt="" width={size} height={size} className="rounded-full ring-2 ring-ember/60 shadow-lg shrink-0" style={{ width: size, height: size }} />;
+  if (src) return <img src={src} alt="" width={size} height={size} className={`rounded-full ring-2 ring-ember/60 shadow-lg shrink-0 ${size >= 64 ? (id === 'nym' || id === 'varo' ? 'portrait-uncanny' : 'portrait-alive') : ''}`} style={{ width: size, height: size }} />;
   return <Sigil emoji={emoji} size={size} tone={tone as any} />;
 }
 
@@ -26,6 +26,18 @@ function tagFor(s: GameState, c: DChoice): { label: string; cls: string } | null
   if (c.req?.fardello) return { label: FARDELLI[c.req.fardello].name, cls: 'border-fate/60 text-purple-200' };
   if (c.req?.classId) return { label: CLASSES[c.req.classId].name, cls: 'border-amber-500/60 text-amber-200' };
   return null;
+}
+
+function Typewriter({ text, instant }: { text: string; instant: boolean }) {
+  const [n, setN] = useState(instant ? text.length : 0);
+  useEffect(() => {
+    if (instant) { setN(text.length); return; }
+    let i = 0;
+    const id = window.setInterval(() => { i += 2; setN(i); if (i >= text.length) window.clearInterval(id); }, 16);
+    return () => window.clearInterval(id);
+  }, [text, instant]);
+  const done = n >= text.length;
+  return <div className={`text-bone ${done ? '' : 'typing'}`} onClick={() => setN(text.length)}>{text.slice(0, n)}</div>;
 }
 
 export function TalkOverlay({ state: s, act }: { state: GameState; act: Act }) {
@@ -50,7 +62,8 @@ export function TalkOverlay({ state: s, act }: { state: GameState; act: Act }) {
             l.who === 'player' ? <div key={i} className="text-right text-ember/90 italic">— {l.text}</div>
             : l.who === 'roll' ? <div key={i} className={`text-center text-xs font-mono rounded-md py-1 ${l.text.includes(T('Successo')) || l.text.includes(T('SUCCESSO CRITICO')) ? 'bg-teal-950/60 text-teal-200' : 'bg-red-950/60 text-red-200'}`}>{l.text}</div>
             : l.who === 'approval' ? <div key={i} className="text-center text-xs text-amber-200/90">{l.text}</div>
-            : <div key={i} className={`text-bone/90 ${i === s.talk!.log.length - 1 ? '' : 'opacity-70'}`}>{l.text.replace(/\{name\}/g, displayName(s))}</div>
+            : i === s.talk!.log.length - 1 ? <Typewriter key={i + l.text.length} text={l.text.replace(/\{name\}/g, displayName(s))} instant={s.settings.reduceFx} />
+            : <div key={i} className="text-bone/90 opacity-70">{l.text.replace(/\{name\}/g, displayName(s))}</div>
           ))}
           <div ref={end} />
         </div>

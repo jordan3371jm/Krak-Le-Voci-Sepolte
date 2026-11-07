@@ -18,6 +18,7 @@ import { Icon, Sigil } from './icons';
 import { isUnlocked } from '../game/engine/onboarding';
 import { TalkersPanel, Face } from './Talk';
 import { BG } from './art';
+import { Particles } from './Atmosphere';
 
 // ------------------------------------------------------------
 // La Notte del Portale: la prima scelta morale (crea il Fardello)
@@ -34,12 +35,13 @@ export function PortalScreen({ act }: { act: Act }) {
   useEffect(() => { heartbeat(true); return () => heartbeat(false); }, []);
   return (
     <div className="min-h-screen portal-bg flex items-center justify-center px-4 py-10 relative">
-      {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none" style={{ backgroundImage: `linear-gradient(rgba(5,4,6,.6), rgba(5,4,6,.95)), url(${BG.copertina})` }} />}
+      <Particles mode="portal" tint="190,110,255" />
+      {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none kenburns" style={{ backgroundImage: `linear-gradient(rgba(5,4,6,.6), rgba(5,4,6,.95)), url(${BG.copertina})` }} />}
       <div className="max-w-5xl w-full animate-rise relative">
         <div className="flex flex-col items-center text-center mb-8">
           <div className="unlock-glow mb-3"><Icon name="portale" size={96} /></div>
           <p className="text-[10px] uppercase tracking-[0.4em] text-amber-300/80">{T('Prologo')}</p>
-          <h1 className="text-3xl sm:text-4xl text-gradient-ember">{T('La Notte del Portale')}</h1>
+          <h1 className="text-3xl sm:text-4xl text-gradient-ember title-beat">{T('La Notte del Portale')}</h1>
           <p className="text-sm text-bone/80 italic mt-3 max-w-2xl">{T('Hondovalle brucia. Un portale di carne e metallo si apre sopra il pozzo. Tre voci ti chiamano nello stesso istante. Puoi rispondere a una sola. Nessuna è giusta. Tutte verranno ricordate.')}</p>
         </div>
         <div className="grid md:grid-cols-3 gap-4">

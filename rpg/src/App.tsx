@@ -1,6 +1,7 @@
 import { t as T } from './i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGame } from './game/useGame';
+import { heroStats } from './game/engine/hero';
 import { BIOMES } from './game/data/enemies';
 import { corruptedUI, toast } from './game/engine/state';
 import { initAudio, setMood, setMusic, setMusicVolume, setSfx, sfx } from './game/audio';
@@ -16,11 +17,15 @@ import Compass from './components/Compass';
 import Modals from './components/Modals';
 import { TalkOverlay } from './components/Talk';
 import { BG } from './components/art';
+import { Eyes, Fog, Particles, Whispers } from './components/Atmosphere';
 import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from './components/Screens';
 
 export default function App() {
   const { state: s, act, replace, saveNow } = useGame();
   const [codex, setCodex] = useState(false);
+  const screenKey = s.combat ? 'c' : s.delve ? 'd' + (s.delve.room ? 'r' : '') : s.tab;
+  const [fresh, setFresh] = useState(true);
+  useEffect(() => { setFresh(true); const tm = window.setTimeout(() => setFresh(false), 750); return () => window.clearTimeout(tm); }, [screenKey]);
 
   // ---------------- audio come sistema ----------------
   useEffect(() => { setMusic(s.settings.music); }, [s.settings.music]);
@@ -79,7 +84,14 @@ export default function App() {
   const corrupt = corruptedUI(s) && !s.settings.reduceFx;
   return (
     <div className={`min-h-screen noise ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
-      {(() => { const k = s.delve ? s.delve.biome : s.tab === 'villaggio' ? 'villaggio' : ''; return k && BG[k] ? <div aria-hidden className="fixed inset-0 -z-0 pointer-events-none bg-cover bg-center opacity-35" style={{ backgroundImage: `linear-gradient(to bottom, rgba(5,4,6,.55), rgba(5,4,6,.9)), url(${BG[k]})` }} /> : null; })()}
+      {(() => { const k = s.delve ? s.delve.biome : s.tab === 'villaggio' ? 'villaggio' : ''; return k && BG[k] ? <div aria-hidden className="fixed inset-0 -z-0 pointer-events-none overflow-hidden"><div className="absolute inset-0 bg-cover bg-center opacity-40 kenburns" style={{ backgroundImage: `url(${BG[k]})` }} /><div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(5,4,6,.55), rgba(5,4,6,.92))' }} /></div> : null; })()}
+      {!s.settings.reduceFx && <>
+        <Particles mode={s.combat ? 'combat' : s.delve ? 'delve' : 'village'} tint={s.delve?.biome === 'paludi' ? '220,40,40' : s.delve?.biome === 'torre' ? '170,120,255' : s.delve?.biome === 'abisso' ? '120,200,255' : '255,140,60'} intensity={s.combat ? 0.7 : 1} />
+        <Fog />
+        {(s.delve || s.corruption > 20) && <Whispers every={s.delve ? 45 : 90} corruption={s.corruption} />}
+        {s.delve && !s.combat && <Eyes every={35} />}
+      </>}
+      {(s.delve || s.combat) && s.hero.hp < heroStats(s).maxHp * 0.3 && !s.settings.reduceFx && <div className="vignette vignette-low" />}
       {corrupt && <div className="vignette vignette-corrupt" />}
       {s.fullscreen && !s.settings.reduceFx && <div className="vignette vignette-rite" />}
       <div className="sticky top-0 z-30">
@@ -87,7 +99,7 @@ export default function App() {
         <Nav state={s} act={act} />
       </div>
       {!s.combat && <GuideBar state={s} act={act} />}
-      <main className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16">
+      <main className={`${fresh ? "stagger-root" : ""} relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16`}>
         {s.combat ? <Combat state={s} act={act} /> : (
           <>
             {s.tab === 'villaggio' && <Village state={s} act={act} />}
