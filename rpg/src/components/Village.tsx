@@ -19,6 +19,7 @@ import { isUnlocked } from '../game/engine/onboarding';
 import { TalkersPanel, Face, Typewriter } from './Talk';
 import { BG } from './art';
 import { Particles } from './Atmosphere';
+import { SceneBg } from './SceneBg';
 import { OmensPanel } from './Delve';
 import { TALKERS } from '../game/data/dialogues';
 import { recoverSatchel } from '../game/engine/features';
@@ -77,7 +78,6 @@ export function PortalScreen({ act }: { act: Act }) {
   const who = wi !== null && wi !== undefined ? NIGHT[wi] : null;
   const ui = wi !== null && wi !== undefined ? VOICE_UI[wi] : null;
   const go = (g: string) => { sfx.click(); setSeen(x => x.includes(node) ? x : [...x, node]); setNode(g); };
-  const bg = BG.portale || BG.copertina;
   const seal = (N: typeof NIGHT[number], F: typeof FARDELLI[FardelloId]) => {
     if (sealing) return;
     setSealing(true); sfx.chain(); sfx.door();
@@ -88,7 +88,7 @@ export function PortalScreen({ act }: { act: Act }) {
   };
   return (
     <div className={`min-h-screen portal-bg relative overflow-hidden flex flex-col items-center px-4 pt-10 pb-12 ${sealing ? 'seal-shake' : ''}`} style={ui ? { ['--vc' as any]: ui.rgb } : undefined}>
-      {bg && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-45 pointer-events-none kenburns" style={{ backgroundImage: `linear-gradient(rgba(5,4,6,.35), rgba(5,4,6,.92) 75%), url(${bg})` }} />}
+      <SceneBg id="portale" fallback="copertina" opacity={0.6} overlay="linear-gradient(rgba(5,4,6,.25), rgba(5,4,6,.9) 78%)" />
       <div aria-hidden className="portal-ring" />
       {ui && <div aria-hidden className="voice-wash" />}
       <Particles mode="portal" tint={ui ? ui.rgb : '190,110,255'} />

@@ -11,3 +11,6 @@ for (const [p, url] of Object.entries(bgFiles)) BG[p.split('/').pop()!.replace('
 
 /** Usa l'illustrazione `id` se esiste, altrimenti il simbolo di riserva. */
 export const artOr = (id: string, fallback: string) => (artFor(id) ? id : fallback);
+const vidFiles = import.meta.glob('../assets/video/*.{mp4,webm}', { eager: true, import: 'default' }) as Record<string, string>;
+export const VIDEO: Record<string, { mp4?: string; webm?: string }> = {};
+for (const [p, url] of Object.entries(vidFiles)) { const [n, ext] = p.split('/').pop()!.split('.'); (VIDEO[n] ||= {})[ext as 'mp4' | 'webm'] = url; }

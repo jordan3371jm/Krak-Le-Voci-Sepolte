@@ -5,7 +5,7 @@ import type { Act } from '../game/useGame';
 import { displayName } from '../game/engine/state';
 import { closeKrakWake } from '../game/engine/features';
 import { sfx } from '../game/audio';
-import { BG } from './art';
+import { SceneBg } from './SceneBg';
 
 // Una sola volta per Ciclo: Krak smette di parlare al personaggio e parla a chi gioca.
 export function KrakWake({ state: s, act }: { state: GameState; act: Act }) {
@@ -29,7 +29,7 @@ export function KrakWake({ state: s, act }: { state: GameState; act: Act }) {
   if (!active) return null;
   return (
     <div className={`fixed inset-0 z-[80] bg-black flex flex-col items-center justify-center px-6 text-center ${s.settings.reduceFx ? '' : 'krak-glitch'}`}>
-      {BG.krak && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-40 kenburns" style={{ backgroundImage: `radial-gradient(ellipse at center, rgba(0,0,0,.2), #000 80%), url(${BG.krak})` }} />}
+      <SceneBg id="krak" opacity={0.55} overlay="radial-gradient(ellipse at center, rgba(0,0,0,.15), #000 82%)" />
       <div className="max-w-xl space-y-4 relative">
         {lines.slice(0, i + 1).map((l, k) => (
           <p key={k} className={`animate-rise ${k === 0 ? 'text-4xl text-red-500 font-black tracking-widest' : 'text-lg text-bone/90 italic'}`}>{l}</p>

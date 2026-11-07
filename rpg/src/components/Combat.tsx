@@ -205,7 +205,7 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
               return (
                 <button key={sk.id} disabled={!ok.ok || c.phase !== 'player'} onClick={() => choose(sk)} title={T('{desc} · natura: {n}', { desc: sk.desc, n: sk.natures.map(n => NATURE_LABEL[n]).join(', ') })}
                   className={`rounded-lg border ${coherenceOf(sk)} bg-black/40 p-2 text-left disabled:opacity-35 hover:bg-white/5 ${pending?.id === sk.id ? 'ring-2 ring-ember' : ''}`}>
-                  <div className="text-sm text-bone">{sk.icon} {sk.name}</div>
+                  <div className="text-sm text-bone flex items-center gap-2">{artFor('skill_' + sk.id) ? <Icon name={'skill_' + sk.id} size={34} /> : sk.icon} <span>{sk.name}</span></div>
                   <div className="text-[10px] text-mist">{sk.focusCost ? `◆${sk.focusCost} ` : ''}{sk.focusGain ? '+1◆ ' : ''}{ok.why || sk.natures.map(n => NATURE_LABEL[n]).join('·')}</div>
                 </button>
               );
@@ -216,7 +216,7 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
             <div className="grid sm:grid-cols-3 gap-2 mt-2">
               {darkSkills.map(sk => { const ok = canUseSkill(s, sk.id); return (
                 <button key={sk.id} disabled={!ok.ok || c.phase !== 'player'} onClick={() => choose(sk)} className="rounded-lg border border-red-900 bg-red-950/30 p-2 text-left disabled:opacity-35">
-                  <div className="text-sm text-red-200">{sk.icon} {sk.name}</div>
+                  <div className="text-sm text-red-200 flex items-center gap-2">{artFor('skill_' + sk.id) ? <Icon name={'skill_' + sk.id} size={34} /> : sk.icon} <span>{sk.name}</span></div>
                   <div className="text-[10px] text-mist">{ok.why || sk.desc}</div>
                 </button>
               ); })}

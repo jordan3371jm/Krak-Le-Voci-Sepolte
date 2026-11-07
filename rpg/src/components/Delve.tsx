@@ -1,5 +1,5 @@
 import { t as T } from '../i18n';
-import { BG, artOr } from './art';
+import { BG, artFor, artOr } from './art';
 import { useEffect, useRef, useState } from 'react';
 import type { BiomeId, GameState } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -140,7 +140,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
             <section key={id} className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg} ${unlocked ? '' : 'opacity-50'} bg-cover bg-center`} style={BG[id] ? { backgroundImage: `linear-gradient(to bottom, rgba(8,6,10,.72), rgba(8,6,10,.93)), url(${BG[id]})` } : undefined}>
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-lg text-bone flex items-center gap-2"><Sigil emoji={B.icon} size={36} tone="violet" /> {biomeName(s, id, B)}</h3>
+                  <h3 className="text-lg text-bone flex items-center gap-2">{artFor('bioma_' + id) ? <Icon name={'bioma_' + id} size={40} /> : <Sigil emoji={B.icon} size={36} tone="violet" />} {biomeName(s, id, B)}</h3>
                   {s.fardello && biomeName(s, id, B) !== B.name && <p className="text-[10px] text-mist">{T('Gli altri lo chiamano «')}{B.name}{T('». Tu lo vedi diversamente.')}</p>}
                   <p className="text-xs text-bone/70 italic mt-1">{B.desc}</p>
                 </div>
@@ -208,7 +208,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
         <section className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg}`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h2 className="text-lg text-bone flex items-center gap-2"><Sigil emoji={B.icon} size={34} tone="violet" /> {biomeName(s, d.biome, B)}</h2>
+              <h2 className="text-lg text-bone flex items-center gap-2">{artFor('bioma_' + d.biome) ? <Icon name={'bioma_' + d.biome} size={40} /> : <Sigil emoji={B.icon} size={34} tone="violet" />} {biomeName(s, d.biome, B)}</h2>
               <p className="text-xs text-mist">{T('Piano')}{' '}<b className="text-ember text-base">{d.floor}</b>{B.depth ? ` / ${B.depth}` : ''} · {T('Specchio:')} <span className="text-fate">{T(d.emotion)}</span> · {valleyFx(s).icon}</p>
             </div>
             <div className="flex flex-wrap gap-1">{d.modifiers.map(m => <Tag key={m} className="border-fate/50 text-purple-200"><span title={DUNGEON_MODIFIERS[m].desc}>{DUNGEON_MODIFIERS[m].name}</span></Tag>)}{d.ghostAlly && <Tag className="text-teal-200">{T('👻 Eco alleata')}</Tag>}{d.daily && <Tag className="text-amber-200 border-amber-500/60">{T('🗓️ Sfida del giorno')}</Tag>}{s.krak.level > 0 && <Tag className="text-red-200 border-red-500/60">{T('💀 Krak {n}', { n: s.krak.level })}</Tag>}</div>

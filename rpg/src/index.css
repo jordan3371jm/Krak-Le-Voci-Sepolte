@@ -194,3 +194,6 @@ button { font-family: inherit; }
 .class-card:not(.sel) { opacity: .78; filter: saturate(.75); }
 .class-card .halo { position: absolute; left: 50%; top: 18px; width: 150px; height: 150px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(circle, rgba(var(--cc), .5), transparent 65%); filter: blur(8px); opacity: 0; transition: opacity .4s; }
 .class-card.sel .halo { opacity: 1; animation: halo 3.6s ease-in-out infinite; }
+
+.scene-poster { transform: scale(1.04); }
+@media (prefers-reduced-motion: reduce) { .scene-video { display: none; } }

@@ -14,6 +14,7 @@ import { displayName } from '../game/engine/state';
 import { sfx } from '../game/audio';
 import { Btn, Cost, Empty, ItemCard, Panel, STAT_LABELS, Tag, rich } from './ui';
 import { Icon } from './icons';
+import { artFor } from './art';
 
 function Forge({ state: s, act }: { state: GameState; act: Act }) {
   const [slot, setSlot] = useState<Slot>('arma');
@@ -157,7 +158,7 @@ function Ascension({ state: s, act }: { state: GameState; act: Act }) {
           const on = sel.includes(p);
           return (
             <button key={p} disabled={!ready} onClick={() => setSel(on ? sel.filter(x => x !== p) : sel.length < 2 ? [...sel, p] : [sel[1], p])} className={`text-left rounded-lg border p-2 ${on ? 'border-fate bg-fate/10' : 'border-stone-700'} disabled:opacity-50`}>
-              <div className="text-sm text-bone">{A.icon} {A.name}</div>
+              <div className="text-sm text-bone flex items-center gap-2">{artFor('asc_' + A.id) ? <Icon name={'asc_' + A.id} size={36} /> : A.icon} <span>{A.name}</span></div>
               <div className="text-[11px] text-teal-200 mt-1">{A.perks.join(' · ')}</div>
               <div className="text-[11px] text-red-300">{A.costs.join(' · ')}</div>
             </button>
