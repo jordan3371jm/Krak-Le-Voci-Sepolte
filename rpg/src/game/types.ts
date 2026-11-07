@@ -178,6 +178,9 @@ export interface Companion {
   inParty: boolean;
   mission?: { locId: string; start: number; end: number } | null;
   left?: boolean;
+  weight?: number;                 // Peso emotivo: a 100 si spezza o trova una Virtù
+  mood?: 'broken' | 'virtue' | null;
+  gifts?: number;
 }
 
 export interface PromiseState {

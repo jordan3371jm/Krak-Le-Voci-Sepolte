@@ -165,7 +165,11 @@ function dealDamage(s: GameState, c: CombatState, att: Combatant, tgt: Combatant
   if (dmg > 0) {
     tgt.hp = Math.max(0, tgt.hp - dmg);
     fx(c, tgt.uid, `${crit ? '💥' : ''}-${dmg}`, crit ? 'crit' : 'dmg');
-    if (tgt.side === 'party') c.sacrificeBank += dmg;
+    if (tgt.side === 'party') {
+      c.sacrificeBank += dmg;
+      if (tgt.companionId) addWeight(s, c, tgt.companionId, (dmg / tgt.maxHp) * 32 + (crit ? 7 : 0));
+      else for (const p of c.party) if (p.companionId && p.hp > 0) addWeight(s, c, p.companionId, (dmg / tgt.maxHp) * 12 + (crit ? 4 : 0));
+    }
     if (att.side === 'party') c.damageDealt += dmg;
     if (att.lifesteal > 0) heal(s, c, att, att, dmg * att.lifesteal / 100, true);
     if (tgt.thorns > 0 && att.hp > 0) {
@@ -175,6 +179,38 @@ function dealDamage(s: GameState, c: CombatState, att: Combatant, tgt: Combatant
     }
   }
   return dmg;
+}
+
+// ============================================================
+// Peso emotivo dei compagni (stile Darkest Dungeon): a 100 si spezzano o trovano una Virtù
+// ============================================================
+const BARKS: Record<string, { broken: string[]; virtue: string[] }> = {
+  kael: { broken: [T('«Tomas urlava così. Proprio così.»'), T('«Basta. Non sono il tuo scudo.»')], virtue: [T('«Per Tomas. Per tutti quelli che non ho salvato.»'), T('«Stavolta resto in piedi.»')] },
+  lyra: { broken: [T('«Non posso curare tutti… non posso…»'), T('«Le mie mani non smettono di tremare.»')], virtue: [T('«Elara diceva: la paura è solo un\'altra ferita.»'), T('«Nessuno muore oggi. Nessuno.»')] },
+  brann: { broken: [T('«Ho giurato… e ho fallito di nuovo.»')], virtue: [T('«Dietro di me. Tutti.»')] },
+  mira: { broken: [T('«Brucia. Brucia tutto.»')], virtue: [T('«Una freccia. Un respiro. Un nome in meno.»')] },
+};
+function bark(id: string, k: 'broken' | 'virtue') { const b = BARKS[id]?.[k] || [T('«…»')]; return b[Math.floor(Math.random() * b.length)]; }
+
+export function addWeight(s: GameState, c: CombatState | null, compId: string, v: number) {
+  const comp = s.companions.find(x => x.id === compId);
+  if (!comp || comp.left) return;
+  comp.weight = Math.max(0, Math.min(100, (comp.weight || 0) + v));
+  if (comp.weight >= 100 && !comp.mood && c) {
+    const p = c.party.find(x => x.companionId === compId);
+    const virtueChance = 0.25 + (comp.trust >= 70 ? 0.15 : 0) + (s.fardello === 'sacrificio' ? 0.05 : 0);
+    if (Math.random() < virtueChance) {
+      comp.mood = 'virtue'; comp.weight = 45;
+      if (p) { p.hp = Math.min(p.maxHp, p.hp + p.maxHp * 0.35); applyStatus(c, p, { type: 'atkUp', dur: 99, pot: 40 }, p); fx(c, p.uid, T('✨ VIRTÙ'), 'echo'); }
+      for (const a of c.party) if (a.hp > 0) a.hp = Math.min(a.maxHp, a.hp + a.maxHp * 0.1);
+      log(c, T('✨ {n} trova una Virtù! {b}', { n: comp.name, b: bark(compId, 'virtue') }));
+    } else {
+      comp.mood = 'broken'; comp.weight = 70;
+      comp.trust = Math.max(0, comp.trust - 6);
+      if (p) fx(c, p.uid, T('💔 SPEZZATO'), 'status');
+      log(c, T('💔 {n} si spezza. {b}', { n: comp.name, b: bark(compId, 'broken') }));
+    }
+  }
 }
 
 function heal(s: GameState, c: CombatState, from: Combatant, to: Combatant, amount: number, quiet = false): number {
@@ -341,6 +377,7 @@ export function playerAct(s: GameState, skillId: string, targetUid?: string) {
       ally.hp = Math.max(1, ally.hp - loss);
       fx(c, ally.uid, `-${loss}`, 'dmg');
       const comp = s.companions.find(x => x.id === ally.companionId);
+      if (comp) addWeight(s, c, comp.id, 25);
       if (comp) comp.trust = Math.max(0, comp.trust - 12);
       addFlag(s, 'betrayed');
       log(c, T('🗡️ Usi {allyName} come scudo! Turno extra. (Fiducia -12)', { allyName: ally.name }));
@@ -458,6 +495,15 @@ function companionsAct(s: GameState, c: CombatState) {
     if (st(p, 'stun')) continue;
     const comp = p.companionId ? s.companions.find(x => x.id === p.companionId) : undefined;
     if (comp && comp.trust < 20 && Math.random() < 0.35) { log(c, T('😶 {pName} esita: non si fida di te.', { pName: p.name })); continue; }
+    if (comp?.mood === 'broken') {
+      const r = Math.random();
+      if (r < 0.3) { log(c, T('💔 {n} si rannicchia e non agisce.', { n: p.name })); continue; }
+      if (r < 0.5) {
+        const victim = alive(c.party).filter(x => x.uid !== p.uid)[Math.floor(Math.random() * (alive(c.party).length - 1))];
+        if (victim) { victim.hp = Math.max(1, victim.hp - Math.round(p.atk * 0.6)); fx(c, victim.uid, `-${Math.round(p.atk * 0.6)}`, 'dmg'); log(c, T('💔 {n} colpisce {v} nella furia.', { n: p.name, v: victim.name })); continue; }
+      }
+      if (r < 0.62) { comp.trust = Math.max(0, comp.trust - 3); log(c, T('💔 {n}: «Perché ti seguo ancora?»', { n: p.name })); }
+    }
     const ready = p.skills.map(id => getSkill(id)!).filter(sk => (p.cds[sk.id] || 0) <= 0);
     const hurt = alive(c.party).filter(x => x.hp / x.maxHp < 0.55).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
     let sk = ready.find(k => k.kind === 'heal' && hurt) || ready.find(k => k.kind === 'buff' && k.selfStatus?.type === 'taunt' && alive(c.party).some(x => x.uid === 'hero' && x.hp / x.maxHp < 0.5)) || ready.find(k => k.kind === 'damage') || ready[0];

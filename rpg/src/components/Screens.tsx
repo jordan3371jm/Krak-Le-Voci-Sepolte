@@ -145,6 +145,7 @@ export function Companions({ state: s, act }: { state: GameState; act: Act }) {
                       <div className="grid grid-cols-2 gap-2 mt-1">
                         <Bar value={c.trust} max={100} color={c.trust < 25 ? 'bg-dissonance' : 'bg-amber-400'} height="h-1" label={<><span>{T('Fiducia')}</span><span>{Math.round(c.trust)}</span></>} />
                         <Bar value={c.hp} max={1} color="bg-red-700" height="h-1" label={<><span>{T('Salute')}</span><span>{Math.round(c.hp * 100)}%</span></>} />
+                        <Bar value={c.weight || 0} max={100} color="bg-violet-600" height="h-1" label={<><span>{T('Peso')}{c.mood === 'broken' ? ' · 💔' : c.mood === 'virtue' ? ' · ✨' : ''}</span><span>{Math.round(c.weight || 0)}</span></>} />
                       </div>
                     )}
                     <div className="text-[10px] text-mist mt-0.5">{T('Salute {hp} · Attacco {atk} · Difesa {def}', { hp: cs.maxHp, atk: cs.atk, def: cs.def })} · {def.row === 'front' ? T('prima fila') : T('retrovia')}</div>

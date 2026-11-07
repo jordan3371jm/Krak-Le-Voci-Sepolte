@@ -315,6 +315,7 @@ export function useShrine(s: GameState, how: 'rest' | 'pray' | 'purify' | 'leave
     s.hero.hp = Math.min(st.maxHp, s.hero.hp + Math.round(st.maxHp * 0.45));
     for (const c of s.companions) if (c.inParty && c.hp > 0) c.hp = Math.min(1, c.hp + 0.45);
     d.room.text = T('Consumi una provvista e riposi. Le ferite si chiudono.');
+    for (const c of s.companions) if (c.inParty) { c.weight = Math.max(0, (c.weight || 0) - 30); if (c.weight < 25) c.mood = null; }
   } else if (how === 'pray') {
     applyEffect(s, { nature: 'faith', resonance: 2 }, 'shrine');
     d.room.text = T('Preghi. Il Fardello vibra, coerente.');

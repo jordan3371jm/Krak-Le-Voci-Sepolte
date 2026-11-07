@@ -49,6 +49,13 @@ function Unit({ u, s, targetable, onClick }: { u: Combatant; s: GameState; targe
           <div className="text-[10px] text-mist">{Math.max(0, Math.round(u.hp))}/{u.maxHp}{u.tags.includes('liar') && (u.revealed || hasFlag(s, 'know_word')) ? T(' · 🎭 bugiardo') : ''}{u.tags.includes('listener') ? ' · 👂' : ''}</div>
         </div>
       </div>
+      {u.companionId && (() => { const comp = s.companions.find(x => x.id === u.companionId); if (!comp) return null; const w = Math.round(comp.weight || 0); return (
+        <div className="mt-1 flex items-center gap-1.5" title={T('Peso: a 100 il compagno si spezza o trova una Virtù')}>
+          <span className="text-[9px] text-violet-300 w-8">{T('Peso')}</span>
+          <div className="flex-1 h-1 bg-stone-800 rounded"><div className={`h-full rounded ${w >= 80 ? 'bg-gradient-to-r from-violet-600 to-red-500 animate-flicker' : 'bg-violet-600'}`} style={{ width: `${w}%` }} /></div>
+          {comp.mood === 'broken' && <span className="text-[9px] text-red-300">💔 {T('Spezzato')}</span>}
+          {comp.mood === 'virtue' && <span className="text-[9px] text-amber-200">✨ {T('Virtù')}</span>}
+        </div>); })()}
       {u.statuses.length > 0 && <div className="flex flex-wrap gap-0.5 mt-1">{u.statuses.map((x, i) => <span key={i} className="text-[9px] px-1 rounded bg-black/60 border border-stone-700">{statusLabel(x.type)}{x.type === 'shield' ? ` ${x.pot}` : ''} {x.dur}</span>)}</div>}
       {intent && <div className="text-[10px] mt-1 text-orange-300 truncate">⚠️ {intent}</div>}
     </button>

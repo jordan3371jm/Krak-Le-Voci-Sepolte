@@ -143,6 +143,12 @@ export function tick(s: GameState, dtMs: number, now = Date.now(), offline = fal
   const gained: Partial<Resources> = {};
   for (const k of Object.keys(p) as ResKey[]) gained[k] = p[k] * dt;
   addRes(s, gained);
+  // al villaggio il Peso dei compagni si scioglie (−6 al minuto, più in fretta con l'Infermeria)
+  if (!s.delve) for (const c of s.companions) {
+    if (!c.weight && !c.mood) continue;
+    c.weight = Math.max(0, (c.weight || 0) - dt * (0.1 + 0.03 * (s.village.buildings.infermeria || 0)));
+    if (c.weight < 25 && c.mood) c.mood = null;
+  }
   s.res.intuizione = Math.min(s.res.intuizione, intuitionCap(s));
 
   // guarigione al villaggio
