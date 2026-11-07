@@ -99,7 +99,15 @@ export function applyEffect(s: GameState, e: Effect, source = '') {
   if (e.prosperity) pushValley(s, { prosperity: e.prosperity });
   if (e.blight) pushValley(s, { blight: e.blight });
   if (e.quest) { const was = s.quests[e.quest.id]?.stage ?? 0; s.quests[e.quest.id] = { ...(s.quests[e.quest.id] || {}), stage: e.quest.stage }; if (e.quest.stage !== was) toast(s, T('📜 Missione aggiornata'), 'info'); }
-  if (e.companion) { const c = s.companions.find(c => c.id === e.companion); if (c) c.recruited = true; }
+  if (e.companion) {
+    const c = s.companions.find(c => c.id === e.companion);
+    if (c && !c.recruited) {
+      c.recruited = true; c.left = false;
+      if (s.companions.filter(x => x.inParty).length < 2) c.inParty = true;
+      toast(s, T('🤝 {c} si unisce a te.', { c: c.name }), 'good');
+      chronicle(s, T('{c} si è unito al tuo gruppo.', { c: c.name }), 'choice');
+    }
+  }
   stat(s, 'choices');
   if (source) chronicle(s, `${source}.`, 'choice');
   checkPromises(s);

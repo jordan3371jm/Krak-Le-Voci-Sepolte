@@ -135,7 +135,7 @@ export function Companions({ state: s, act }: { state: GameState; act: Act }) {
     <div className="grid lg:grid-cols-2 gap-4">
       <Panel title={T('Compagni')} icon="👥" right={<span className="text-xs text-mist">{T('In gruppo:')}{' '}{s.companions.filter(c => c.inParty).length}/2</span>}>
         <div className="space-y-2">
-          {COMPANIONS.map(def => {
+          {COMPANIONS.filter(def => (def.minCycle || 1) <= s.cycle.n).map(def => {
             const c = s.companions.find(x => x.id === def.id)!;
             const cs = companionStats(s, c.id);
             return (
@@ -157,7 +157,8 @@ export function Companions({ state: s, act }: { state: GameState; act: Act }) {
                 </div>
                 <div className="flex flex-wrap gap-1 mt-2">
                   {c.left && <Tag className="text-dissonance">{T('Ti ha abbandonato')}</Tag>}
-                  {!c.recruited && !c.left && <Btn small kind="good" onClick={() => act(d => recruit(d, c.id))}>{T('Recluta · ⚱️')}{def.recruitCost?.cenere}{def.recruitCost?.reliquie ? ` 🏺${def.recruitCost.reliquie}` : ''}</Btn>}
+                  {!c.recruited && !c.left && def.joinsByStory && <Tag className="text-amber-200 border-amber-600/60">{T('📜 Si unirà a te attraverso la sua storia')}</Tag>}
+                  {!c.recruited && !c.left && !def.joinsByStory && <Btn small kind="good" onClick={() => act(d => recruit(d, c.id))}>{T('Recluta · ⚱️')}{def.recruitCost?.cenere}{def.recruitCost?.reliquie ? ` 🏺${def.recruitCost.reliquie}` : ''}</Btn>}
                   {c.recruited && !c.left && !c.mission && <Btn small kind={c.inParty ? 'ember' : 'default'} disabled={!!s.delve} onClick={() => act(d => toggleParty(d, c.id))}>{c.inParty ? T('✔ Nel gruppo') : T('Porta con te')}</Btn>}
                   {c.recruited && !c.left && !c.mission && !s.delve && <Btn small onClick={() => act(d => sendExpedition(d, c.id, loc))}>{T('🧭 Manda in spedizione')}</Btn>}
                   {c.recruited && !c.left && <Btn small kind={giftFor === c.id ? 'ember' : 'default'} onClick={() => setGiftFor(giftFor === c.id ? null : c.id)}>{T('🎁 Fai un dono')}{c.gifts ? ` · ${c.gifts}` : ''}</Btn>}

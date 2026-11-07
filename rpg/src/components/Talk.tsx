@@ -5,7 +5,7 @@ import type { Act } from '../game/useGame';
 import { DIALOGUES, TALKERS, type DChoice } from '../game/data/dialogues';
 import { CHECK_NAME, checkBonus, chooseTalk, endTalk, npcHasNews, startTalk, talkerVisible, visibleChoices, activeQuests } from '../game/engine/dialogue';
 import { FARDELLI, CLASSES, FACTIONS } from '../game/data/core';
-import { displayName } from '../game/engine/state';
+import { fillText } from '../game/engine/state';
 import { sfx } from '../game/audio';
 import { Panel } from './ui';
 import { Sigil } from './icons';
@@ -59,11 +59,11 @@ export function TalkOverlay({ state: s, act }: { state: GameState; act: Act }) {
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-3 text-[15px] leading-relaxed">
           {s.talk.log.map((l, i) => (
-            l.who === 'player' ? <div key={i} className="text-right text-ember/90 italic">— {l.text}</div>
-            : l.who === 'roll' ? <div key={i} className={`text-center text-xs font-mono rounded-md py-1 ${l.text.includes(T('Successo')) || l.text.includes(T('SUCCESSO CRITICO')) ? 'bg-teal-950/60 text-teal-200' : 'bg-red-950/60 text-red-200'}`}>{l.text}</div>
-            : l.who === 'approval' ? <div key={i} className="text-center text-xs text-amber-200/90">{l.text}</div>
-            : i === s.talk!.log.length - 1 ? <Typewriter key={i + l.text.length} text={l.text.replace(/\{name\}/g, displayName(s))} instant={s.settings.reduceFx} />
-            : <div key={i} className="text-bone/90 opacity-70">{l.text.replace(/\{name\}/g, displayName(s))}</div>
+            l.who === 'player' ? <div key={i} className="text-right text-ember/90 italic">— {fillText(s, l.text)}</div>
+            : l.who === 'roll' ? <div key={i} className={`text-center text-xs font-mono rounded-md py-1 ${l.text.includes(T('Successo')) || l.text.includes(T('SUCCESSO CRITICO')) ? 'bg-teal-950/60 text-teal-200' : 'bg-red-950/60 text-red-200'}`}>{fillText(s, l.text)}</div>
+            : l.who === 'approval' ? <div key={i} className="text-center text-xs text-amber-200/90">{fillText(s, l.text)}</div>
+            : i === s.talk!.log.length - 1 ? <Typewriter key={i + l.text.length} text={fillText(s, l.text)} instant={s.settings.reduceFx} />
+            : <div key={i} className="text-bone/90 opacity-70">{fillText(s, l.text)}</div>
           ))}
           <div ref={end} />
         </div>
@@ -75,7 +75,7 @@ export function TalkOverlay({ state: s, act }: { state: GameState; act: Act }) {
                 className="w-full text-left rounded-lg border border-stone-700 hover:border-ember/70 hover:bg-white/5 disabled:opacity-40 px-3 py-2 text-sm text-bone flex flex-wrap gap-2 items-center">
                 <span className="text-ember">{i + 1}.</span>
                 {tag && <span className={`text-[10px] uppercase tracking-wide border rounded px-1.5 py-0.5 ${tag.cls}`}>{tag.label}</span>}
-                <span className="flex-1 min-w-[50%]">{c.text.replace(/\{name\}/g, displayName(s))}</span>
+                <span className="flex-1 min-w-[50%]">{fillText(s, c.text)}</span>
                 {!ok && <span className="text-[10px] text-red-300">{T('Requisito mancante')}</span>}
               </button>
             );

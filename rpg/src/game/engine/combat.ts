@@ -190,6 +190,11 @@ const BARKS: Record<string, { broken: string[]; virtue: string[] }> = {
   brann: { broken: [T('«Ho giurato… e ho fallito di nuovo.»')], virtue: [T('«Dietro di me. Tutti.»')] },
   mira: { broken: [T('«Brucia. Brucia tutto.»')], virtue: [T('«Una freccia. Un respiro. Un nome in meno.»')] },
 };
+Object.assign(BARKS, {
+  teodora: { broken: [T('«Ho scavato abbastanza fosse. Non la mia.»'), T('«Troppi nomi… troppi.»')], virtue: [T('«Questa notte non seppellisco nessuno.»'), T('«Alzatevi. Non ho finito con voi.»')] },
+  tarn: { broken: [T('«Le catene… le sento ancora.»'), T('«Il Culto aveva ragione su di me.»')], virtue: [T('«Mai più in ginocchio.»'), T('«Venite a prendermi, adesso!»')] },
+  ilyas: { broken: [T('«Quattro Cicli. Sempre la stessa fine.»'), T('«Vendimi e falla finita.»')], virtue: [T('«Questa volta scrivo io la mia riga.»'), T('«Ricordo tutto. Anche come si vince.»')] },
+});
 function bark(id: string, k: 'broken' | 'virtue') { const b = BARKS[id]?.[k] || [T('«…»')]; return b[Math.floor(Math.random() * b.length)]; }
 
 export function addWeight(s: GameState, c: CombatState | null, compId: string, v: number) {

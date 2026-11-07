@@ -3,7 +3,7 @@ import type { BiomeId, DelveState, GameState, Item, Slot } from '../types';
 import { BIOMES, BIOME_IDS, DUNGEON_MODIFIERS } from '../data/enemies';
 import { TALKERS } from '../data/dialogues';
 import { hashStr, mulberry32, pick, todayKey } from '../rng';
-import { addFlag, addRes, chronicle, displayName, hasFlag, toast } from './state';
+import { addFlag, addRes, chronicle, displayName, fillText, hasFlag, toast } from './state';
 import { addItem } from './hero';
 import { applyEffect } from './meta';
 import { reqOk } from './dialogue';
@@ -161,8 +161,23 @@ export function villageVoices(s: GameState, d: DelveState, success: boolean): { 
 // ------------------------------------------------------------
 // Doni ai compagni
 // ------------------------------------------------------------
-export const GIFT_LIKES: Record<string, Slot[]> = { kael: ['arma', 'scudo'], lyra: ['amuleto', 'anello'], brann: ['corazza', 'elmo', 'scudo'], mira: ['anello', 'stivali', 'arma'] };
+export const GIFT_LIKES: Record<string, Slot[]> = { kael: ['arma', 'scudo'], lyra: ['amuleto', 'anello'], brann: ['corazza', 'elmo', 'scudo'], mira: ['anello', 'stivali', 'arma'], teodora: ['amuleto', 'stivali'], tarn: ['corazza', 'arma'], ilyas: ['anello', 'amuleto'] };
 const GIFT_SCENES: Record<string, string[]> = {
+  teodora: [
+    T('Teodora rigira il dono, lo annusa, lo mette in tasca. «Non mi regalavano niente da quando è morto mio figlio. Va bene. Lo terrò per quando servirà a qualcuno.»'),
+    T('Teodora ti porta in un angolo del Cimitero e ti mostra una lapide liscia. «Questa è per te. Non ci scrivo niente. È una promessa che non la userò.» (Teodora accumula meno Peso.)'),
+    T('Teodora incide il tuo nome sul manico della pala, accanto a quello di suo figlio. «Così, se Krak riavvolge tutto, almeno qui resti.» (Teodora +10% salute e attacco.)'),
+  ],
+  tarn: [
+    T('Tarn guarda il dono come se fosse una trappola. Poi lo stringe così forte che gli sbiancano le nocche. «Nel Culto ci davano solo ordini.»'),
+    T('Tarn ti mostra le cicatrici sul petto, una per ogni rito a cui ha obbedito. «Le conto ogni notte. Da quando sei arrivato, conto più in fretta.» (Tarn accumula meno Peso.)'),
+    T('Tarn fonde l’ultimo anello delle sue catene e ne fa una medaglia con il tuo nome. «Ora le catene sono mie. E le porto per te.» (Tarn +10% salute e attacco.)'),
+  ],
+  ilyas: [
+    T('Ilyas sorride, sorpreso. «In quattro Cicli nessuno mi ha mai regalato niente. Mi hanno comprato, venduto, salvato. Mai regalato.»'),
+    T('Ilyas ti racconta come muore {legacy}, nel suo Ciclo. Poi ti dice come evitarlo. «Te lo dico perché questa volta voglio vederti arrivare in fondo.» (Ilyas accumula meno Peso.)'),
+    T('Ilyas scrive il tuo nome sul suo braccio, con l’inchiostro del Registro. «Così il prossimo Ciclo, se ricomincia, ti riconoscerò per primo.» (Ilyas +10% salute e attacco.)'),
+  ],
   kael: [
     T('Kael rigira il dono tra le mani. «Tomas mi regalava sempre cose inutili. Questo no. Questo… grazie.»'),
     T('Di notte Kael ti mostra una lettera mai spedita, scritta a suo fratello. Non la leggi. Lui la brucia nel fuoco, sollevato. (Kael accumula meno Peso.)'),
@@ -208,7 +223,7 @@ export function giveGift(s: GameState, compId: string, itemUid: string) {
   const tier = GIFT_TIERS.indexOf(c.gifts);
   if (tier >= 0 && GIFT_SCENES[compId]) {
     if (tier >= 1) addFlag(s, `gift${tier + 1}_${compId}`);
-    const text = GIFT_SCENES[compId][tier];
+    const text = fillText(s, GIFT_SCENES[compId][tier]);
     s.modal = { kind: 'info', title: T('💞 Scena privata: {c}', { c: c.name }), text };
     chronicle(s, T('Un momento con {c}: {text}', { c: c.name, text }), 'choice');
   }

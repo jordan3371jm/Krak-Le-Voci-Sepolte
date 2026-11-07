@@ -1,7 +1,9 @@
 import { t as T } from '../i18n';
 import { useEffect, useState } from 'react';
 import type { ClassId, GameState } from '../game/types';
-import { CLASSES } from '../game/data/core';
+import { CLASSES, COMPANIONS } from '../game/data/core';
+import { TALKERS } from '../game/data/dialogues';
+import { Face } from './Talk';
 import { FATE_CARDS } from '../game/data/world';
 import type { Act } from '../game/useGame';
 import { beginGame } from '../game/engine/village';
@@ -54,6 +56,20 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
         {newCycle && legacy && (
           <p className="mt-6 text-sm text-fate max-w-md">{T('L\'eco di {name} ({ending}) vaga ancora nella valle. Le tue Memorie: +{prod}% produzione, +{stats}% statistiche.', { name: legacy.name, ending: legacy.ending, prod: state.cycle.memorieTotal * 5, stats: Math.round(state.cycle.memorieTotal * 1.5) })}{card && <> {T('Carta del Destino:')} <b>{card.icon} {card.name}</b>.</>}</p>
         )}
+        {newCycle && (() => {
+          const faces = TALKERS.filter(tk => tk.appear?.cycle === state.cycle.n && !tk.id.endsWith('_t'));
+          const comps = COMPANIONS.filter(c => c.minCycle === state.cycle.n);
+          if (!faces.length && !comps.length) return <p className="mt-4 text-xs text-mist italic relative z-10">{T('La valle si è riavvolta. Ma chi ricorda, ricorda più di prima.')}</p>;
+          return (
+            <div className="mt-6 relative z-10 animate-rise">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-amber-300/80 mb-2">{T('Nuovi volti in questo Ciclo')}</p>
+              <div className="flex flex-wrap justify-center gap-4">
+                {faces.map(tk => <div key={tk.id} className="flex flex-col items-center w-24"><Face id={tk.id} emoji={tk.icon} tone={tk.tone} size={64} /><span className="text-xs text-bone mt-1">{tk.name}</span><span className="text-[10px] text-mist leading-tight">{tk.title}</span></div>)}
+                {comps.map(c => <div key={c.id} className="flex flex-col items-center w-24"><Face id={c.id} emoji={c.icon} tone="teal" size={64} /><span className="text-xs text-bone mt-1">{c.name}</span><span className="text-[10px] text-mist leading-tight">{T('Compagno reclutabile')}</span></div>)}
+              </div>
+            </div>
+          );
+        })()}
         <div className="mt-10">
           <Btn kind="ember" onClick={() => { initAudio(); sfx.door(); setStep(1); }}>{line < VISION.length - 1 ? T('Salta ›') : T('Entra nella valle')}</Btn>
         </div>

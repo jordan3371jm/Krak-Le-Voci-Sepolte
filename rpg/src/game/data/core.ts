@@ -151,7 +151,7 @@ export const DISSONANCE_SKILLS = ['patto_oscuro', 'tradimento', 'rogo_provviste'
 // ------------------------------------------------------------
 // COMPAGNI
 // ------------------------------------------------------------
-export interface CompanionDef { id: string; name: string; icon: string; role: string; row: 'front' | 'back'; base: { maxHp: number; atk: number; def: number; speed: number }; skills: string[]; recruitCost?: { cenere: number; reliquie?: number }; faction?: FactionId; bio: string }
+export interface CompanionDef { id: string; name: string; icon: string; role: string; row: 'front' | 'back'; base: { maxHp: number; atk: number; def: number; speed: number }; skills: string[]; recruitCost?: { cenere: number; reliquie?: number }; faction?: FactionId; bio: string; minCycle?: number; joinsByStory?: string }
 export const COMPANIONS: CompanionDef[] = [
   { id: 'kael', name: t('Kael'), icon: '🧔', role: t('Spadaccino'), row: 'front', base: { maxHp: 70, atk: 11, def: 5, speed: 7 }, skills: ['c_lama_rapida'], bio: t('Fratello di Tomas. Ti segue, ma non ha ancora deciso se perdonarti.') },
   { id: 'lyra', name: t('Lyra'), icon: '👩‍⚕️', role: t('Guaritrice'), row: 'back', base: { maxHp: 55, atk: 8, def: 3, speed: 8 }, skills: ['c_toccasana', 'c_lama_rapida'], faction: 'guaritori', bio: t('Allieva di Elara. Cura chiunque, anche chi non lo merita.') },
@@ -203,3 +203,6 @@ export const TALENTS: TalentDef[] = [
   { id: 'ri3', via: 'rivolta', tier: 3, requires: 'ri2', name: t('Caos'), desc: t('La Dissonanza costa 1 in meno per azione'), special: 'cheap_dis' },
   { id: 'ri4', via: 'rivolta', tier: 4, requires: 'ri3', name: t('Fuoco della Rivolta'), desc: t('+8 attacco, +10% critico'), stats: { atk: 8, crit: 10 } },
 ];
+
+import { CYCLE_COMPANIONS } from './cycles';
+COMPANIONS.push(...CYCLE_COMPANIONS);

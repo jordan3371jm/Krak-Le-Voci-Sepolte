@@ -1,6 +1,7 @@
 import type { BiomeId, ClassId, FactionId, FardelloId, Resources } from '../types';
 import type { Effect } from './events';
 import { t } from '../../i18n';
+import { CYCLE_TALKERS, CYCLE_QUESTS, CYCLE_DIALOGUES, CYCLE_ENTRIES } from './cycles';
 
 // ============================================================
 // DIALOGHI RAMIFICATI, PERSONAGGI E MISSIONI SECONDARIE
@@ -19,6 +20,7 @@ export interface DReq {
   floor?: Partial<Record<BiomeId, number>>;
   companion?: string; trust?: Record<string, number>;
   quest?: Record<string, number>;
+  cycle?: number; maxCycle?: number;   // da quale Ciclo (e fino a quale) compare
 }
 
 export interface DChoice {
@@ -419,3 +421,16 @@ export const DIALOGUES: Record<string, Dialogue> = {
 // ------------------------------------------------------------
 // Eventi di dungeon legati alle missioni (agganciati agli EVENTS)
 // ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// Contenuti dei Cicli successivi (personaggi, missioni, righe nuove)
+// ------------------------------------------------------------
+TALKERS.push(...CYCLE_TALKERS);
+Object.assign(QUESTS, CYCLE_QUESTS);
+Object.assign(DIALOGUES, CYCLE_DIALOGUES);
+for (const [npc, add] of Object.entries(CYCLE_ENTRIES)) {
+  const d = DIALOGUES[npc];
+  if (!d) continue;
+  d.entries.unshift(add.entry);
+  Object.assign(d.nodes, add.nodes);
+}

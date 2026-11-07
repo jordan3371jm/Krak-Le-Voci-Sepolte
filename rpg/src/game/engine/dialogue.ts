@@ -58,6 +58,8 @@ export function reqOk(s: GameState, r?: DReq): boolean {
   if (r.floor) for (const [b, v] of Object.entries(r.floor)) if (((s.biomes as any)[b]?.best || 0) < (v || 0)) return false;
   if (r.companion && !s.companions.find(c => c.id === r.companion && c.recruited && !c.left)) return false;
   if (r.trust) for (const [id, v] of Object.entries(r.trust)) { const c = s.companions.find(c => c.id === id); if (!c || c.trust < (v || 0)) return false; }
+  if (r.cycle && s.cycle.n < r.cycle) return false;
+  if (r.maxCycle && s.cycle.n > r.maxCycle) return false;
   if (r.quest) for (const [q, st] of Object.entries(r.quest)) if (questStage(s, q) !== st) return false;
   return true;
 }

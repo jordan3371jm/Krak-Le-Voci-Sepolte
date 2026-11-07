@@ -326,3 +326,6 @@ export const PROMISES: Record<string, PromiseDef> = {
   p_menzogna: { id: 'p_menzogna', text: t('Manterrò la menzogna sulla sorte di Tomas.'), deadline: 6, brokenFlag: 'told_truth', keepOnExpire: true },
   p_nessuno: { id: 'p_nessuno', text: t('Non lascerò indietro nessuno.'), deadline: 4, brokenFlag: 'betrayed', keepOnExpire: true },
 };
+
+import { CYCLE_EVENTS } from './cycles';
+EVENTS.push(...CYCLE_EVENTS);

@@ -29,7 +29,7 @@ export function newGame(): GameState {
     reliquie: 0,
     totals: {},
     village: { buildings: {}, upgrades: [] },
-    companions: COMPANIONS.map(c => ({ id: c.id, name: c.name, icon: c.icon, role: c.role, level: 1, xp: 0, trust: 60, hp: 1, recruited: !c.recruitCost, inParty: !c.recruitCost, mission: null })),
+    companions: COMPANIONS.map(c => ({ id: c.id, name: c.name, icon: c.icon, role: c.role, level: 1, xp: 0, trust: 60, hp: 1, recruited: !c.recruitCost && !c.joinsByStory, inParty: !c.recruitCost && !c.joinsByStory, mission: null })),
     resonance: 0, dissonance: 0, corruption: 10,
     factions, flags: [], chronicle: [], promises: [], fragments: [],
     delve: null,
@@ -97,7 +97,8 @@ export function displayName(s: GameState): string {
   return s.playerName.split('').map((c, i) => (i % 2 ? '̷' + c : c)).join('');
 }
 export function fillText(s: GameState, t: string): string {
-  return t.replace(/\{name\}/g, displayName(s)).replace(/\{fardello\}/g, s.fardello ? FARDELLI[s.fardello].name : T('nessun Fardello'));
+  return t.replace(/\{name\}/g, displayName(s)).replace(/\{fardello\}/g, s.fardello ? FARDELLI[s.fardello].name : T('nessun Fardello'))
+    .replace(/\{legacy\}/g, s.legacies[0]?.name || T('il portatore di prima')).replace(/\{cycle\}/g, String(s.cycle.n));
 }
 
 // ---------------- Risorse ----------------
