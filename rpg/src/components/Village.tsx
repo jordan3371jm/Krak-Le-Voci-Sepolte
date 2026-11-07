@@ -27,6 +27,13 @@ import { adMode, showRewarded } from '../game/platform';
 // ------------------------------------------------------------
 // La Notte del Portale: la prima scelta morale (crea il Fardello)
 // ------------------------------------------------------------
+// Ciò che accade quella notte, qualunque voce tu scelga: è il canone su cui poggiano tutti i dialoghi.
+const AFTER: Record<FardelloId, string> = {
+  sacrificio: T('Tomas cade nella luce senza un grido. Il portale si richiude su di lui come una bocca. Kael resta in ginocchio davanti al sigillo fino all’alba, e non ti chiede niente. Non ancora.'),
+  sangue: T('Mentre stringi la mano di Vesper, Tomas si getta da solo nel sigillo: Kael non ne ha avuto il coraggio, e tu non c’eri. Il portale si chiude. Il bambino di Elara respira. Ilyas sparisce nel fumo, tra le braccia del Culto.'),
+  silenzio: T('Resti immobile. Vedi il portale strappare Tomas dalle mani di Kael. Vedi una figura con un occhio cucito sul mantello allontanarsi tra le fiamme. Il portale si chiude da solo, sazio. Nessuno ha visto te.'),
+};
+
 const NIGHT: { f: FardelloId; npc: string; icon: string; who: string; text: string; choice: string; hint: string }[] = [
   { f: 'sacrificio', npc: 'Kael', icon: '🧔', who: T('Kael, spadaccino'), text: T('«Il portale si allarga! Tomas, mio fratello, è il più vicino al sigillo. Se qualcuno lo spinge dentro, il portale si chiude con lui.»'), choice: T('Sigillare il portale sacrificando Tomas'), hint: T('Fardello pesante: colpi potenti, Risonanza proteggendo gli altri') },
   { f: 'sangue', npc: 'Vesper', icon: '🕯️', who: T('Vesper, emissario del Culto'), text: T('«Il bambino di Elara muore avvelenato. Il Culto ha l\'antidoto. Il prezzo? Quel profugo, Ilyas. Consegnacelo.»'), choice: T('Consegnare Ilyas al Culto per salvare il bambino'), hint: T('Fardello pesantissimo: rubavita e attacco, il Culto ti chiama fratello') },
@@ -95,6 +102,7 @@ export function PortalScreen({ act }: { act: Act }) {
           {commit !== null && (() => { const N = NIGHT[commit]; const F = FARDELLI[N.f]; return (
             <div className="text-center">
               <p className="text-amber-200 font-semibold">{N.choice}</p>
+              <p className="text-sm text-bone/80 italic mt-3 max-w-lg mx-auto leading-relaxed">{AFTER[N.f]}</p>
               <div className="flex items-center justify-center gap-3 my-4"><Icon name={N.f} size={72} /><div className="text-left"><p className="text-[10px] uppercase tracking-widest text-mist">{T('Fardello')}</p><p className="text-bone font-display">{F.name}</p><p className="text-[11px] text-mist">{N.hint}</p></div></div>
               <p className="text-xs text-mist mb-4 max-w-md mx-auto">{F.origin}{' '}{T('Non potrai tornare indietro.')}</p>
               <div className="flex flex-wrap justify-center gap-2">
@@ -110,31 +118,6 @@ export function PortalScreen({ act }: { act: Act }) {
       </div>
     </div>
   );
-}
-
-// ------------------------------------------------------------
-// PNG che ricordano
-// ------------------------------------------------------------
-const NPCS: { id: string; name: string; icon: string; faction: FactionId }[] = [
-  { id: 'elara', name: 'Elara', icon: '🌿', faction: 'guaritori' },
-  { id: 'marcus', name: 'Marcus', icon: '⚔️', faction: 'capitale' },
-  { id: 'vesper', name: 'Vesper', icon: '🕯️', faction: 'culto' },
-];
-function npcLine(s: GameState, id: string): string {
-  const n = displayName(s);
-  const st = repState(s, NPCS.find(x => x.id === id)!.faction);
-  if (s.aberration && id !== 'vesper') return id === 'elara' ? T('"Cosa… cosa ti sei fatto? Posso ancora curarti, se me lo permetti."') : T('"Stai lontano dalla piazza, mostro. La gente ha paura."');
-  if (s.nameCorrupted) return T('"…Come ti chiamavi? Ce l\'ho sulla punta della lingua."');
-  if (id === 'elara') {
-    if (hasFlag(s, 'child_fed')) return T('"{n}, il bambino ha chiesto di te oggi. Ha detto il tuo nome per la prima volta."', { n: n });
-    return ({ Adorato: T('"{n}, la mia casa è la tua."', { n: n }), Fidato: T('"Siediti, {n}. Ti cambio le bende."', { n: n }), Tollerato: T('"{n}. Hai bisogno di cure, o di perdono?"', { n: n }), Ignorato: T('"Un altro portatore. Spero tu sia diverso dagli altri."'), Temuto: T('"Non… non farmi del male, {n}."', { n: n }), Bandito: T('"Fuori dalla mia infermeria."'), Marchiato: T('"Hai il marchio del Culto addosso. Vattene."') } as Record<string, string>)[st];
-  }
-  if (id === 'marcus') {
-    if (hasFlag(s, 'burned_edict')) return T('"Hai bruciato l\'editto della Capitale. Lo ricorderò, portatore."');
-    return ({ Adorato: T('"Portatore {n}! La Capitale ha bisogno di uomini come te."', { n: n }), Fidato: T('"{n}. Un rapporto, prego."', { n: n }), Tollerato: T('"Muoviti. Ho una guarnigione da sfamare."'), Ignorato: T('"Chi sei? Non mi interessa. Circola."'), Temuto: T('"…Prego, passa pure."'), Bandito: T('"Un altro passo e ti faccio arrestare."'), Marchiato: T('"Ricercato. Vivo o morto."') } as Record<string, string>)[st];
-  }
-  if (s.fardello === 'sangue') return T('"Fratello {n}. Il Culto non dimentica chi gli ha dato un figlio."', { n: n });
-  return ({ Adorato: T('"{n}, la Fonte ti attende."', { n: n }), Fidato: T('"Il Culto ti osserva con favore."'), Tollerato: T('"Ogni potere ha un prezzo. Sempre."'), Ignorato: T('"La valle muore. Solo il Culto può salvarla… o distruggerla."'), Temuto: T('"Anche il Culto sa riconoscere un predatore."'), Bandito: '"Eretico."', Marchiato: T('"Il tuo sangue sarà nostro."') } as Record<string, string>)[st];
 }
 
 // ------------------------------------------------------------
@@ -326,7 +309,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
         {/* Persone, storie e servizi */}
         <div className="space-y-4">
 
-          {isUnlocked(s, 'f_volti') && <TalkersPanel state={s} act={act} />}
+          {totalBuildings(s) >= 1 && <TalkersPanel state={s} act={act} />}
 
           {isUnlocked(s, 'f_stagno') && <Pond state={s} act={act} />}
 

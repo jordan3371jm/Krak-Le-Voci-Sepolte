@@ -44,8 +44,8 @@ export function setKrakLevel(s: GameState, n: number) {
 // ------------------------------------------------------------
 interface OmenDef { id: string; icon: string; text: string; fail: string; apply: (s: GameState) => void }
 export const OMENS: OmenDef[] = [
-  { id: 'culto', icon: '🩸', text: T('Il Culto verrà a prendere i figli del mugnaio. Raggiungi il piano {floor} di {biome} per spezzare il loro rito.'),
-    fail: T('Il Culto è venuto nella notte. La casa del mugnaio è vuota, e nessuno ti guarda più negli occhi.'),
+  { id: 'culto', icon: '🩸', text: T('Il Culto verrà a prendere i figli dei Bertoldo. Raggiungi il piano {floor} di {biome} per spezzare il loro rito.'),
+    fail: T('Il Culto è venuto nella notte. La fattoria dei Bertoldo è vuota, e nessuno ti guarda più negli occhi.'),
     apply: s => applyEffect(s, { factions: { culto: 8, contadini: -15 }, prosperity: -10, flags: ['omen_culto_failed'] }) },
   { id: 'pozzo', icon: '🪣', text: T('Il pozzo di Hondovalle verrà avvelenato. Scendi al piano {floor} di {biome} e trova chi lo vuole morto.'),
     fail: T('L’acqua del pozzo è diventata nera. Metà delle provviste è marcita.'),
@@ -135,21 +135,21 @@ export function villageVoices(s: GameState, d: DelveState, success: boolean): { 
     add('sibilla', T('Per un istante il dungeon ha smesso di battere. La mia mappa si è zittita. Sei stato tu?'), 4);
     add('orsola', T('Stasera la birra è gratis. Non per te: per chi ha smesso di avere incubi grazie a te.'), 3);
   }
-  if (reached >= 10) add('varo', T('Così in fondo? Laggiù i nomi pesano di più. Se ne hai portato su qualcuno, te lo compro.'), 3);
+  if (reached >= 10) add('varo', T('Così in fondo? Laggiù i nomi pesano di più. Se ne avete portato su qualcuno, ve lo compro.'), 3);
   if (dCorr >= 5) { add('nym', T('Hai portato su qualcosa. Lo sento muoversi sotto la tua pelle. Non dargli il tuo nome.'), 4); add('orsola', T('Hai gli occhi di chi è stato troppo vicino al Cuore. Stanotte la candela resta accesa per te.'), 2); }
   if (dCorr <= -5) add('sibilla', T('La tua ombra è più leggera. Le linee della mappa ti seguono di nuovo.'), 2);
   if (broken > 0) { add('orsola', T('In paese si dice che la tua parola valga meno della cenere. Io non lo dico. Ma lo sento dire.'), 4); add('garrik', T('Una promessa infranta è un debito con gli interessi. Lo so bene.'), 3); }
   for (const c of s.companions.filter(c => c.recruited && !c.left)) {
-    if (c.mood === 'broken') add('garrik', T('{c} non parla da quando siete tornati. Ho visto quello sguardo in guerra. Dagli tempo.').replace('{c}', c.name), 5);
-    if (c.mood === 'virtue') add('sibilla', T('{c} brilla di una luce strana. Qualcosa laggiù l’ha reso più forte di te.').replace('{c}', c.name), 5);
+    if (c.mood === 'broken') add('garrik', T('{c} non parla da quando siete tornati. Ho visto quello sguardo in guerra. Lascia che il tempo faccia il suo lavoro.').replace('{c}', c.name), 5);
+    if (c.mood === 'virtue') add('sibilla', T('{c} brilla di una luce strana. Qualcosa, laggiù, ha acceso in quel cuore una forza che tu non hai.').replace('{c}', c.name), 5);
   }
-  if (loot >= 300) add('varo', T('Bisaccia piena, eh? Le Ombre del Mercato annusano già l’aria. Passa da me prima che passino loro.'), 2);
+  if (loot >= 300) add('varo', T('Bisaccia piena, eh? Le Ombre del Mercato annusano già l’aria. Passate da me prima che passino loro da voi.'), 2);
   if (d.daily) add('sibilla', T('La Sfida del giorno è uguale per tutti i portatori della valle. Oggi il tuo nome è sulla mappa.'), 2);
   if (success && reached <= 2) add('garrik', T('Due piani e già risali? Prudente. Mi piace. I prudenti invecchiano.'), 1);
   if (success) {
     add('orsola', T('Hai l’odore del sottosuolo addosso. Siediti, la zuppa è ancora calda.'), 1);
     add('nym', T('Hanno chiesto di te, laggiù. Ho detto che saresti tornato. Ho detto bene?'), 1);
-    add('varo', T('Ogni volta che risali, la valle ti ricorda un po’ meglio. E il ricordo, amico mio, ha un prezzo.'), 1);
+    add('varo', T('Ogni volta che risalite, la valle vi ricorda un po’ meglio. E il ricordo, amico mio, ha un prezzo.'), 1);
   }
   if (!cand.length) return [];
   cand.sort((a, b) => b.w - a.w + (Math.random() - 0.5) * 1.5);

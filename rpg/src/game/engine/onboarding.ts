@@ -22,8 +22,6 @@ export const UNLOCKS: UnlockDef[] = [
     codex: t('Hondovalle Bassa è la tua base. Raccogli a mano, costruisci edifici e lascia che producano risorse da soli: il villaggio lavora anche quando il gioco è chiuso.') },
   { id: 'f_edifici', kind: 'feature', name: t('Edifici'), icon: 'segheria', cond: s => s.res.legno >= 5 || totalBuildings(s) > 0 || s.res.cenere >= 12,
     codex: t('Ogni edificio produce una risorsa al secondo. Ogni copia costa il 15% in più della precedente. A 10, 25, 50 e 100 copie compaiono miglioramenti che raddoppiano la produzione.') },
-  { id: 'f_volti', kind: 'feature', name: t('Volti di Hondovalle'), icon: 'compagni', cond: s => totalBuildings(s) >= 1,
-    codex: t('Elara, Marcus e Vesper ricordano le tue scelte. Le loro parole cambiano con la reputazione della loro fazione, con il tuo nome e con ciò che sei diventato.') },
   { id: 'f_produzione', kind: 'feature', name: t('Produzione'), icon: 'bottega', cond: s => totalBuildings(s) >= 2,
     codex: t('Qui vedi quanto produce il villaggio al minuto. Imprese, Memorie, carte e stato della Valle moltiplicano la produzione.') },
   { id: 'discesa', kind: 'tab', name: t('Discesa'), icon: 'discesa', cond: s => (s.village.buildings.segheria || 0) >= 1 || (s.village.buildings.capanna || 0) >= 1 || (s.totals.delves || 0) > 0,
