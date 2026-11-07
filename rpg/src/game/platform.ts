@@ -5,12 +5,56 @@
 // (stato `rewarded`). Senza piattaforma (file locale) il pulsante diventa
 // un piccolo dono della valle, usabile alle stesse condizioni.
 // ============================================================
+import { kvInit, bridgeActive } from './kv';
+import { setExternalMute } from './audio';
+
 const w = () => (typeof window !== 'undefined' ? (window as any) : {});
+
+// ------------------------------------------------------------
+// Avvio: Bridge si inizializza PRIMA che il gioco carichi testi e salvataggi.
+// ------------------------------------------------------------
+let audioAllowed = true, paused = false, adOpen = false;
+const applyMute = () => setExternalMute(!audioAllowed || paused || adOpen || (typeof document !== 'undefined' && document.hidden));
+
+export async function bootPlatform(keys: string[]) {
+  const b = w().bridge;
+  if (b?.initialize) {
+    try { await Promise.race([b.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 10_000))]); } catch { /* si gioca comunque */ }
+  }
+  if (bridgeActive()) {
+    await kvInit(keys);
+    try {
+      audioAllowed = b.platform.isAudioEnabled !== false;
+      const E = b.EVENT_NAME || {};
+      b.platform.on?.(E.AUDIO_STATE_CHANGED || 'audio_state_changed', (on: boolean) => { audioAllowed = on !== false; applyMute(); });
+      b.platform.on?.(E.PAUSE_STATE_CHANGED || 'pause_state_changed', (p: boolean) => { paused = !!p; applyMute(); });
+      b.advertisement?.on?.(E.INTERSTITIAL_STATE_CHANGED || 'interstitial_state_changed', (st: string) => { adOpen = st === 'opened'; applyMute(); });
+      b.advertisement?.on?.(E.REWARDED_STATE_CHANGED || 'rewarded_state_changed', (st: string) => { adOpen = st === 'opened'; applyMute(); });
+    } catch { /* */ }
+  }
+  if (typeof document !== 'undefined') document.addEventListener('visibilitychange', applyMute);
+  applyMute();
+}
+
+/** Il primo fotogramma giocabile è pronto: la piattaforma nasconde il suo caricamento. */
+let readySent = false;
+export function gameReady() {
+  if (readySent) return; readySent = true;
+  try { w().bridge?.platform?.sendMessage?.('game_ready'); } catch { /* */ }
+}
+/** Messaggi di ciclo di vita (inizio/fine livello) per le piattaforme che li usano. */
+export function platformMessage(msg: 'level_started' | 'level_completed' | 'level_failed' | 'player_got_achievement', data?: Record<string, string>) {
+  try { w().bridge?.platform?.sendMessage?.(msg, data); } catch { /* */ }
+}
+/** Pausa naturale (ritorno dal dungeon, fine Ciclo): Bridge decide se mostrare davvero un annuncio. */
+export function interstitial(placement = 'pause') {
+  try { const a = w().bridge?.advertisement; if (a?.showInterstitial && bridgeActive()) a.showInterstitial(placement); } catch { /* */ }
+}
 
 export type AdMode = 'bridge' | 'crazy' | 'none';
 export function adMode(): AdMode {
   const b = w().bridge;
-  if (b?.advertisement && b.advertisement.isRewardedSupported !== false) return 'bridge';
+  if (bridgeActive() && b?.advertisement && b.advertisement.isRewardedSupported) return 'bridge';
   if (w().CrazyGames?.SDK?.ad?.requestAd) return 'crazy';
   return 'none';
 }
@@ -48,10 +92,10 @@ export function showRewarded(placement = 'reward'): Promise<boolean> {
 export function submitScore(id: string, score: number) {
   try {
     const lb = w().bridge?.leaderboards;
-    if (lb?.setScore && lb.type && lb.type !== 'not_available') lb.setScore(id, score)?.catch?.(() => {});
+    if (bridgeActive() && lb?.setScore && lb.type && lb.type !== 'not_available') lb.setScore(id, score)?.catch?.(() => {});
   } catch { /* nessuna classifica */ }
 }
 export function hasLeaderboard() {
   const lb = w().bridge?.leaderboards;
-  return !!lb && !!lb.type && lb.type !== 'not_available';
+  return bridgeActive() && !!lb && !!lb.type && lb.type !== 'not_available';
 }

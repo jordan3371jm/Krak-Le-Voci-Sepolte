@@ -19,6 +19,7 @@ let musicWet: GainNode | null = null;
 let sfxBus: GainNode | null = null;
 let reverb: ConvolverNode | null = null;
 let musicOn = true;
+let extMuted = false;   // la piattaforma (pubblicità, scheda nascosta, pausa) chiede il silenzio
 let sfxOn = true;
 let musicVol = 0.55;
 let sched: number | null = null;
@@ -47,7 +48,7 @@ export function initAudio() {
     ctx = new AC();
     const comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -18; comp.ratio.value = 3;
-    master = ctx.createGain(); master.gain.value = 0.8;
+    master = ctx.createGain(); master.gain.value = extMuted ? 0 : 0.8;
     master.connect(comp); comp.connect(ctx.destination);
     reverb = ctx.createConvolver(); reverb.buffer = impulse(ctx, 4.2, 2.6);
     musicBus = ctx.createGain(); musicBus.gain.value = musicOn ? musicVol : 0;
@@ -71,6 +72,14 @@ function impulse(c: AudioContext, secs: number, decay: number) {
     for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
   }
   return buf;
+}
+
+/** Silenzio imposto dalla piattaforma: azzera il volume generale e sospende l'audio. */
+export function setExternalMute(on: boolean) {
+  extMuted = on;
+  if (!ctx || !master) return;
+  master.gain.setTargetAtTime(on ? 0 : 0.8, ctx.currentTime, 0.05);
+  if (on) ctx.suspend().catch(() => {}); else ctx.resume().catch(() => {});
 }
 
 export function setMusic(on: boolean) {

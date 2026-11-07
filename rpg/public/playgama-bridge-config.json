@@ -1,0 +1,21 @@
+{
+    "advertisement": {
+        "interstitial": {
+            "placements": [
+                { "id": "delve_end" },
+                { "id": "cycle_end" }
+            ]
+        },
+        "rewarded": {
+            "placementFallback": "reward",
+            "placements": [
+                { "id": "double_offline" },
+                { "id": "recover_satchel" },
+                { "id": "reward" }
+            ]
+        }
+    },
+    "leaderboards": [
+        { "id": "krak_daily", "isMain": true }
+    ]
+}

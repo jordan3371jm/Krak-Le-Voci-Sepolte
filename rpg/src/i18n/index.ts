@@ -1,3 +1,4 @@
+import { kvGet, kvSet } from '../game/kv';
 // ============================================================
 // Localizzazione. Le chiavi sono le frasi italiane originali
 // (stile gettext): t("frase", { n: 3 }).
@@ -46,7 +47,7 @@ function normalize(code: string | undefined | null): Lang | null {
 
 function detect(): Lang {
   try {
-    const saved = normalize(localStorage.getItem(LS_KEY));
+    const saved = normalize(kvGet(LS_KEY));
     if (saved) return saved;
   } catch { /* storage non disponibile */ }
   // Piattaforme (Playgama Bridge / CrazyGames) possono esporre la lingua del giocatore
@@ -61,7 +62,7 @@ export const getLang = () => lang;
 
 // Cambiare lingua ricarica la pagina: i testi dei dati vengono tradotti al caricamento.
 export function setLang(l: Lang) {
-  try { localStorage.setItem(LS_KEY, l); } catch { /* ignora */ }
+  try { kvSet(LS_KEY, l); } catch { /* ignora */ }
   lang = l;
   document.documentElement.lang = l;
 }

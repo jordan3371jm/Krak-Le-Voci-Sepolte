@@ -17,6 +17,7 @@ import Compass from './components/Compass';
 import Modals from './components/Modals';
 import { TalkOverlay } from './components/Talk';
 import { KrakWake } from './components/KrakWake';
+import { gameReady, interstitial, platformMessage } from './game/platform';
 import { BG } from './components/art';
 import { Eyes, Fog, Particles, Whispers } from './components/Atmosphere';
 import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from './components/Screens';
@@ -27,6 +28,21 @@ export default function App() {
   const screenKey = s.combat ? 'c' : s.delve ? 'd' + (s.delve.room ? 'r' : '') : s.tab;
   const [fresh, setFresh] = useState(true);
   useEffect(() => { setFresh(true); const tm = window.setTimeout(() => setFresh(false), 750); return () => window.clearTimeout(tm); }, [screenKey]);
+
+  // ---------------- piattaforma (Playgama Bridge) ----------------
+  useEffect(() => { const id = window.setTimeout(gameReady, 300); return () => window.clearTimeout(id); }, []);
+  const inDelve = !!s.delve;
+  const delveBiome = s.delve?.biome;
+  const wasDelve = useRef(inDelve);
+  useEffect(() => {
+    if (inDelve && !wasDelve.current) platformMessage('level_started', { world: delveBiome || '', level: String(s.delve?.floor || 1) });
+    if (!inDelve && wasDelve.current) {
+      platformMessage(s.lastReport?.good === false ? 'level_failed' : 'level_completed');
+      interstitial('delve_end');
+    }
+    wasDelve.current = inDelve;
+  }, [inDelve]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (s.scene === 'ending') interstitial('cycle_end'); }, [s.scene]);
 
   // ---------------- audio come sistema ----------------
   useEffect(() => { setMusic(s.settings.music); }, [s.settings.music]);
