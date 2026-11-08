@@ -346,6 +346,8 @@ const EMOJI_ART: Record<string, string[]> = {
   '🛡️': ['equipaggiamento', 'eroe'], '🚪': ['porte', 'event'], '🗝️': ['chiave', 'treasure'], '💾': ['salvataggio', 'diario'], '👹': ['bestiario', 'boss'],
   '⚱️': ['reliquie'], '🌾': ['fazione_contadini'], '🏚️': ['rovine'], '💧': ['pozione'], '💰': ['treasure'], '📓': ['diario'], '📚': ['cantastorie'],
   '🔥': ['custode'], '🔮': ['intuizione'], '🗡️': ['lama'], '🗿': ['santuari'], '🦴': ['scheletro'], '🧒': ['predone'], '🩸': ['sangue'], '🪦': ['custode_lapidi'], '🪨': ['pietra'],
+  '🌉': ['oltre'], '⛪': ['penitente'], '⛓️': ['promessa'], '🌀': ['portale'], '🌿': ['boschi'], '🍺': ['locanda'], '🎀': ['eco_muta'], '👧': ['eco_muta'], '🧔': ['predone'],
+  '🔔': ['campanaro'], '🛶': ['annegato'], '🪞': ['shadow_mirror'], '👁️‍🗨️': ['veggente'],
   '🏆': ['imprese', 'reliquie'], '🌙': ['sogni', 'rito'], '🃏': ['carte_destino', 'fardello'], '✅': ['piano_superato', 'discesa'], '🕯️': ['shrine', 'altare'],
 };
 const emojiArt = (n: string) => { for (const k of EMOJI_ART[n] || []) { const a = artFor(k); if (a) return a; } return undefined; };
