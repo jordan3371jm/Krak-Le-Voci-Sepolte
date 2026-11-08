@@ -252,7 +252,7 @@ export function Journal({ state: s, act }: { state: GameState; act: Act }) {
       {tab === 'imprese' && (
         <Panel title={T('Imprese {achievements}/{ACHIEVEMENTS}', { achievements: s.achievements.length, ACHIEVEMENTS: ACHIEVEMENTS.length })} icon="🏆" right={<span className="text-xs text-amber-300">+{s.achievements.length * 2}{T('% produzione')}</span>}>
           <div className="grid sm:grid-cols-2 gap-2">
-            {ACHIEVEMENTS.map(a => <div key={a.id} className={`rounded border p-2 text-xs ${s.achievements.includes(a.id) ? 'border-amber-500 text-amber-100' : 'border-stone-800 text-mist opacity-60'}`}><b>{s.achievements.includes(a.id) ? '🏆' : '🔒'} {a.name}</b><div>{a.desc}</div></div>)}
+            {ACHIEVEMENTS.map(a => <div key={a.id} className={`rounded border p-2 text-xs ${s.achievements.includes(a.id) ? 'border-amber-500 text-amber-100' : 'border-stone-800 text-mist opacity-60'}`}><b className="flex items-center gap-1.5"><Icon name={pick('impresa_', a.id, 'imprese')} size={28} className={s.achievements.includes(a.id) ? '' : 'grayscale'} /> {a.name}</b><div>{a.desc}</div></div>)}
           </div>
         </Panel>
       )}

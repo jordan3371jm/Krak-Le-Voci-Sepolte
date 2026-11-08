@@ -211,7 +211,7 @@ function Pond({ state: s, act }: { state: GameState; act: Act }) {
         <div className="text-xs text-bone/80 mt-1">{msg}</div>
       </button>
       <p className="text-[11px] text-mist mt-2">{T('Ogni specie è una memoria della valle: +1% produzione per sempre. Memorie:')}{' '}{s.fish.length}/{FISH.length}{hasGoldenRod(s) ? T(' · 🏆 Canna d\'oro') : ''}</p>
-      <div className="flex flex-wrap gap-1 mt-1">{FISH.map(f => <span key={f.id} title={s.fish.includes(f.id) ? `${f.name}: ${f.lore}` : '???'} className={s.fish.includes(f.id) ? '' : 'opacity-20 grayscale'}>{f.icon}</span>)}</div>
+      <div className="flex flex-wrap gap-1 mt-1">{FISH.map(f => <span key={f.id} title={s.fish.includes(f.id) ? `${f.name}: ${f.lore}` : '???'} className={s.fish.includes(f.id) ? '' : 'opacity-20 grayscale'}><Icon name={pick('pesce_', f.id, f.icon)} size={34} /></span>)}</div>
     </Panel>
   );
 }
