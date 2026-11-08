@@ -18,7 +18,7 @@ import Modals from './components/Modals';
 import { TalkOverlay } from './components/Talk';
 import { KrakWake } from './components/KrakWake';
 import { gameReady, interstitial, platformMessage } from './game/platform';
-import { hasTrack, playTrack } from './game/music';
+import { hasTrack, playClip, playTrack } from './game/music';
 import { setRecorded } from './game/audio';
 import { BG } from './components/art';
 import { Eyes, Fog, Particles, Whispers } from './components/Atmosphere';
@@ -54,6 +54,22 @@ export default function App() {
     const root = s.combat ? (s.combat.kind === 'boss' ? 41 : 49) : s.delve ? BIOMES[s.delve.biome].drone : 55;
     setMood({ scene: s.scene !== 'game' ? 'menu' : s.combat ? (s.combat.kind === 'boss' || s.combat.kind === 'shadow' || s.combat.kind === 'trial' ? 'boss' : 'combat') : s.delve ? 'delve' : 'village', root, corruption: s.corruption, fullscreen: s.fullscreen, intensity: s.combat ? 1 : s.delve ? 0.5 : 0.1, silent: s.dissonance >= 15 });
   }, [s.scene, s.combat?.kind, !!s.combat, s.delve?.biome, Math.round(s.corruption / 10), s.fullscreen, s.dissonance >= 15]); // eslint-disable-line react-hooks/exhaustive-deps
+  // effetti registrati nei momenti chiave
+  const phase = s.combat?.phase;
+  useEffect(() => { if (phase === 'won') playClip('vittoria'); if (phase === 'lost') playClip('sconfitta'); }, [phase]);
+  const lvl = useRef(s.hero.level);
+  useEffect(() => { if (s.hero.level > lvl.current) playClip('livello'); lvl.current = s.hero.level; }, [s.hero.level]);
+  const fard = useRef(s.fardello);
+  useEffect(() => { if (s.fardello && !fard.current) playClip('fardello', 1); fard.current = s.fardello; }, [s.fardello]);
+  const om = useRef(s.omens.length);
+  useEffect(() => { if (s.omens.length > om.current) playClip('presagio'); om.current = s.omens.length; }, [s.omens.length]);
+  const moods = s.companions.map(c => c.mood || '').join(',');
+  const prevMoods = useRef(moods);
+  useEffect(() => {
+    const a = prevMoods.current.split(','), b = moods.split(',');
+    b.forEach((m, i) => { if (m !== a[i]) { if (m === 'virtue') playClip('virtu'); if (m === 'broken') playClip('spezzato'); } });
+    prevMoods.current = moods;
+  }, [moods]);
   // colonna sonora registrata (se presente per la scena)
   const dark = s.corruption >= 60 || s.valley.eclipseUntil > Date.now();
   const track = s.flags.includes('krak_wake_pending') ? 'krak'

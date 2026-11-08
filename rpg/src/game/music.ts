@@ -47,3 +47,18 @@ export function setTrackMuted(m: boolean) {
   if (!current) return;
   if (m) current.el.pause(); else { current.el.volume = target(); current.el.play().catch(() => {}); }
 }
+
+// Effetti brevi registrati (vittoria, sconfitta, livello, Fardello, presagio, Virtù, Rottura)
+const sfxFiles = import.meta.glob('../assets/sfx/*.mp3', { eager: true, import: 'default' }) as Record<string, string>;
+const CLIPS: Record<string, string> = {};
+for (const [p, url] of Object.entries(sfxFiles)) CLIPS[p.split('/').pop()!.replace('.mp3', '')] = url;
+let clipsOn = true;
+export function setClipsOn(v: boolean) { clipsOn = v; }
+export function playClip(name: string, volume = 0.8) {
+  const src = CLIPS[name];
+  if (!src || !clipsOn || muted || !unlocked) return;
+  const el = new Audio(src); el.volume = volume;
+  // abbassa la musica mentre suona l'effetto
+  if (current) { const c = current.el; fade(c, target() * 0.35, 200); el.onended = () => { if (current?.el === c) fade(c, target(), 900); }; }
+  el.play().catch(() => {});
+}

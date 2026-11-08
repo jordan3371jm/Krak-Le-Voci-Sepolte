@@ -11,7 +11,7 @@
 export type Scene = 'menu' | 'village' | 'delve' | 'combat' | 'boss';
 interface Mood { scene: Scene; root: number; corruption: number; fullscreen: boolean; intensity: number; silent: boolean }
 
-import { setTrackMuted, setTrackVolume, unlockMusic } from './music';
+import { setClipsOn, setTrackMuted, setTrackVolume, unlockMusic } from './music';
 
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -102,6 +102,7 @@ function applyMusicGain() {
 export function setRecorded(r: boolean) { recorded = r; applyMusicGain(); }
 export function setSfx(on: boolean) {
   sfxOn = on;
+  setClipsOn(on);
   if (sfxBus && ctx) sfxBus.gain.setTargetAtTime(on ? 0.5 : 0, ctx.currentTime, 0.05);
 }
 
