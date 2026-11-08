@@ -275,7 +275,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
             )}
             {room.type === 'shrine' && !room.resolved && (
               <div className="grid sm:grid-cols-3 gap-2">
-                <Btn kind="good" onClick={() => act(x => useShrine(x, 'rest'))}>{T('🛏️ Riposa (🍞1, +45%)')}</Btn>
+                <Btn kind="good" disabled={d.satchel.provviste < 1 && s.res.provviste < 1} onClick={() => act(x => useShrine(x, 'rest'))}>{T('🛏️ Riposa (🍞1, +45%)')}</Btn>
                 <Btn kind="fate" onClick={() => act(x => useShrine(x, 'pray'))}>{T('🙏 Prega (+Risonanza)')}</Btn>
                 <Btn kind="ghost" onClick={() => act(x => useShrine(x, 'leave'))}>{T('Prosegui')}</Btn>
                 <Btn onClick={() => act(x => useShrine(x, 'purify'))}>{T('🕯️ Purificati')}</Btn>

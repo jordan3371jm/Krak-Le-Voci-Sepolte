@@ -732,7 +732,7 @@ export function syncPartyBack(s: GameState) {
   const c = s.combat;
   if (!c) return;
   const hero = c.party.find(p => p.uid === 'hero');
-  if (hero) s.hero.hp = Math.max(0, hero.hp);
+  if (hero) s.hero.hp = Math.max(0, Math.min(heroStats(s).maxHp, hero.hp));
   for (const p of c.party) {
     if (!p.companionId) continue;
     const comp = s.companions.find(x => x.id === p.companionId);

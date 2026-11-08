@@ -11,8 +11,8 @@ export function LangGrid({ onBeforeChange }: { onBeforeChange?: () => void }) {
       <div className="grid grid-cols-3 gap-1.5">
         {LANGS.map(l => (
           <button key={l.id} onClick={() => { if (l.id === cur) return; onBeforeChange?.(); setLang(l.id); location.reload(); }}
-            className={`flex flex-col items-center gap-0.5 rounded-lg border px-1 py-1.5 text-[11px] leading-tight transition ${l.id === cur ? 'border-amber-500 bg-amber-900/40 text-amber-100' : 'border-stone-700 text-bone hover:border-amber-500/60 hover:bg-white/5'}`}>
-            <span className="text-lg">{l.flag}</span><span>{l.name}</span>
+            className={`rounded-lg border px-2 py-2 text-sm font-display tracking-wide transition ${l.id === cur ? 'border-amber-500 bg-amber-900/40 text-amber-100 shadow-[0_0_14px_rgba(245,158,11,.35)]' : 'border-stone-700 text-bone/75 hover:border-amber-500/60 hover:text-bone hover:bg-white/5'}`}>
+            {l.name}
           </button>
         ))}
       </div>
@@ -34,13 +34,13 @@ export function LangPicker({ onBeforeChange, compact }: { onBeforeChange?: () =>
     <div className="relative inline-block">
       <button onClick={() => setOpen(!open)} title="Language" className={`flex items-center gap-2 rounded-full border border-stone-700 hover:border-amber-500/70 ${compact ? 'p-1' : 'px-3 py-1.5'}`}>
         <Icon name="globo" size={compact ? 28 : 26} plain={compact} />
-        {!compact && <span className="text-sm text-bone">{cur.flag} {cur.name}</span>}
+        {!compact && <span className="text-sm text-bone">{cur.name}</span>}
       </button>
       {open && (
         <div className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-amber-800/60 bg-black/95 p-1 shadow-2xl">
           {LANGS.map(l => (
             <button key={l.id} onClick={() => choose(l.id)} className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${l.id === cur.id ? 'bg-amber-900/40 text-amber-100' : 'text-bone hover:bg-white/5'}`}>
-              <span>{l.flag}</span><span>{l.name}</span>
+              <span>{l.name}</span>
             </button>
           ))}
           <p className="text-[10px] text-mist px-3 py-1">{T('Il gioco si ricarica per cambiare lingua.')}</p>

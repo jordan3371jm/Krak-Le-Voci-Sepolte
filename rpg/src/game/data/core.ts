@@ -93,9 +93,9 @@ export interface ClassDef { id: ClassId; name: string; icon: string; desc: strin
 const baseStats = (s: Partial<Stats>): Stats => ({ maxHp: 90, atk: 12, def: 5, crit: 5, critDmg: 50, dodge: 3, lifesteal: 0, thorns: 0, speed: 5, ...s });
 
 export const CLASSES: Record<ClassId, ClassDef> = {
-  penitente: { id: 'penitente', name: t('Penitente di Cenere'), icon: '⛪', desc: t('Corazzato, protegge e si sacrifica. Molta salute, rivalsa.'), base: baseStats({ maxHp: 115, atk: 12, def: 8, thorns: 8 }), growth: { maxHp: 14, atk: 2.6, def: 1.3 }, skills: ['colpo_cenere', 'scudo_martire', 'flagello', 'voto_ferro'] },
+  penitente: { id: 'penitente', name: t('Penitente di Cenere'), icon: '⛪', desc: t('Corazzato, protegge e si sacrifica. Molta salute, rivalsa.'), base: baseStats({ maxHp: 104, atk: 7, def: 9, thorns: 12 }), growth: { maxHp: 13, atk: 2.0, def: 1.5 }, skills: ['colpo_cenere', 'scudo_martire', 'flagello', 'voto_ferro'] },
   lama: { id: 'lama', name: t('Lama del Debito'), icon: '🗡️', desc: t('Critici e sanguinamenti. Fragile ma letale.'), base: baseStats({ maxHp: 80, atk: 15, def: 3, crit: 15, critDmg: 70, dodge: 8, speed: 8 }), growth: { maxHp: 9, atk: 2.8, def: 0.7, crit: 0.3 }, skills: ['taglio', 'salasso', 'esecuzione', 'passo_ombra'] },
-  veggente: { id: 'veggente', name: t('Veggente Muta'), icon: '🔮', desc: t('Debolezze, cure e tempeste di sussurri.'), base: baseStats({ maxHp: 78, atk: 14, def: 4, crit: 8, speed: 6 }), growth: { maxHp: 9, atk: 2.5, def: 0.8 }, skills: ['dardo', 'sguardo_vero', 'litania', 'tempesta_sussurri'] },
+  veggente: { id: 'veggente', name: t('Veggente Muta'), icon: '🔮', desc: t('Debolezze, cure e tempeste di sussurri.'), base: baseStats({ maxHp: 78, atk: 14, def: 5, crit: 8, speed: 6 }), growth: { maxHp: 9, atk: 2.5, def: 0.9 }, skills: ['dardo', 'sguardo_vero', 'litania', 'tempesta_sussurri'] },
   custode: { id: 'custode', name: t('Custode della Fiamma'), icon: '🔥', desc: t('Guerriero equilibrato: roghi, cariche e benedizioni.'), base: baseStats({ maxHp: 100, atk: 13, def: 6 }), growth: { maxHp: 12, atk: 2.3, def: 1.1 }, skills: ['fendente', 'rogo', 'benedizione', 'carica'] },
 };
 

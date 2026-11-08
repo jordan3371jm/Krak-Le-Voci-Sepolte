@@ -4,7 +4,7 @@ import { COMPANIONS, FACTIONS, FACTION_IDS, FARDELLI } from '../data/core';
 import { ACHIEVEMENTS, BUILDINGS, DAILY_POOL, EXPEDITIONS, FISH, UPGRADE_THRESHOLDS, type FishDef, RES_INFO } from '../data/world';
 import { pick, todayKey, uid, weighted } from '../rng';
 import { addFlag, addRes, canAfford, cardMod, chronicle, hasFlag, intuitionCap, pay, prodMult, sanct, stat, toast, valleyState } from './state';
-import { addItem, companionXp, equip, gainXp, heroStats, makeItem, rollRarity } from './hero';
+import { addItem, clampHeroHp, companionXp, equip, gainXp, heroStats, makeItem, rollRarity } from './hero';
 import { onboard } from './onboarding';
 import { changeRep, checkStars, createPromise, generateDreams, pushValley, randomFragment, refreshMarket, resolveContracts } from './meta';
 
@@ -150,6 +150,7 @@ export function tick(s: GameState, dtMs: number, now = Date.now(), offline = fal
     if (c.weight < 25 && c.mood) c.mood = null;
   }
   s.res.intuizione = Math.min(s.res.intuizione, intuitionCap(s));
+  if (!s.combat) clampHeroHp(s);  // la salute non supera mai il massimo (es. dopo aver tolto un oggetto)
 
   // guarigione al villaggio
   if (!s.delve && !s.combat) {
