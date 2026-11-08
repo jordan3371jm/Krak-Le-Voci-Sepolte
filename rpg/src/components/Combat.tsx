@@ -135,7 +135,7 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
       {intro && bossUnit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 animate-fade cursor-pointer" onClick={() => setIntro(null)}>
           <div className="text-center px-6 animate-rise max-w-lg">
-            <div className="flex justify-center mb-4">(artFor(bossUnit.defId) ? <img src={artFor(bossUnit.defId)} alt="" className="rounded-full ring-2 ring-red-500/70 shadow-2xl object-cover portrait-uncanny" style={{ width: 220, height: 220 }} /> : <Sigil emoji={bossUnit.icon} size={120} tone="blood" />)</div>
+            <div className="flex justify-center mb-4">{artFor(bossUnit.defId) ? <img src={artFor(bossUnit.defId)} alt="" className="rounded-full ring-2 ring-red-500/70 shadow-2xl object-cover portrait-uncanny" style={{ width: 220, height: 220 }} /> : <Sigil emoji={bossUnit.icon} size={120} tone="blood" />}</div>
             <p className="text-[10px] uppercase tracking-[0.5em] text-red-400">{T('Si risveglia')}</p>
             <h2 className="text-3xl sm:text-4xl text-gradient-ember my-2">{bossUnit.name}</h2>
             <p className="text-sm text-bone/80 italic">{ENEMIES[bossUnit.defId]?.lore}</p>

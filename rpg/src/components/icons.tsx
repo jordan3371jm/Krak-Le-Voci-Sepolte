@@ -344,6 +344,8 @@ const EMOJI_ART: Record<string, string[]> = {
   '🎭': ['merchant'], '🎧': ['musica'], '🌡️': ['valle'], '❔': ['event'], '⚖️': ['tribunale'], '👁️': ['presagi'], '💀': ['krak_livelli'], '✨': ['risonanza'], '♾️': ['santuari'],
   '📜': ['missioni', 'promessa'], '⬆️': ['potenzia', 'fucina'], '💠': ['talenti', 'risonanza'], '🎓': ['talenti', 'eroe'], '🧭': ['spedizioni', 'bussola'],
   '🛡️': ['equipaggiamento', 'eroe'], '🚪': ['porte', 'event'], '🗝️': ['chiave', 'treasure'], '💾': ['salvataggio', 'diario'], '👹': ['bestiario', 'boss'],
+  '⚱️': ['reliquie'], '🌾': ['fazione_contadini'], '🏚️': ['rovine'], '💧': ['pozione'], '💰': ['treasure'], '📓': ['diario'], '📚': ['cantastorie'],
+  '🔥': ['custode'], '🔮': ['intuizione'], '🗡️': ['lama'], '🗿': ['santuari'], '🦴': ['scheletro'], '🧒': ['predone'], '🩸': ['sangue'], '🪦': ['custode_lapidi'], '🪨': ['pietra'],
   '🏆': ['imprese', 'reliquie'], '🌙': ['sogni', 'rito'], '🃏': ['carte_destino', 'fardello'], '✅': ['piano_superato', 'discesa'], '🕯️': ['shrine', 'altare'],
 };
 const emojiArt = (n: string) => { for (const k of EMOJI_ART[n] || []) { const a = artFor(k); if (a) return a; } return undefined; };
@@ -395,6 +397,8 @@ export function Icon({ name, size = 28, className = '', title, plain }: { name: 
 // Per gli elementi senza icona dedicata (nemici, abilità, oggetti):
 // l'emoji viene incastonato in un medaglione con filtro "inchiostro antico".
 export function Sigil({ emoji, size = 40, tone = 'bone', className = '' }: { emoji: string; size?: number; tone?: Tone; className?: string }) {
+  const painted = size >= 22 ? emojiArt(emoji) : undefined;
+  if (painted) return <img src={painted} alt="" width={size} height={size} className={`rounded-full ring-1 ring-ember/50 object-cover shrink-0 ${className}`} style={{ width: size, height: size }} />;
   const t = TONES[tone];
   return (
     <span className={`sigil inline-flex items-center justify-center shrink-0 rounded-full ${className}`}
