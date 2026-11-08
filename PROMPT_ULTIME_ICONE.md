@@ -41,7 +41,7 @@ text, letters, watermark, signature, logo, blurry, low quality, cartoon, anime, 
 | `impresa_a_stars` | Lettore di Stelle | a hand reading a glowing constellation map |
 | `impresa_a_threat` | Sentinella | a lone sentinel on a watchtower at night |
 
-## 2. Pesci dello Stagno (6) — Villaggio → Stagno
+## 2. Pesci dello Stagno (11) — Villaggio → Stagno
 
 | File | Pesce | Prompt (dopo l'inizio) |
 |---|---|---|
@@ -49,8 +49,13 @@ text, letters, watermark, signature, logo, blurry, low quality, cartoon, anime, 
 | `pesce_carpa` | Carpa del Mulino | a big old carp beside a broken water mill wheel |
 | `pesce_perca` | Perca Striata | a striped perch in dark murky water |
 | `pesce_stivale` | Vecchio Stivale | an old rotten leather boot pulled from a pond, dripping |
+| `pesce_anguilla` | Anguilla del Rimorso | a black eel coiled around a rusty key at night |
+| `pesce_salmone` | Salmone d'Argento | a silver salmon leaping upstream against a waterfall |
+| `pesce_pescesole` | Pesce Sole | a golden sunfish glowing like a small sun underwater |
+| `pesce_pesceluna` | Pesce Luna | a pale silver moonfish under a full moon reflection |
 | `pesce_koi` | Koi Spirito | a ghostly translucent koi spirit swirling |
 | `pesce_cristallo` | Pesce di Cristallo | a fish made of clear crystal refracting light |
+| `pesce_drago` | Drago dello Stagno | a small serpentine pond dragon with fins, emerald scales |
 
 ---
-**Totale: 31 immagini.** Dopo queste ogni cosa del gioco avrà la sua immagine.
+**Totale: 36 immagini.** Dopo queste ogni cosa del gioco avrà la sua immagine.
