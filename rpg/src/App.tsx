@@ -18,6 +18,8 @@ import Modals from './components/Modals';
 import { TalkOverlay } from './components/Talk';
 import { KrakWake } from './components/KrakWake';
 import { gameReady, interstitial, platformMessage } from './game/platform';
+import { hasTrack, playTrack } from './game/music';
+import { setRecorded } from './game/audio';
 import { BG } from './components/art';
 import { Eyes, Fog, Particles, Whispers } from './components/Atmosphere';
 import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from './components/Screens';
@@ -52,6 +54,16 @@ export default function App() {
     const root = s.combat ? (s.combat.kind === 'boss' ? 41 : 49) : s.delve ? BIOMES[s.delve.biome].drone : 55;
     setMood({ scene: s.scene !== 'game' ? 'menu' : s.combat ? (s.combat.kind === 'boss' || s.combat.kind === 'shadow' || s.combat.kind === 'trial' ? 'boss' : 'combat') : s.delve ? 'delve' : 'village', root, corruption: s.corruption, fullscreen: s.fullscreen, intensity: s.combat ? 1 : s.delve ? 0.5 : 0.1, silent: s.dissonance >= 15 });
   }, [s.scene, s.combat?.kind, !!s.combat, s.delve?.biome, Math.round(s.corruption / 10), s.fullscreen, s.dissonance >= 15]); // eslint-disable-line react-hooks/exhaustive-deps
+  // colonna sonora registrata (se presente per la scena)
+  const dark = s.corruption >= 60 || s.valley.eclipseUntil > Date.now();
+  const track = s.flags.includes('krak_wake_pending') ? 'krak'
+    : s.scene === 'intro' ? 'menu' : s.scene === 'ending' ? 'finale' : !s.fardello ? 'portale'
+    : s.combat ? (s.combat.kind === 'worldboss' ? 'colosso' : ['boss', 'shadow', 'trial', 'hunter'].includes(s.combat.kind) ? 'boss' : 'combattimento')
+    : s.delve ? s.delve.biome : s.tab === 'mercato' ? 'mercato' : dark ? 'villaggio_notte' : 'villaggio';
+  useEffect(() => {
+    const t = hasTrack(track) ? track : track === 'villaggio_notte' && hasTrack('villaggio') ? 'villaggio' : track === 'colosso' && hasTrack('boss') ? 'boss' : null;
+    setRecorded(!!t); playTrack(t);
+  }, [track]);
   useEffect(() => {
     const unlock = () => initAudio();
     window.addEventListener('pointerdown', unlock, { once: true });

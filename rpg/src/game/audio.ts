@@ -11,6 +11,8 @@
 export type Scene = 'menu' | 'village' | 'delve' | 'combat' | 'boss';
 interface Mood { scene: Scene; root: number; corruption: number; fullscreen: boolean; intensity: number; silent: boolean }
 
+import { setTrackMuted, setTrackVolume, unlockMusic } from './music';
+
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 let musicBus: GainNode | null = null;
@@ -19,7 +21,8 @@ let musicWet: GainNode | null = null;
 let sfxBus: GainNode | null = null;
 let reverb: ConvolverNode | null = null;
 let musicOn = true;
-let extMuted = false;   // la piattaforma (pubblicità, scheda nascosta, pausa) chiede il silenzio
+let extMuted = false;
+let recorded = false;   // un brano registrato sta suonando: la partitura generativa tace   // la piattaforma (pubblicità, scheda nascosta, pausa) chiede il silenzio
 let sfxOn = true;
 let musicVol = 0.55;
 let sched: number | null = null;
@@ -42,6 +45,7 @@ const SCALE = [0, 2, 3, 5, 7, 8, 10, 12, 14, 15];
 const hz = (semi: number, base = TONIC) => base * Math.pow(2, semi / 12);
 
 export function initAudio() {
+  unlockMusic();
   if (ctx) { if (ctx.state === 'suspended') ctx.resume().catch(() => {}); return; }
   try {
     const AC = window.AudioContext || (window as any).webkitAudioContext;
@@ -77,6 +81,7 @@ function impulse(c: AudioContext, secs: number, decay: number) {
 /** Silenzio imposto dalla piattaforma: azzera il volume generale e sospende l'audio. */
 export function setExternalMute(on: boolean) {
   extMuted = on;
+  setTrackMuted(on);
   if (!ctx || !master) return;
   master.gain.setTargetAtTime(on ? 0 : 0.8, ctx.currentTime, 0.05);
   if (on) ctx.suspend().catch(() => {}); else ctx.resume().catch(() => {});
@@ -91,8 +96,10 @@ export function setMusicVolume(v: number) {
   applyMusicGain();
 }
 function applyMusicGain() {
-  if (musicBus && ctx) musicBus.gain.setTargetAtTime(musicOn && !mood.silent ? musicVol : 0, ctx.currentTime, 0.6);
+  if (musicBus && ctx) musicBus.gain.setTargetAtTime(musicOn && !mood.silent && !recorded ? musicVol : 0, ctx.currentTime, 0.6);
+  setTrackVolume(musicVol, musicOn && !mood.silent);
 }
+export function setRecorded(r: boolean) { recorded = r; applyMusicGain(); }
 export function setSfx(on: boolean) {
   sfxOn = on;
   if (sfxBus && ctx) sfxBus.gain.setTargetAtTime(on ? 0.5 : 0, ctx.currentTime, 0.05);
@@ -218,7 +225,7 @@ function noiseBurst(t: number, dur: number, vol: number, freq: number, dest: 'mu
 
 // ---------------- compositore ----------------
 function schedule() {
-  if (!ctx || !musicOn || mood.silent || ctx.state !== 'running') return;
+  if (!ctx || !musicOn || mood.silent || recorded || ctx.state !== 'running') return;
   while (nextChordAt < ctx.currentTime + 0.6) {
     playChord(nextChordAt);
     nextChordAt += PROGRESSIONS[mood.scene].secs;
