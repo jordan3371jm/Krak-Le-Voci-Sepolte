@@ -54,7 +54,8 @@ function detect(): Lang {
   const w = window as any;
   const fromPlatform = normalize(w.bridge?.platform?.language) || normalize(w.CrazyGames?.SDK?.user?.systemInfo?.locale);
   if (fromPlatform) return fromPlatform;
-  return normalize(typeof navigator !== 'undefined' ? navigator.language : null) || 'en';
+  // lingua principale: inglese (si cambia dalle Opzioni o la sceglie la piattaforma)
+  return 'en';
 }
 
 let lang: Lang = typeof window !== 'undefined' ? detect() : 'en';
