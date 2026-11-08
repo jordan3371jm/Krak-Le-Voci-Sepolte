@@ -21,7 +21,7 @@ import {
 import { deleteSave, exportCode, importCode } from '../game/save';
 import { GIFT_LIKES, giftableItems, giveGift, nextGiftScene } from '../game/engine/features';
 import { RARITY_COLORS, SLOT_INFO } from '../game/data/world';
-import { LangPicker } from './LangPicker';
+import { LangGrid } from './LangPicker';
 import { Bar, Btn, Empty, ItemCard, Panel, Tag, rich } from './ui';
 
 // ============================================================
@@ -277,7 +277,7 @@ export function Legacy({ state: s, act }: { state: GameState; act: Act }) {
   return (
     <div className="space-y-4">
       <div className="grid lg:grid-cols-2 gap-4">
-        <Panel title={`Ciclo ${s.cycle.n}`} icon="♾️">
+        <Panel title={T('Ciclo {n}', { n: s.cycle.n })} icon="♾️">
           <p className="text-xs text-mist mb-2">{rich(T('Quando il tuo portatore raggiunge il Cuore di Krak (o la valle diventa leggenda), puoi chiudere il Ciclo. Il personaggio diventa un\'Eredità: un\'eco che i futuri portatori incontreranno. Ottieni **Memorie** permanenti (+5% produzione e +1,5% statistiche ciascuna). Conservi reliquie, Santuario, imprese, memorie dello stagno e bestiario.'))}</p>
           <div className="text-xs space-y-1">
             <div>{T('Memorie accumulate:')}{' '}<b className="text-fate">{s.cycle.memorieTotal}</b> {T('(+{n}% produzione)', { n: s.cycle.memorieTotal * 5 })}</div>
@@ -335,7 +335,7 @@ export function Settings({ state: s, act, replace, saveNow, onFullscreen }: { st
       </Panel>
       <Panel title={T('Lingua')} icon="globo">
         <p className="text-xs text-mist mb-2">{T('Scegli la lingua del gioco.')}</p>
-        <LangPicker onBeforeChange={saveNow} />
+        <LangGrid onBeforeChange={saveNow} />
       </Panel>
       <Panel title={T('Rito e Suono')} icon="🎧">
         <div className="space-y-2 text-sm">

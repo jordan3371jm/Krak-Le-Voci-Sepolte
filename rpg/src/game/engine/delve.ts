@@ -166,10 +166,10 @@ export function chooseDoor(s: GameState, idx: number) {
   d.room = room;
   const B = BIOMES[d.biome];
   const scale = biomeScale(s);
-  const title = (t: string) => `Piano ${d.floor} · ${t}`;
+  const title = (t: string) => `${T('Piano {n}', { n: d.floor })} · ${t}`;
   switch (opt.type) {
     case 'combat':
-      startCombat(s, encounter(s, r), { floor: d.floor, scale, title: title('Scontro'), kind: 'delve' });
+      startCombat(s, encounter(s, r), { floor: d.floor, scale, title: title(T('Scontro')), kind: 'delve' });
       break;
     case 'elite': {
       const ids = [pick(B.elites, r)];

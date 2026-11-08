@@ -339,16 +339,18 @@ const EMOJI_MAP: Record<string, string> = {
 };
 
 // Emoji dei pannelli → illustrazione dipinta (se esiste)
-const EMOJI_ART: Record<string, string> = {
-  '👥': 'compagni', '🎒': 'bisaccia', '🤖': 'auto', '🔨': 'fucina', '🔗': 'promessa', '📅': 'sfida', '👤': 'eco_portatore', '🏺': 'reliquie',
-  '🎭': 'merchant', '🎧': 'musica', '🌡️': 'valle', '❔': 'event', '⚖️': 'tribunale', '👁️': 'presagi', '📜': 'missioni', '⬆️': 'potenzia',
-  '💠': 'talenti', '🎓': 'talenti', '🧭': 'spedizioni', '🛡️': 'equipaggiamento', '🚪': 'porte', '🗝️': 'chiave', '💾': 'salvataggio',
-  '👹': 'bestiario', '🏆': 'imprese', '🌙': 'sogni', '🃏': 'carte_destino', '✅': 'piano_superato', '♾️': 'santuari', '✨': 'risonanza', '🗓️': 'sfida', '💀': 'krak_livelli',
+const EMOJI_ART: Record<string, string[]> = {
+  '👥': ['compagni'], '🎒': ['bisaccia'], '🤖': ['auto'], '🔨': ['fucina'], '🔗': ['promessa'], '📅': ['sfida'], '🗓️': ['sfida'], '👤': ['eco_portatore'], '🏺': ['reliquie'],
+  '🎭': ['merchant'], '🎧': ['musica'], '🌡️': ['valle'], '❔': ['event'], '⚖️': ['tribunale'], '👁️': ['presagi'], '💀': ['krak_livelli'], '✨': ['risonanza'], '♾️': ['santuari'],
+  '📜': ['missioni', 'promessa'], '⬆️': ['potenzia', 'fucina'], '💠': ['talenti', 'risonanza'], '🎓': ['talenti', 'eroe'], '🧭': ['spedizioni', 'bussola'],
+  '🛡️': ['equipaggiamento', 'eroe'], '🚪': ['porte', 'event'], '🗝️': ['chiave', 'treasure'], '💾': ['salvataggio', 'diario'], '👹': ['bestiario', 'boss'],
+  '🏆': ['imprese', 'reliquie'], '🌙': ['sogni', 'rito'], '🃏': ['carte_destino', 'fardello'], '✅': ['piano_superato', 'discesa'], '🕯️': ['shrine', 'altare'],
 };
+const emojiArt = (n: string) => { for (const k of EMOJI_ART[n] || []) { const a = artFor(k); if (a) return a; } return undefined; };
 
 export function Icon({ name, size = 28, className = '', title, plain }: { name: string; size?: number; className?: string; title?: string; plain?: boolean }) {
   const id = useId().replace(/:/g, '');
-  const art = plain || size < 22 ? undefined : (artFor(name) || artFor(EMOJI_ART[name]) || artFor(EMOJI_MAP[name]));
+  const art = plain || size < 22 ? undefined : (artFor(name) || emojiArt(name) || artFor(EMOJI_MAP[name]));
   if (art) return <img src={art} alt={title || ''} title={title} width={size} height={size} className={`rounded-full ring-1 ring-ember/50 object-cover shrink-0 ${size >= 64 ? 'portrait-alive' : ''} ${className}`} style={{ width: size, height: size }} />;
   const sym = S[name] || S[EMOJI_MAP[name]];
   if (!sym) return <Sigil emoji={name} size={size} className={className} />;

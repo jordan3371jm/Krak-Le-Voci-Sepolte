@@ -23,6 +23,11 @@ import { KRAK_RULES, OMENS, PUZZLE_SYMBOLS, dailyMods, omenText, setKrakLevel } 
 import { puzzlePress } from '../game/engine/delve';
 import { hasLeaderboard } from '../game/platform';
 
+function BiomeMedal({ id }: { id: string }) {
+  if (artFor('bioma_' + id)) return <Icon name={'bioma_' + id} size={44} />;
+  return BG[id] ? <span className="inline-block w-11 h-11 rounded-full ring-2 ring-amber-700/70 shadow-[0_0_12px_rgba(0,0,0,.8)] bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${BG[id]})` }} /> : <Icon name="discesa" size={44} />;
+}
+
 export function OmensPanel({ state: s }: { state: GameState }) {
   if (!s.omens.length) return null;
   return (
@@ -140,7 +145,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
             <section key={id} className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg} ${unlocked ? '' : 'opacity-50'} bg-cover bg-center`} style={BG[id] ? { backgroundImage: `linear-gradient(to bottom, rgba(8,6,10,.72), rgba(8,6,10,.93)), url(${BG[id]})` } : undefined}>
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-lg text-bone flex items-center gap-2">{artFor('bioma_' + id) ? <Icon name={'bioma_' + id} size={40} /> : <Sigil emoji={B.icon} size={36} tone="violet" />} {biomeName(s, id, B)}</h3>
+                  <h3 className="text-lg text-bone flex items-center gap-2"><BiomeMedal id={id} /> {biomeName(s, id, B)}</h3>
                   {s.fardello && biomeName(s, id, B) !== B.name && <p className="text-[10px] text-mist">{T('Gli altri lo chiamano «')}{B.name}{T('». Tu lo vedi diversamente.')}</p>}
                   <p className="text-xs text-bone/70 italic mt-1">{B.desc}</p>
                 </div>
@@ -148,7 +153,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
               </div>
               <div className="text-xs text-mist mt-2 space-y-0.5">
                 <div>{lc.desc}</div>
-                <div>{T('Livello consigliato:')}{' '}{B.minLevel}+ · Record: piano {b.best}{B.depth ? `/${B.depth}` : ' (infinito)'} {b.conquered ? T('· 🏆 Conquistato') : ''}</div>
+                <div>{T('Livello consigliato:')}{' '}{B.minLevel}+ · {T('Record: piano {n}', { n: B.depth ? `${b.best}/${B.depth}` : b.best })}{B.depth ? '' : T(' (infinito)')} {b.conquered ? T('· 🏆 Conquistato') : ''}</div>
                 {b.memory.length > 0 && <div className="text-fate/80">{T('Ricorda: «')}{b.memory[0]}»</div>}
               </div>
               {unlocked ? (
@@ -160,7 +165,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
                   )}
                   <Btn kind="ember" disabled={!s.fardello || !!s.delve || s.res.provviste < 1} onClick={() => { sfx.door(); act(d => enterDelve(d, id as BiomeId, sel)); }}>{T('Scendi (🍞1)')}</Btn>
                   {s.fardello && !s.delve && s.res.provviste < 1 && <p className="basis-full text-[11px] text-amber-300/90 mt-1">{T('Ti serve 1 provvista per scendere: premi «Raccogli» al villaggio o costruisci una Capanna dei Raccoglitori.')}</p>}
-                  {s.hero.level < B.minLevel && <span className="text-[11px] text-dissonance">{T('Sei di livello')}{' '}{s.hero.level}: pericoloso.</span>}
+                  {s.hero.level < B.minLevel && <span className="text-[11px] text-dissonance">{T('Sei di livello {n}: pericoloso.', { n: s.hero.level })}</span>}
                 </div>
               ) : <p className="text-xs text-mist mt-3">{T('🔒 Conquista')}{' '}{BIOMES[B.requires!].name}{' '}{T('per sbloccarlo.')}</p>}
             </section>
@@ -208,7 +213,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
         <section className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg}`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h2 className="text-lg text-bone flex items-center gap-2">{artFor('bioma_' + d.biome) ? <Icon name={'bioma_' + d.biome} size={40} /> : <Sigil emoji={B.icon} size={34} tone="violet" />} {biomeName(s, d.biome, B)}</h2>
+              <h2 className="text-lg text-bone flex items-center gap-2"><BiomeMedal id={d.biome} /> {biomeName(s, d.biome, B)}</h2>
               <p className="text-xs text-mist">{T('Piano')}{' '}<b className="text-ember text-base">{d.floor}</b>{B.depth ? ` / ${B.depth}` : ''} · {T('Specchio:')} <span className="text-fate">{T(d.emotion)}</span> · {valleyFx(s).icon}</p>
             </div>
             <div className="flex flex-wrap gap-1">{d.modifiers.map(m => <Tag key={m} className="border-fate/50 text-purple-200"><span title={DUNGEON_MODIFIERS[m].desc}>{DUNGEON_MODIFIERS[m].name}</span></Tag>)}{d.ghostAlly && <Tag className="text-teal-200">{T('👻 Eco alleata')}</Tag>}{d.daily && <Tag className="text-amber-200 border-amber-500/60">{T('🗓️ Sfida del giorno')}</Tag>}{s.krak.level > 0 && <Tag className="text-red-200 border-red-500/60">{T('💀 Krak {n}', { n: s.krak.level })}</Tag>}</div>
@@ -330,7 +335,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
         <Panel title={T('Gruppo')} icon="👥">
           <Bar value={s.hero.hp} max={st.maxHp} color="bg-red-600" label={<><span>{s.playerName}</span><span>{Math.round(s.hero.hp)}/{st.maxHp}</span></>} />
           {s.companions.filter(c => c.inParty && c.recruited && !c.left && !c.mission).map(c => (
-            <Bar key={c.id} className="mt-2" value={c.hp} max={1} color="bg-red-800" label={<><span>{c.icon} {c.name} · fiducia {Math.round(c.trust)}</span><span>{Math.round(c.hp * 100)}%</span></>} />
+            <Bar key={c.id} className="mt-2" value={c.hp} max={1} color="bg-red-800" label={<><span>{c.icon} {c.name} · {T('fiducia {n}', { n: Math.round(c.trust) })}</span><span>{Math.round(c.hp * 100)}%</span></>} />
           ))}
         </Panel>
       </div>

@@ -197,7 +197,7 @@ export function makeItem(ilvl: number, rarity?: Rarity, slot?: Slot, r: () => nu
     stats[k] = round1((stats[k] || 0) + AFFIX_SCALE[k] * (6 + ilvl) * (0.7 + r() * 0.6));
   }
   const base = pick(SLOT_INFO[sl].bases, r);
-  const name = rar === 0 ? base : `${base} ${affixes[0] || ''}`.trim() + (rar >= 3 ? ` di ${pick(['Krak', 'Vhalzareth', 'Hondovalle', 'Tomas', 'Elara', 'Cenere', 'Silenzio'], r)}` : '');
+  const name = rar === 0 ? base : `${base} ${affixes[0] || ''}`.trim() + (rar >= 3 ? ' ' + T('di {x}', { x: pick(['Krak', 'Vhalzareth', 'Hondovalle', 'Tomas', 'Elara', T('Cenere'), T('Silenzio')], r) }) : '');
   return { uid: uid('it'), name, slot: sl, rarity: rar, ilvl, plus: 0, stats, origin: pick(ORIGINS, r) };
 }
 const round1 = (n: number) => Math.round(n * 10) / 10;

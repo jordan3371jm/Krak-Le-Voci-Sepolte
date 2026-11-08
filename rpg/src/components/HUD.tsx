@@ -10,7 +10,7 @@ import { isUnlocked } from '../game/engine/onboarding';
 import type { Act } from '../game/useGame';
 import { Bar } from './ui';
 import { Icon } from './icons';
-import { LangPicker } from './LangPicker';
+import { LangGrid } from './LangPicker';
 
 // numeri che mentono quando la corruzione è alta (UI diegetica)
 function lie(n: number, on: boolean) {
@@ -92,8 +92,8 @@ function GameMenu({ state: s, act, onFullscreen, onCodex, onSave }: { state: Gam
         <span className="block w-5 h-[2px] bg-bone/80 rounded" /><span className="block w-5 h-[2px] bg-bone/80 rounded" /><span className="block w-5 h-[2px] bg-bone/80 rounded" />
       </button>
       {open && (
-        <div className="absolute right-0 z-[70] mt-2 w-64 rounded-xl border border-amber-800/60 bg-black/95 p-1.5 shadow-2xl animate-rise">
-          <div className="px-3 py-2"><LangPicker onBeforeChange={onSave} /></div>
+        <div className="absolute right-0 z-[70] mt-2 w-72 max-w-[92vw] rounded-xl border border-amber-800/60 bg-black/95 p-1.5 shadow-2xl animate-rise">
+          <div className="px-2 py-2"><LangGrid onBeforeChange={onSave} /></div>
           <button className={row} onClick={() => { setOpen(false); onCodex(); }}><Icon name="diario" size={30} />{T('Codex: come funziona')}</button>
           <button className={row} onClick={() => act(d => { d.settings.music = !d.settings.music; })}><span className={s.settings.music ? '' : 'opacity-40'}><Icon name="musica" size={30} /></span>{s.settings.music ? T('Musica attiva') : T('Musica spenta')}</button>
           <button className={row} onClick={() => { setOpen(false); onFullscreen(); }}><Icon name="rito" size={30} />{T('Il Rito (schermo intero)')}</button>
