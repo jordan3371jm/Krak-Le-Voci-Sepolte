@@ -1,5 +1,5 @@
 import { t as T } from '../i18n';
-import { BG, artFor, artOr } from './art';
+import { BG, artFor, artOr, pick } from './art';
 import { useEffect, useRef, useState } from 'react';
 import type { BiomeId, GameState } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -245,7 +245,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
 
         {/* Stanza */}
         {room && (
-          <Panel title={ev && !postBoss ? ev.title : ROOM_NAMES[room.type]} icon={ev && !postBoss ? ev.icon : room.type === 'puzzle' ? artOr('puzzle', '🕯️') : room.type}>
+          <Panel title={ev && !postBoss ? ev.title : ROOM_NAMES[room.type]} icon={ev && !postBoss ? pick('evento_', ev.id, ev.icon) : room.type === 'puzzle' ? artOr('puzzle', '🕯️') : room.type}>
             {room.text && <p className="text-sm text-bone/85 mb-3 whitespace-pre-line">{room.text}</p>}
             {room.type === 'event' && ev && !room.resolved && (
               <>

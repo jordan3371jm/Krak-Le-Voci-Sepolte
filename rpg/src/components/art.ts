@@ -14,3 +14,4 @@ export const artOr = (id: string, fallback: string) => (artFor(id) ? id : fallba
 const vidFiles = import.meta.glob('../assets/video/*.{mp4,webm}', { eager: true, import: 'default' }) as Record<string, string>;
 export const VIDEO: Record<string, { mp4?: string; webm?: string }> = {};
 for (const [p, url] of Object.entries(vidFiles)) { const [n, ext] = p.split('/').pop()!.split('.'); (VIDEO[n] ||= {})[ext as 'mp4' | 'webm'] = url; }
+export const pick = (prefix: string, id: string, fallback: string) => (artFor(prefix + id) ? prefix + id : fallback);

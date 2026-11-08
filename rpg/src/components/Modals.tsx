@@ -1,3 +1,4 @@
+import { pick } from './art';
 import { t as T } from '../i18n';
 import { useEffect } from 'react';
 import type { GameState } from '../game/types';
@@ -24,7 +25,7 @@ export default function Modals({ state: s, act }: { state: GameState; act: Act }
     if (!ev) { close(); return null; }
     return (
       <Modal>
-        <div className="flex justify-center mb-2"><Icon name={ev.icon} size={72} /></div>
+        <div className="flex justify-center mb-2"><Icon name={pick('evento_', ev.id, ev.icon)} size={72} /></div>
         <h2 className="text-xl text-center text-bone mb-1">{ev.title}</h2>
         <p className="text-[11px] text-center text-mist mb-3">{T('Il mondo ricorda. Una conseguenza ti aspettava al villaggio.')}</p>
         <p className="text-sm text-bone/85 italic mb-4">{fillText(s, ev.text)}</p>

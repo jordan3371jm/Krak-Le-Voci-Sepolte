@@ -1,3 +1,4 @@
+import { pick } from './art';
 import { totalBuildings, completeRequest } from '../game/engine/village';
 import { canAfford } from '../game/engine/state';
 import { Cost } from './ui';
@@ -301,7 +302,7 @@ export function Legacy({ state: s, act }: { state: GameState; act: Act }) {
             const lvl = s.cycle.sanctuary[x.id] || 0;
             return (
               <button key={x.id} disabled={lvl >= x.max || s.reliquie < sanctuaryCost(s, x.id)} onClick={() => act(d => buySanctuary(d, x.id, x.max))} className="text-left rounded-lg border border-stone-700 p-2 text-xs disabled:opacity-50 hover:border-ember">
-                <div className="flex justify-between"><span className="text-bone flex items-center gap-1.5"><Icon name={x.icon} size={26} /> {x.name}</span><span className="text-mist">{lvl}/{x.max}</span></div>
+                <div className="flex justify-between"><span className="text-bone flex items-center gap-1.5"><Icon name={pick('eredita_', x.id, x.icon)} size={26} /> {x.name}</span><span className="text-mist">{lvl}/{x.max}</span></div>
                 <div className="text-mist">{x.desc}: +{lvl * x.per}{x.id === 'memoria' ? 'h' : '%'} {lvl < x.max && <span className="text-amber-300">{T('→ costo 🏺')}{sanctuaryCost(s, x.id)}</span>}</div>
               </button>
             );
@@ -385,7 +386,7 @@ export function Ending({ state: s, act, replace }: { state: GameState; act: Act;
     <div className="min-h-screen px-4 py-10 flex items-center justify-center">
       <div className="max-w-3xl w-full space-y-6 animate-rise">
         <div className="text-center">
-          <div className="flex justify-center mb-2"><Icon name={E.icon} size={96} /></div>
+          <div className="flex justify-center mb-2"><Icon name={pick('finale_', s.ending || 'cancellato', E.icon)} size={96} /></div>
           <p className="text-xs tracking-[0.3em] text-ember uppercase">{T('Finale del Ciclo')}{' '}{s.cycle.n}</p>
           <h1 className="text-3xl text-gradient-ember my-2">{E.name}</h1>
           <p className="text-bone/85 italic max-w-xl mx-auto">{E.text}</p>
@@ -395,7 +396,7 @@ export function Ending({ state: s, act, replace }: { state: GameState; act: Act;
           <div className="grid sm:grid-cols-3 gap-2">
             {s.cycle.cardOffer.map(id => { const c = FATE_CARDS.find(x => x.id === id)!; return (
               <button key={id} onClick={() => setCard(id)} className={`rounded-lg border p-3 text-left ${card === id ? 'border-fate bg-fate/10' : 'border-stone-700'}`}>
-                <Icon name={c.icon} size={40} /><div className="text-sm text-bone">{c.name}</div>
+                <Icon name={pick('carta_', c.id, c.icon)} size={40} /><div className="text-sm text-bone">{c.name}</div>
                 <div className="text-[11px] text-teal-200">{c.good}</div><div className="text-[11px] text-red-300">{c.bad}</div>
               </button>
             ); })}

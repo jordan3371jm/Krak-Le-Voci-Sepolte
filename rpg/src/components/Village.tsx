@@ -17,7 +17,7 @@ import { Bar, Btn, Cost, Panel, Tag } from './ui';
 import { Icon, Sigil } from './icons';
 import { isUnlocked } from '../game/engine/onboarding';
 import { TalkersPanel, Face, Typewriter } from './Talk';
-import { BG } from './art';
+import { BG, pick } from './art';
 import { Particles } from './Atmosphere';
 import { SceneBg } from './SceneBg';
 import { OmensPanel } from './Delve';
@@ -406,7 +406,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
                 <Btn className="w-full" onClick={() => act(d => brewPotion(d))}>{T('🧪 Prepara pozione (')}{s.potions}) · <Cost cost={potionCost()} have={s.res} /></Btn>
                 {(s.village.buildings.infermeria || 0) >= 2 && Object.entries(ELIXIRS).map(([id, e]) => (
                   <div key={id} className="flex items-center gap-2 text-xs">
-                    <Btn small onClick={() => act(d => brewElixir(d, id))}><Icon name={e.icon} size={22} className="inline-block align-middle" /> {e.name} <Cost cost={e.cost} have={s.res} /></Btn>
+                    <Btn small onClick={() => act(d => brewElixir(d, id))}><Icon name={pick('elisir_', id, e.icon)} size={22} className="inline-block align-middle" /> {e.name} <Cost cost={e.cost} have={s.res} /></Btn>
                     {(s.elixirs[id] || 0) > 0 && <Btn small kind="fate" disabled={!!s.activeElixir} onClick={() => act(d => activateElixir(d, id))}>{T('Bevi (')}{s.elixirs[id]})</Btn>}
                   </div>
                 ))}
