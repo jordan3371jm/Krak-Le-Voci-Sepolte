@@ -270,7 +270,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
           {s.events.buffs.filter(b => b.until > now).map(b => <Tag key={b.id} className="border-fate text-fate">{b.label} · {fmtTime(b.until - now)}</Tag>)}
         </div>
         <div className="relative flex flex-wrap gap-1 text-2xl min-h-[44px] items-end">
-          <span title={T('Il fuoco di Hondovalle')} className="animate-flicker"><Icon name="custode" size={44} /></span>
+          <span title={displayName(s)} className="animate-flicker"><Icon name={s.aberration ? "corruzione" : s.classId} size={44} /></span>
           {BUILDINGS.filter(b => s.village.buildings[b.id]).map(b => (
             <span key={b.id} title={`${b.name} ×${s.village.buildings[b.id]}`} className="relative">
               <Icon name={b.id} size={44} /><span className="absolute -bottom-1 -right-1 text-[9px] bg-black/85 border border-amber-800 rounded px-1 text-bone">{s.village.buildings[b.id]}</span>
