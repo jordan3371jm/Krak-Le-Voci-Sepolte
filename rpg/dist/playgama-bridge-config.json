@@ -2,20 +2,45 @@
     "advertisement": {
         "interstitial": {
             "placements": [
-                { "id": "delve_end" },
-                { "id": "cycle_end" }
+                {
+                    "id": "delve_end"
+                },
+                {
+                    "id": "cycle_end"
+                },
+                {
+                    "id": "pause"
+                }
             ]
         },
         "rewarded": {
             "placementFallback": "reward",
             "placements": [
-                { "id": "double_offline" },
-                { "id": "recover_satchel" },
-                { "id": "reward" }
+                {
+                    "id": "double_offline"
+                },
+                {
+                    "id": "recover_satchel"
+                },
+                {
+                    "id": "reward"
+                }
+            ]
+        },
+        "minimumDelayBetweenInterstitial": 300,
+        "banner": {
+            "placementFallback": "idle",
+            "placements": [
+                {
+                    "id": "idle"
+                }
             ]
         }
     },
     "leaderboards": [
-        { "id": "krak_daily", "isMain": true }
+        {
+            "id": "krak_daily",
+            "isMain": true
+        }
     ]
 }

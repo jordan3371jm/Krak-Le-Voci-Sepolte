@@ -17,7 +17,7 @@ import Compass from './components/Compass';
 import Modals from './components/Modals';
 import { TalkOverlay } from './components/Talk';
 import { KrakWake } from './components/KrakWake';
-import { gameReady, interstitial, platformMessage } from './game/platform';
+import { gameReady, interstitial, platformMessage, setBanner, bannerSupported } from './game/platform';
 import { hasTrack, playClip, playTrack } from './game/music';
 import { setRecorded } from './game/audio';
 import { BG } from './components/art';
@@ -45,6 +45,14 @@ export default function App() {
     wasDelve.current = inDelve;
   }, [inDelve]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (s.scene === 'ending') interstitial('cycle_end'); }, [s.scene]);
+  // pause naturali: il gioco offre un annuncio solo se il giocatore non sta combattendo, parlando o scegliendo;
+  // è il Bridge a decidere se mostrarlo davvero (al massimo uno ogni 5 minuti, vedi la configurazione)
+  const calm = s.scene === 'game' && !s.combat && !s.talk && !s.modal && (!s.delve || (s.delve.floorCleared && !s.delve.room?.bossChoice));
+  const calmRef = useRef(calm); calmRef.current = calm;
+  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden) interstitial('pause'); }, 30_000); return () => window.clearInterval(id); }, []);
+  // banner in basso solo quando la scena è tranquilla e fuori dai dungeon
+  const idle = s.scene !== 'game' || (!s.combat && !s.delve && !s.talk && !s.modal);
+  useEffect(() => { setBanner(idle); }, [idle]);
 
   // ---------------- audio come sistema ----------------
   useEffect(() => { setMusic(s.settings.music); }, [s.settings.music]);
@@ -144,7 +152,7 @@ export default function App() {
         <Nav state={s} act={act} />
       </div>
       {!s.combat && <GuideBar state={s} act={act} />}
-      <main className={`${fresh ? "stagger-root" : ""} relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16`}>
+      <main className={`${fresh ? "stagger-root" : ""} relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-4 ${bannerSupported() ? "pb-32" : "pb-16"}`}>
         {s.combat ? <Combat state={s} act={act} /> : (
           <>
             {s.tab === 'villaggio' && <Village state={s} act={act} />}

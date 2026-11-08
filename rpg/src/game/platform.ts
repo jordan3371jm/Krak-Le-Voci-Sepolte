@@ -22,6 +22,7 @@ export async function bootPlatform(keys: string[]) {
     try { await Promise.race([b.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 10_000))]); } catch { /* si gioca comunque */ }
   }
   if (bridgeActive()) {
+    try { b.advertisement?.setMinimumDelayBetweenInterstitial?.(300); } catch { /* */ }
     await kvInit(keys);
     try {
       audioAllowed = b.platform.isAudioEnabled !== false;
@@ -98,4 +99,15 @@ export function submitScore(id: string, score: number) {
 export function hasLeaderboard() {
   const lb = w().bridge?.leaderboards;
   return bridgeActive() && !!lb && !!lb.type && lb.type !== 'not_available';
+}
+
+// ------------------------------------------------------------
+// Banner: solo nelle schermate tranquille (villaggio, menu), mai in combattimento.
+// ------------------------------------------------------------
+let bannerOn = false;
+export function bannerSupported() { try { return bridgeActive() && !!w().bridge?.advertisement?.isBannerSupported; } catch { return false; } }
+export function setBanner(show: boolean) {
+  if (!bannerSupported() || show === bannerOn) return;
+  bannerOn = show;
+  try { const a = w().bridge.advertisement; if (show) a.showBanner('bottom', 'idle'); else a.hideBanner(); } catch { /* */ }
 }
