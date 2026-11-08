@@ -181,7 +181,8 @@ export function prodMult(s: GameState, key: keyof Resources | 'all', now = Date.
 }
 
 export function lootMult(s: GameState): number {
-  return 1 + valleyFx(s).loot + cardMod(s, 'loot') + sanct(s, 'bottino') / 100 + consMod(s, 'loot') + s.corruption / 250;
+  const talent = s.hero.talents.includes('ca4b') ? 0.2 : 0;
+  return 1 + valleyFx(s).loot + cardMod(s, 'loot') + sanct(s, 'bottino') / 100 + consMod(s, 'loot') + s.corruption / 250 + talent;
 }
 
 export function repState(s: GameState, f: FactionId): string {

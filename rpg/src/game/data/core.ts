@@ -178,30 +178,47 @@ export const FACTION_IDS = Object.keys(FACTIONS) as FactionId[];
 // ------------------------------------------------------------
 // TALENTI — "Vie" narrative (GDD §7)
 // ------------------------------------------------------------
-export interface TalentDef { id: string; via: string; name: string; desc: string; tier: number; requires?: string; stats?: Partial<Stats>; special?: string }
+export interface TalentDef { id: string; via: string; name: string; desc: string; tier: number; requires?: string; requiresAny?: string[]; stats?: Partial<Stats>; special?: string }
 export const VIE: Record<string, { name: string; icon: string; desc: string; faction: FactionId }> = {
   culto: { name: t('Via del Culto'), icon: '🕯️', desc: t('Sangue, visione, sacrificio.'), faction: 'culto' },
   capitale: { name: t('Via della Capitale'), icon: '🏰', desc: t('Comando, ordine, repressione.'), faction: 'capitale' },
   contadini: { name: t('Via dei Contadini'), icon: '🌾', desc: t('Resistenza, cura, trappole naturali.'), faction: 'contadini' },
   rivolta: { name: t('Via della Rivolta'), icon: '📜', desc: t('Sabotaggio, carisma, caos.'), faction: 'eretici' },
 };
+// Ogni Via: 6 livelli, con due bivi (livello 2 e 4) in cui scegliere un ramo o prenderli entrambi.
 export const TALENTS: TalentDef[] = [
   { id: 'cu1', via: 'culto', tier: 1, name: t('Sete Rituale'), desc: t('+5% rubavita'), stats: { lifesteal: 5 } },
   { id: 'cu2', via: 'culto', tier: 2, requires: 'cu1', name: t('Occhio della Fonte'), desc: t('+8% critico, +20% danni critici'), stats: { crit: 8, critDmg: 20 } },
-  { id: 'cu3', via: 'culto', tier: 3, requires: 'cu2', name: t('Sacramento di Sangue'), desc: t('Le abilità di sangue danno +1 Risonanza'), special: 'blood_res' },
+  { id: 'cu2b', via: 'culto', tier: 2, requires: 'cu1', name: t('Pelle di Cera'), desc: t('+30 salute, +3 difesa'), stats: { maxHp: 30, def: 3 } },
+  { id: 'cu3', via: 'culto', tier: 3, requiresAny: ['cu2', 'cu2b'], name: t('Sacramento di Sangue'), desc: t('Le abilità di sangue danno +1 Risonanza'), special: 'blood_res' },
   { id: 'cu4', via: 'culto', tier: 4, requires: 'cu3', name: t('Visione di Vhalzareth'), desc: t('+10 attacco'), stats: { atk: 10 } },
+  { id: 'cu4b', via: 'culto', tier: 4, requires: 'cu3', name: t('Calice Rovesciato'), desc: t('+8% rubavita, +15% danni critici'), stats: { lifesteal: 8, critDmg: 15 } },
+  { id: 'cu5', via: 'culto', tier: 5, requiresAny: ['cu4', 'cu4b'], name: t('Litania del Pozzo'), desc: t('Inizi ogni scontro con +2 Risonanza'), special: 'res_start' },
+  { id: 'cu6', via: 'culto', tier: 6, requires: 'cu5', name: t('Figlio della Fonte'), desc: t('+15 attacco, +10% critico'), stats: { atk: 15, crit: 10 } },
   { id: 'ca1', via: 'capitale', tier: 1, name: t('Disciplina'), desc: t('+5 difesa'), stats: { def: 5 } },
   { id: 'ca2', via: 'capitale', tier: 2, requires: 'ca1', name: t('Comando'), desc: t('I compagni infliggono +25% danni'), special: 'command' },
-  { id: 'ca3', via: 'capitale', tier: 3, requires: 'ca2', name: t('Repressione'), desc: t('+6 attacco, +30 salute'), stats: { atk: 6, maxHp: 30 } },
+  { id: 'ca2b', via: 'capitale', tier: 2, requires: 'ca1', name: t('Scudo d’Ordinanza'), desc: t('+6 difesa, +20 salute'), stats: { def: 6, maxHp: 20 } },
+  { id: 'ca3', via: 'capitale', tier: 3, requiresAny: ['ca2', 'ca2b'], name: t('Repressione'), desc: t('+6 attacco, +30 salute'), stats: { atk: 6, maxHp: 30 } },
   { id: 'ca4', via: 'capitale', tier: 4, requires: 'ca3', name: t('Legge Marziale'), desc: t('Inizi ogni scontro con 2 Focus'), special: 'focus_start' },
+  { id: 'ca4b', via: 'capitale', tier: 4, requires: 'ca3', name: t('Paga del Soldato'), desc: t('+20% bottino nei dungeon'), special: 'loot_plus' },
+  { id: 'ca5', via: 'capitale', tier: 5, requiresAny: ['ca4', 'ca4b'], name: t('Catena di Comando'), desc: t('+10 difesa, +2 velocità'), stats: { def: 10, speed: 2 } },
+  { id: 'ca6', via: 'capitale', tier: 6, requires: 'ca5', name: t('Editto Imperiale'), desc: t('+10 attacco, +60 salute'), stats: { atk: 10, maxHp: 60 } },
   { id: 'co1', via: 'contadini', tier: 1, name: t('Pelle Dura'), desc: t('+40 salute massima'), stats: { maxHp: 40 } },
   { id: 'co2', via: 'contadini', tier: 2, requires: 'co1', name: t('Erbe di Campo'), desc: t('Le pozioni curano il 50% in più'), special: 'potion_plus' },
-  { id: 'co3', via: 'contadini', tier: 3, requires: 'co2', name: t('Trappole Naturali'), desc: t('+10% rivalsa, le trappole del dungeon ti feriscono la metà'), stats: { thorns: 10 }, special: 'trap_half' },
+  { id: 'co2b', via: 'contadini', tier: 2, requires: 'co1', name: t('Mani Callose'), desc: t('+4 attacco, +3 difesa'), stats: { atk: 4, def: 3 } },
+  { id: 'co3', via: 'contadini', tier: 3, requiresAny: ['co2', 'co2b'], name: t('Trappole Naturali'), desc: t('+10% rivalsa, le trappole del dungeon ti feriscono la metà'), stats: { thorns: 10 }, special: 'trap_half' },
   { id: 'co4', via: 'contadini', tier: 4, requires: 'co3', name: t('Radici'), desc: t('+8 difesa, +60 salute'), stats: { def: 8, maxHp: 60 } },
+  { id: 'co4b', via: 'contadini', tier: 4, requires: 'co3', name: t('Raccolto Abbondante'), desc: t('+20% esperienza'), special: 'xp_plus' },
+  { id: 'co5', via: 'contadini', tier: 5, requiresAny: ['co4', 'co4b'], name: t('Pazienza della Terra'), desc: t('+10% rivalsa, +40 salute'), stats: { thorns: 10, maxHp: 40 } },
+  { id: 'co6', via: 'contadini', tier: 6, requires: 'co5', name: t('Cuore della Valle'), desc: t('+12 difesa, +100 salute'), stats: { def: 12, maxHp: 100 } },
   { id: 'ri1', via: 'rivolta', tier: 1, name: t('Sabotaggio'), desc: t('+6% schivata, +2 velocità'), stats: { dodge: 6, speed: 2 } },
   { id: 'ri2', via: 'rivolta', tier: 2, requires: 'ri1', name: t('Carisma'), desc: t('Prezzi del Mercato -15%'), special: 'cheap' },
-  { id: 'ri3', via: 'rivolta', tier: 3, requires: 'ri2', name: t('Caos'), desc: t('La Dissonanza costa 1 in meno per azione'), special: 'cheap_dis' },
+  { id: 'ri2b', via: 'rivolta', tier: 2, requires: 'ri1', name: t('Lama Nascosta'), desc: t('+8% critico, +3 attacco'), stats: { crit: 8, atk: 3 } },
+  { id: 'ri3', via: 'rivolta', tier: 3, requiresAny: ['ri2', 'ri2b'], name: t('Caos'), desc: t('La Dissonanza costa 1 in meno per azione'), special: 'cheap_dis' },
   { id: 'ri4', via: 'rivolta', tier: 4, requires: 'ri3', name: t('Fuoco della Rivolta'), desc: t('+8 attacco, +10% critico'), stats: { atk: 8, crit: 10 } },
+  { id: 'ri4b', via: 'rivolta', tier: 4, requires: 'ri3', name: t('Voci nella Folla'), desc: t('+8% schivata, +2 velocità'), stats: { dodge: 8, speed: 2 } },
+  { id: 'ri5', via: 'rivolta', tier: 5, requiresAny: ['ri4', 'ri4b'], name: t('Barricate'), desc: t('+25% danni critici, +6% schivata'), stats: { critDmg: 25, dodge: 6 } },
+  { id: 'ri6', via: 'rivolta', tier: 6, requires: 'ri5', name: t('La Valle Insorge'), desc: t('+12 attacco, +12% critico'), stats: { atk: 12, crit: 12 } },
 ];
 
 import { CYCLE_COMPANIONS } from './cycles';

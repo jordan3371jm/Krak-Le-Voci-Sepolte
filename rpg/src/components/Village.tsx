@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import type { FactionId, FardelloId, GameState, ResKey } from '../game/types';
 import type { Act } from '../game/useGame';
 import { FACTIONS, FARDELLI } from '../game/data/core';
-import { BUILDINGS, FISH, RES_INFO } from '../game/data/world';
+import { BUILDINGS, FISH, RES_INFO, UPGRADE_NAMES, UPGRADE_THRESHOLDS } from '../game/data/world';
 import { canAfford, displayName, fmt, fmtTime, hasFlag, repState } from '../game/engine/state';
 import {
   availableUpgrades, baitMax, build, buildingCost, buildingUnlocked, buyAllUpgrades, buyUpgrade, catchFish, chooseFardello, clickCart, clickDeer,
-  clickValue, completeRequest, gather, hasGoldenRod, hitThreat, playBard, productionPerSec, totalBuildings, useBait,
+  clickValue, completeRequest, gather, hasGoldenRod, hitThreat, nextThreshold, playBard, productionPerSec, totalBuildings, useBait,
 } from '../game/engine/village';
 import { activateElixir, brewElixir, brewPotion, ELIXIRS, potionCost } from '../game/engine/hero';
 import { cureAberration, curePledge, pledgeCureCost, purifyUI, restoreName } from '../game/engine/meta';
@@ -312,9 +312,20 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
           </Panel>
 
           {isUnlocked(s, 'f_produzione') && <Panel title={T('Produzione')} icon="bottega">
-            <div className="grid grid-cols-2 gap-1 text-xs">
-              {(Object.keys(prod) as ResKey[]).map(k => <div key={k} className={RES_INFO[k].color}><Pic id={k} emoji={RES_INFO[k].icon} size={16} /> {RES_INFO[k].name}: +{fmt(prod[k] * 60)}{T('/min')}</div>)}
-            </div>
+            {(() => { const keys = (Object.keys(prod) as ResKey[]).filter(k => prod[k] > 0); const top = Math.max(...keys.map(k => prod[k] * 60), 1); return (
+              <div className="space-y-1.5">
+                {keys.map(k => (
+                  <div key={k} className="flex items-center gap-2">
+                    <Icon name={k} size={28} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between text-xs"><span className="text-bone/90">{RES_INFO[k].name}</span><span className={`font-semibold ${RES_INFO[k].color}`}>+{fmt(prod[k] * 60)}{T('/min')}</span></div>
+                      <div className="h-1.5 rounded bg-stone-900 overflow-hidden"><div className="h-full rounded bg-gradient-to-r from-amber-700 to-amber-300" style={{ width: `${Math.max(4, (prod[k] * 60 / top) * 100)}%` }} /></div>
+                    </div>
+                  </div>
+                ))}
+                {!keys.length && <p className="text-xs text-mist italic">{T('Nessun edificio produce ancora.')}</p>}
+              </div>
+            ); })()}
           </Panel>}
 
         </div>
@@ -322,21 +333,36 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
         {/* Edifici */}
         <div className="space-y-4">
           {isUnlocked(s, 'f_edifici') && <Panel title={T('Edifici')} icon="villaggio" right={<span className="text-[10px] text-mist">{T('ogni edificio costa +15%')}</span>}>
-            <div className="space-y-2">
+            <div className="grid gap-2">
               {BUILDINGS.map(b => {
                 const n = s.village.buildings[b.id] || 0;
                 const unlocked = buildingUnlocked(s, b.id);
                 if (!unlocked && (maxBuilt === 0 || BUILDINGS.filter(x => !buildingUnlocked(s, x.id)).indexOf(b) > 1)) return null;
                 const cost = buildingCost(s, b.id);
-                const maxed = b.max && n >= b.max;
-                if (!unlocked) return <div key={b.id} className="text-xs text-mist/60 border border-dashed border-stone-800 rounded-lg p-2">{T('??? · costruisci')}{' '}{b.unlock!.count} {BUILDINGS.find(x => x.id === b.unlock!.building)?.name}</div>;
+                const maxed = !!b.max && n >= b.max;
+                if (!unlocked) return (
+                  <div key={b.id} className="flex items-center gap-3 rounded-xl border border-dashed border-stone-800 p-2 opacity-60">
+                    <span className="grayscale brightness-50"><Icon name={b.id} size={44} /></span>
+                    <div className="text-xs text-mist"><div className="text-bone/60 font-display">???</div>{T('Costruisci {n} × {b}', { n: b.unlock!.count, b: BUILDINGS.find(x => x.id === b.unlock!.building)?.name || '' })}</div>
+                  </div>
+                );
+                const nxt = nextThreshold(s, b.id);
+                const prev = [0, ...UPGRADE_THRESHOLDS].filter(t => t <= n).pop() || 0;
+                const mult = Math.pow(2, s.village.upgrades.filter(u => u.startsWith(b.id + '_')).length);
+                const ok = !maxed && canAfford(s, cost);
                 return (
-                  <button key={b.id} disabled={!!maxed || !canAfford(s, cost)} onClick={() => { sfx.build(); act(d => build(d, b.id)); }} className="w-full text-left rounded-lg border border-stone-700 hover:border-ember/60 disabled:opacity-50 p-2 flex items-center gap-2">
-                    <Icon name={b.id} size={40} />
+                  <button key={b.id} disabled={!ok} onClick={() => { sfx.build(); act(d => build(d, b.id)); }}
+                    className={`group w-full text-left rounded-xl border p-2.5 flex items-center gap-3 transition bg-gradient-to-r from-black/50 to-stone-950/40 ${ok ? 'border-amber-700/60 hover:border-amber-400 hover:shadow-[0_0_18px_rgba(245,158,11,.18)]' : 'border-stone-800'} ${maxed ? 'opacity-70' : ''}`}>
+                    <div className="relative shrink-0">
+                      <span className={ok ? '' : 'opacity-60'}><Icon name={b.id} size={52} /></span>
+                      <span className="absolute -bottom-1 -right-1 min-w-[22px] text-center text-[11px] font-bold rounded-full bg-black border border-amber-600 text-amber-200 px-1">{n}</span>
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-bone flex justify-between"><span>{b.name}</span><span className="text-ember">{n}{b.max ? `/${b.max}` : ''}</span></div>
-                      <div className="text-[10px] text-mist truncate">{b.desc} {Object.entries(b.prod).map(([k, v]) => `+${fmt((v || 0) * Math.pow(2, s.village.upgrades.filter(u => u.startsWith(b.id + '_')).length))} ${RES_INFO[k as ResKey].icon}/s`).join(' ')}</div>
-                      {!maxed && <Cost cost={cost} have={s.res} />}
+                      <div className="flex justify-between items-baseline gap-2"><span className="font-display text-bone text-[15px] truncate">{b.name}</span>{b.max ? <span className="text-[10px] text-mist">{n}/{b.max}</span> : null}</div>
+                      <div className="text-[11px] text-mist truncate">{b.desc}</div>
+                      {Object.keys(b.prod).length > 0 && <div className="text-[11px] text-amber-200/90">{Object.entries(b.prod).map(([k, v]) => `+${fmt((v || 0) * mult * 60)} ${RES_INFO[k as ResKey].name}/min ${T('ciascuno')}`).join(' · ')}{mult > 1 ? ` · ×${mult}` : ''}</div>}
+                      {nxt && Object.keys(b.prod).length > 0 && <div className="mt-1 flex items-center gap-2"><div className="flex-1 h-1 rounded bg-stone-900 overflow-hidden"><div className="h-full bg-gradient-to-r from-violet-700 to-fuchsia-400" style={{ width: `${((n - prev) / (nxt - prev)) * 100}%` }} /></div><span className="text-[9px] text-violet-200/80 whitespace-nowrap">{T('×2 a {n}', { n: nxt })}</span></div>}
+                      <div className="mt-1">{maxed ? <span className="text-[10px] text-teal-300">{T('Al massimo')}</span> : <Cost cost={cost} have={s.res} />}</div>
                     </div>
                   </button>
                 );
@@ -344,13 +370,21 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
             </div>
           </Panel>}
           {ups.length > 0 && (
-            <Panel title={T('Miglioramenti')} icon="opzioni" right={<Btn small onClick={() => act(d => buyAllUpgrades(d))}>{T('Compra tutti')}</Btn>}>
-              <div className="space-y-1">
+            <Panel title={T('Miglioramenti')} icon="potenzia" right={<Btn small onClick={() => act(d => buyAllUpgrades(d))}>{T('Compra tutti')}</Btn>}>
+              <div className="grid gap-2">
                 {ups.slice(0, 6).map(u => {
                   const b = BUILDINGS.find(x => x.id === u.building)!;
+                  const ok = canAfford(s, u.cost);
+                  const tier = UPGRADE_THRESHOLDS.indexOf(u.threshold);
                   return (
-                    <button key={u.id} disabled={!canAfford(s, u.cost)} onClick={() => act(d => buyUpgrade(d, u.id))} className="w-full text-left text-xs rounded border border-stone-700 p-2 disabled:opacity-50 hover:border-ember">
-                      {b.icon} {T('{name} ({n}): produzione ×2', { name: b.name, n: u.threshold })} · <Cost cost={u.cost} have={s.res} />
+                    <button key={u.id} disabled={!ok} onClick={() => { sfx.build(); act(d => buyUpgrade(d, u.id)); }}
+                      className={`w-full text-left rounded-xl border p-2 flex items-center gap-3 transition ${ok ? 'border-fuchsia-700/60 bg-fuchsia-950/20 hover:border-fuchsia-400 hover:shadow-[0_0_16px_rgba(217,70,239,.2)]' : 'border-stone-800 opacity-60'}`}>
+                      <div className="relative shrink-0"><Icon name={b.id} size={40} /><span className="absolute -top-1 -right-1 text-[9px] font-bold rounded bg-fuchsia-700 text-white px-1">×2</span></div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-bone font-display truncate">{UPGRADE_NAMES[tier] || ''}</div>
+                        <div className="text-[11px] text-mist">{T('{name}: produzione raddoppiata (soglia {n})', { name: b.name, n: u.threshold })}</div>
+                        <Cost cost={u.cost} have={s.res} />
+                      </div>
                     </button>
                   );
                 })}

@@ -39,6 +39,7 @@ export function makeEnemy(s: GameState, id: string, floor: number, scale: number
 export function startCombat(s: GameState, enemyIds: string[], o: CombatOpts) {
   const st = heroStats(s);
   if (s.hero.hp <= 0) s.hero.hp = 1;
+  if (hasTalent(s, 'res_start')) s.resonance = Math.min(resonanceMax(s), s.resonance + 2);
   const hero: Combatant = {
     uid: 'hero', defId: 'hero', name: s.playerName, icon: s.aberration ? '🦷' : CLASSES[s.classId].icon, side: 'party', row: 'front',
     hp: Math.min(s.hero.hp, st.maxHp), maxHp: st.maxHp, atk: st.atk, def: st.def, crit: st.crit, critDmg: st.critDmg, dodge: st.dodge,

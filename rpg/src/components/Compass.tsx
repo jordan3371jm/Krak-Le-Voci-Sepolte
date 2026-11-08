@@ -9,6 +9,11 @@ import { fragmentUsable, placeContract, readStar, sharedWorld, useFragment } fro
 import { todayKey } from '../game/rng';
 import { sfx } from '../game/audio';
 import { Bar, Btn, Empty, Panel, Tag } from './ui';
+import { Icon } from './icons';
+import { artOr } from './art';
+
+// stelle di sfondo fisse (pseudo-casuali ma stabili)
+const BG_STARS = Array.from({ length: 90 }, (_, i) => ({ x: (i * 37.3) % 100, y: (i * 61.7 + i * i * 0.13) % 100, r: 0.15 + ((i * 13) % 7) / 25, o: 0.2 + ((i * 7) % 10) / 20 }));
 
 function starPos(cons: string, i: number) {
   const c = CONSTELLATIONS[cons];
@@ -29,19 +34,34 @@ export default function Compass({ state: s, act }: { state: GameState; act: Act 
     <div className="space-y-4">
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <Panel title={T('Bussola del Fato')} icon="✨" right={<span className="text-xs text-violet-300">🔮 {Math.floor(s.res.intuizione)}{' '}{T('Intuizione')}</span>}>
+          <Panel title={T('Bussola del Fato')} icon="bussola" right={<span className="text-xs text-violet-300">🔮 {Math.floor(s.res.intuizione)}{' '}{T('Intuizione')}</span>}>
             <p className="text-xs text-mist mb-2">{T('La valle non è un menu di livelli: è una costellazione viva. Le tue scelte accendono stelle; con l\'Intuizione puoi leggerne altre e rivelare segreti, PNG, minacce e memorie del mondo.')}</p>
-            <div className="relative w-full aspect-[16/10] rounded-xl bg-[radial-gradient(ellipse_at_center,#1e1033_0%,#05050a_70%)] border border-indigo-900 overflow-hidden">
+            <div className="relative w-full aspect-[16/10] rounded-2xl border border-amber-900/60 overflow-hidden shadow-[inset_0_0_60px_rgba(0,0,0,.9)]" style={{ background: 'radial-gradient(ellipse at 50% 55%, #2a1446 0%, #120a22 45%, #05040a 80%)' }}>
+              {/* nebulosa e stelle di fondo */}
+              <div aria-hidden className="absolute inset-0 opacity-60" style={{ background: 'radial-gradient(circle at 20% 30%, rgba(168,85,247,.25), transparent 35%), radial-gradient(circle at 80% 70%, rgba(220,38,38,.18), transparent 40%), radial-gradient(circle at 60% 20%, rgba(56,189,248,.12), transparent 30%)' }} />
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
+                {BG_STARS.map((b, i) => <circle key={i} cx={b.x} cy={b.y} r={b.r} fill="#fff" opacity={b.o} />)}
+              </svg>
+              {/* rosa dei venti d'ottone che ruota lenta */}
+              <svg aria-hidden viewBox="0 0 200 200" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[92%] opacity-40 compass-spin">
+                <circle cx="100" cy="100" r="92" fill="none" stroke="#b08a3e" strokeWidth="1.2" />
+                <circle cx="100" cy="100" r="80" fill="none" stroke="#7a5a22" strokeWidth="0.6" strokeDasharray="2 3" />
+                {Array.from({ length: 72 }, (_, i) => { const a = (i / 72) * Math.PI * 2; const l = i % 6 === 0 ? 8 : 3; return <line key={i} x1={100 + Math.cos(a) * 92} y1={100 + Math.sin(a) * 92} x2={100 + Math.cos(a) * (92 - l)} y2={100 + Math.sin(a) * (92 - l)} stroke="#b08a3e" strokeWidth={i % 6 === 0 ? 1 : 0.5} />; })}
+                <polygon points="100,18 106,100 100,182 94,100" fill="rgba(176,138,62,.25)" stroke="#b08a3e" strokeWidth="0.6" />
+                <polygon points="18,100 100,94 182,100 100,106" fill="rgba(176,138,62,.18)" stroke="#b08a3e" strokeWidth="0.6" />
+              </svg>
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
                 {Object.keys(CONSTELLATIONS).map(cons => {
                   const pts = STARS.filter(x => x.cons === cons).map((_, i) => starPos(cons, i));
-                  return <polyline key={cons} points={[...pts, pts[0]].map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke={lit.includes(cons) ? '#a855f7' : '#3b2a55'} strokeWidth={0.3} strokeDasharray="1 1" />;
+                  const on = lit.includes(cons);
+                  return <polyline key={cons} points={[...pts, pts[0]].map(p => `${p.x},${p.y}`).join(' ')} fill={on ? 'rgba(168,85,247,.08)' : 'none'} stroke={on ? '#d8b4fe' : '#4c3a6b'} strokeWidth={on ? 0.45 : 0.25} strokeDasharray={on ? undefined : '1 1'} style={on ? { filter: 'drop-shadow(0 0 1.5px #a855f7)' } : undefined} />;
                 })}
               </svg>
               {Object.entries(CONSTELLATIONS).map(([cons, c]) => (
-                <div key={cons} className="absolute -translate-x-1/2 text-center" style={{ left: `${c.x}%`, top: `${c.y + 13}%` }}>
-                  <div className={`text-[10px] whitespace-nowrap ${lit.includes(cons) ? 'text-fate' : 'text-mist/70'}`}>{c.icon} {c.name}</div>
-                  <button onClick={() => { sfx.resonance(); act(d => readStar(d, cons)); }} className="text-[9px] text-violet-300 underline">{T('leggi')}</button>
+                <div key={cons} className="absolute -translate-x-1/2 flex flex-col items-center text-center" style={{ left: `${c.x}%`, top: `${c.y + 11}%` }}>
+                  <span className={lit.includes(cons) ? 'drop-shadow-[0_0_8px_rgba(216,180,254,.8)]' : 'opacity-60 grayscale'}><Icon name={artOr('cost_' + cons, c.icon)} size={26} /></span>
+                  <div className={`text-[10px] whitespace-nowrap font-display ${lit.includes(cons) ? 'text-fate' : 'text-mist/80'}`}>{c.name}</div>
+                  <button onClick={() => { sfx.resonance(); act(d => readStar(d, cons)); }} className="mt-0.5 text-[9px] rounded-full border border-violet-500/60 bg-violet-950/60 px-2 text-violet-200 hover:bg-violet-800/60">🔮 {T('leggi')}</button>
                 </div>
               ))}
               {STARS.map(st => {
@@ -49,7 +69,7 @@ export default function Compass({ state: s, act }: { state: GameState; act: Act 
                 const p = starPos(st.cons, i);
                 const on = s.stars.includes(st.id);
                 return (
-                  <button key={st.id} onMouseEnter={() => setHover(st.id)} onClick={() => setHover(st.id)} className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full ${on ? 'w-3 h-3 bg-yellow-100 shadow-[0_0_10px_#fde68a] animate-twinkle' : 'w-2 h-2 bg-indigo-900 border border-indigo-500/40'}`} style={{ left: `${p.x}%`, top: `${p.y}%` }} />
+                  <button key={st.id} title={st.name} onMouseEnter={() => setHover(st.id)} onClick={() => setHover(st.id)} className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition ${on ? 'w-3.5 h-3.5 bg-yellow-100 shadow-[0_0_14px_#fde68a,0_0_4px_#fff] animate-twinkle' : 'w-2 h-2 bg-indigo-950 border border-indigo-400/50 hover:border-yellow-200'} ${hover === st.id ? 'ring-2 ring-amber-300' : ''}`} style={{ left: `${p.x}%`, top: `${p.y}%` }} />
                 );
               })}
             </div>
@@ -58,12 +78,13 @@ export default function Compass({ state: s, act }: { state: GameState; act: Act 
                 <div><b className={s.stars.includes(hs.id) ? 'text-yellow-100' : 'text-mist'}>{hs.name}</b> · {CONSTELLATIONS[hs.cons].name} — {s.stars.includes(hs.id) ? <span className="text-bone/80">{hs.text}</span> : <span className="text-mist italic">{hs.flag ? T('Si accende solo con una scelta.') : T('Si può leggere con l\'Intuizione.')}</span>}</div>
               ) : <span className="text-mist">{T('Stelle accese: {lit}/{total}. Costellazioni complete: {list}.', { lit: s.stars.length, total: STARS.length, list: lit.map(c => CONSTELLATIONS[c].name).join(', ') || T('nessuna') })}</span>}
             </div>
-            <div className="flex flex-wrap gap-1 mt-1">{Object.entries(CONSTELLATIONS).map(([k, c]) => <Tag key={k} className={lit.includes(k) ? 'border-fate text-fate' : ''}>{c.icon} {c.bonus}</Tag>)}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 mt-2">{Object.entries(CONSTELLATIONS).map(([k, c]) => (
+              <div key={k} className={`flex items-center gap-2 rounded-lg border px-2 py-1 text-[11px] ${lit.includes(k) ? 'border-fate/70 bg-fate/10 text-purple-100' : 'border-stone-800 text-mist'}`}><Icon name={artOr('cost_' + k, c.icon)} size={22} /><span className="leading-tight">{c.bonus}</span></div>))}</div>
           </Panel>
         </div>
 
         <div className="space-y-4">
-          <Panel title={T('Promesse')} icon="🔗">
+          <Panel title={T('Promesse')} icon="promessa">
             {s.promises.length === 0 && <Empty>{T('Nessuna promessa. Le promesse nascono dalle scelte importanti.')}</Empty>}
             <div className="space-y-1.5">
               {s.promises.map(p => (
@@ -74,7 +95,7 @@ export default function Compass({ state: s, act }: { state: GameState; act: Act 
               ))}
             </div>
           </Panel>
-          <Panel title={T('Temperatura narrativa')} icon="🌡️">
+          <Panel title={T('Temperatura narrativa')} icon="valle">
             <p className="text-xs mb-1">{T('La tua valle:')}{' '}<span className={VALLEY_EFFECTS[vs].color}>{VALLEY_EFFECTS[vs].icon} {T(vs)}</span></p>
             <p className="text-[11px] text-mist mb-2">{VALLEY_EFFECTS[vs].desc}</p>
             <Bar value={s.valley.prosperity} max={100} color="bg-pink-400" label={<><span>{T('Fioritura')}</span><span>{Math.round(s.valley.prosperity)}</span></>} />

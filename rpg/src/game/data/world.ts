@@ -26,7 +26,9 @@ export const BUILDINGS: BuildingDef[] = [
   { id: 'locanda', name: t('Locanda dei Viandanti'), icon: '🍺', desc: t('Ogni livello: +1 compagno in spedizione contemporanea.'), cost: { legno: 90, cenere: 90 }, prod: {}, max: 4, unlock: { building: 'bottega', count: 3 } },
   { id: 'torre', name: t('Torre di Guardia'), icon: '🗼', desc: t('Respinge le incursioni da sola e potenzia i tuoi colpi.'), cost: { pietra: 90, ferro: 25 }, prod: {}, max: 20, unlock: { building: 'fucina', count: 1 } },
 ];
-export const UPGRADE_THRESHOLDS = [10, 25, 50, 100];
+// Ogni soglia raggiunta sblocca un miglioramento che raddoppia la produzione dell'edificio.
+export const UPGRADE_THRESHOLDS = [5, 15, 30, 60, 100];
+export const UPGRADE_NAMES = [t('Attrezzi migliori'), t('Maestranze della valle'), t('Metodi antichi'), t('Benedizione dei Guardiani'), t('Opera leggendaria')];
 
 // Spedizioni dei compagni in tempo reale (proseguono offline)
 export interface ExpeditionDef { id: string; name: string; icon: string; minutes: number; minLevel: number; rewards: Partial<Resources> & { reliquie?: number; itemChance?: number; fragmentChance?: number }; desc: string }

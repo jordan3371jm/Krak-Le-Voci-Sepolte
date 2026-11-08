@@ -83,7 +83,7 @@ export function availableUpgrades(s: GameState) {
       const id = upgradeId(b.id, t);
       if (n >= t && !s.village.upgrades.includes(id)) {
         const cost: Partial<Resources> = {};
-        for (const [k, v] of Object.entries(b.cost)) cost[k as ResKey] = Math.ceil((v || 0) * 12 * Math.pow(t, 1.6));
+        for (const [k, v] of Object.entries(b.cost)) cost[k as ResKey] = Math.ceil((v || 0) * 6 * Math.pow(t, 1.35));
         out.push({ id, building: b.id, threshold: t, cost });
       }
     }
@@ -500,4 +500,10 @@ export function buySanctuary(s: GameState, id: string, max: number) {
   s.reliquie -= c;
   s.cycle.sanctuary[id] = lvl + 1;
   toast(s, T('🏺 Offerta accettata dal Santuario'), 'good');
+}
+
+/** Prossima soglia di miglioramento di un edificio (null se le ha superate tutte). */
+export function nextThreshold(s: GameState, id: string) {
+  const n = s.village.buildings[id] || 0;
+  return UPGRADE_THRESHOLDS.find(t => n < t) ?? null;
 }

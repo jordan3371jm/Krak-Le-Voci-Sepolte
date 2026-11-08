@@ -103,7 +103,7 @@ export function companionStats(s: GameState, id: string) {
 // ---------------- Esperienza ----------------
 export function gainXp(s: GameState, amount: number) {
   if (amount <= 0) return;
-  const mult = 1 + (s.valley.rebirthUntil > Date.now() ? 0.25 : 0);
+  const mult = 1 + (s.valley.rebirthUntil > Date.now() ? 0.25 : 0) + (hasTalent(s, 'xp_plus') ? 0.2 : 0);
   s.hero.xp += Math.round(amount * mult);
   while (s.hero.xp >= xpForLevel(s.hero.level)) {
     s.hero.xp -= xpForLevel(s.hero.level);
@@ -138,6 +138,7 @@ export function canUnlockTalent(s: GameState, id: string) {
   const t = TALENTS.find(t => t.id === id);
   if (!t || s.hero.talents.includes(id) || s.hero.talentPoints < 1) return false;
   if (t.requires && !s.hero.talents.includes(t.requires)) return false;
+  if (t.requiresAny && !t.requiresAny.some(r => s.hero.talents.includes(r))) return false;
   return true;
 }
 export function unlockTalent(s: GameState, id: string) {
