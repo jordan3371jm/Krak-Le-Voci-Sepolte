@@ -8,6 +8,7 @@ import { FATE_CARDS } from '../game/data/world';
 import type { Act } from '../game/useGame';
 import { beginGame } from '../game/engine/village';
 import { initAudio, sfx } from '../game/audio';
+import { tryAutoplay } from '../game/music';
 import { Btn } from './ui';
 import { Icon } from './icons';
 import { LangPicker } from './LangPicker';
@@ -24,6 +25,8 @@ const VISION = [
 
 export default function Intro({ state, act }: { state: GameState; act: Act }) {
   const [step, setStep] = useState(0);
+  const [awake, setAwake] = useState(false);
+  useEffect(() => { tryAutoplay(); }, []);
   const [line, setLine] = useState(0);
   const [name, setName] = useState('');
   const [cls, setCls] = useState<ClassId>('custode');
@@ -32,10 +35,10 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
   const card = FATE_CARDS.find(c => c.id === state.cycle.card);
   // la visione scorre da sola: niente clic inutili
   useEffect(() => {
-    if (step !== 0 || line >= VISION.length - 1) return;
+    if (!awake || step !== 0 || line >= VISION.length - 1) return;
     const t = window.setTimeout(() => setLine(l => l + 1), 2300);
     return () => window.clearTimeout(t);
-  }, [step, line]);
+  }, [step, line, awake]);
 
   if (step === 0) {
     return (
@@ -48,11 +51,15 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
         <p className="text-xs tracking-[0.4em] text-ember/80 mb-4 uppercase">{newCycle ? `Ciclo ${state.cycle.n}` : T('Un RPG che ricorda')}</p>
         <h1 className="text-4xl sm:text-6xl font-black text-gradient-ember title-beat mb-2 leading-tight">{T('KRAK')}</h1>
         <h2 className="text-lg sm:text-2xl text-bone/90 mb-10 tracking-widest">{T('Le Voci Sepolte')}</h2>
-        <div className="min-h-[96px] max-w-xl">
+        {!awake ? (
+          <button onClick={() => { initAudio(); sfx.door(); setAwake(true); }} className="relative z-10 mt-2 px-8 py-4 rounded-full border-2 border-ember/80 bg-black/60 text-ember text-lg sm:text-xl font-display tracking-[0.2em] uppercase animate-breathe hover:bg-ember/15 shadow-[0_0_40px_rgba(251,146,60,.35)]">▶ {T('Ascolta la valle')}</button>
+        ) : (
+        <div className="min-h-[140px] max-w-2xl relative z-10 space-y-2">
           {VISION.slice(0, line + 1).map((l, i) => (
-            <p key={i} className={`animate-rise ${i === VISION.length - 1 ? 'text-ember text-xl mt-2' : 'text-bone/80 italic'}`}>{l}</p>
+            <p key={i} style={{ textShadow: '0 2px 10px #000, 0 0 2px #000' }} className={`animate-rise ${i === VISION.length - 1 ? 'text-ember text-2xl sm:text-3xl font-bold mt-3' : 'text-bone text-lg sm:text-xl font-semibold italic'}`}>{l}</p>
           ))}
         </div>
+        )}
         {newCycle && legacy && (
           <p className="mt-6 text-sm text-fate max-w-md">{T('L\'eco di {name} ({ending}) vaga ancora nella valle. Le tue Memorie: +{prod}% produzione, +{stats}% statistiche.', { name: legacy.name, ending: legacy.ending, prod: state.cycle.memorieTotal * 5, stats: Math.round(state.cycle.memorieTotal * 1.5) })}{card && <> {T('Carta del Destino:')} <b>{card.icon} {card.name}</b>.</>}</p>
         )}
@@ -70,9 +77,9 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
             </div>
           );
         })()}
-        <div className="mt-10">
+        {awake && <div className="mt-10 relative z-10">
           <Btn kind="ember" onClick={() => { initAudio(); sfx.door(); setStep(1); }}>{line < VISION.length - 1 ? T('Salta ›') : T('Entra nella valle')}</Btn>
-        </div>
+        </div>}
         <p className="absolute bottom-4 text-[11px] text-mist/60">{T('Suggerimento: cuffie e schermo intero rendono il rito più profondo.')}</p>
       </div>
     );
@@ -105,13 +112,16 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
                 <div className="relative"><Icon name={c.id} size={120} /></div>
                 <span className="font-display text-bone mt-3 leading-tight text-[15px]">{c.name}</span>
                 <p className="text-[11px] text-mist mt-1 min-h-[2.5em]">{c.desc}</p>
-                <div className="w-full mt-2 space-y-1">
-                  {st.map(([l, v, m]) => (
-                    <div key={l} className="flex items-center gap-1.5 text-[10px] text-bone/70">
-                      <span className="w-14 text-left truncate">{l}</span>
-                      <div className="flex-1 h-1.5 bg-stone-800 rounded overflow-hidden"><div className="h-full rounded" style={{ width: `${Math.min(100, (v / m) * 100)}%`, background: `linear-gradient(90deg, rgba(${CC[c.id]},.6), rgb(${CC[c.id]}))` }} /></div>
-                    </div>
-                  ))}
+                <div className="w-full mt-3 pt-2 border-t border-[rgba(var(--cc),.25)] space-y-1.5">
+                  {st.map(([l, v, m]) => {
+                    const n = Math.max(1, Math.min(5, Math.round((v / m) * 5)));
+                    return (
+                      <div key={l} className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] uppercase tracking-[0.18em] text-bone/70 font-display">{l}</span>
+                        <span className="flex gap-1">{[0, 1, 2, 3, 4].map(k => <span key={k} className={`stat-gem ${k < n ? 'on' : ''}`} />)}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </button>
             );

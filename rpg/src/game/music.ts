@@ -35,8 +35,8 @@ export function playTrack(name: string | null) {
   if (!src || !name) return;
   const el = new Audio(src);
   el.loop = true; el.volume = 0;
-  el.play().then(() => fade(el, target(), 1800)).catch(() => {});
   current = { name, el };
+  el.play().then(() => fade(el, target(), 1800)).catch(() => { if (current?.el === el) current = null; unlocked = false; });
 }
 
 /** Il primo gesto del giocatore sblocca l'audio del browser. */
@@ -62,3 +62,6 @@ export function playClip(name: string, volume = 0.8) {
   if (current) { const c = current.el; fade(c, target() * 0.35, 200); el.onended = () => { if (current?.el === c) fade(c, target(), 900); }; }
   el.play().catch(() => {});
 }
+
+/** Prova a far partire la musica subito (riesce se il browser lo consente). */
+export function tryAutoplay() { if (!unlocked) { unlocked = true; playTrack(wanted); } }

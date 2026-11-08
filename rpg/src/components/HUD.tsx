@@ -32,7 +32,7 @@ export default function HUD({ state: s, act, onFullscreen, onCodex, onSave }: { 
   const keys = (['cenere', 'provviste', 'legno', 'pietra', 'ferro', 'intuizione'] as ResKey[]).filter(k => s.res[k] >= 1 || prod[k] > 0 || k === 'cenere' || (k === 'provviste' && isUnlocked(s, 'discesa')));
   const heroIcon = s.aberration ? 'corruzione' : s.fardello || 'portale';
   return (
-    <header className="bg-black/85 backdrop-blur border-b border-amber-900/40">
+    <header className="relative z-50 bg-black/85 backdrop-blur border-b border-amber-900/40">
       <div className="max-w-6xl mx-auto px-3 pt-2 flex items-center gap-3">
         <div className="flex items-center gap-2 min-w-0 shrink-0">
           <Icon name={heroIcon} size={42} />
@@ -92,12 +92,12 @@ function GameMenu({ state: s, act, onFullscreen, onCodex, onSave }: { state: Gam
         <span className="block w-5 h-[2px] bg-bone/80 rounded" /><span className="block w-5 h-[2px] bg-bone/80 rounded" /><span className="block w-5 h-[2px] bg-bone/80 rounded" />
       </button>
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-64 rounded-xl border border-amber-800/60 bg-black/95 p-1.5 shadow-2xl animate-rise">
+        <div className="absolute right-0 z-[70] mt-2 w-64 rounded-xl border border-amber-800/60 bg-black/95 p-1.5 shadow-2xl animate-rise">
           <div className="px-3 py-2"><LangPicker onBeforeChange={onSave} /></div>
-          <button className={row} onClick={() => { setOpen(false); onCodex(); }}><Icon name="diario" size={28} plain />{T('Codex: come funziona')}</button>
-          <button className={row} onClick={() => act(d => { d.settings.music = !d.settings.music; })}><span className={s.settings.music ? '' : 'opacity-40'}><Icon name="musica" size={28} plain /></span>{s.settings.music ? T('Musica attiva') : T('Musica spenta')}</button>
-          <button className={row} onClick={() => { setOpen(false); onFullscreen(); }}><Icon name="rito" size={28} plain />{T('Il Rito (schermo intero)')}</button>
-          {onSave && <button className={row} onClick={() => { onSave(); setOpen(false); }}><Icon name="opzioni" size={28} plain />{T('💾 Salva ora')}</button>}
+          <button className={row} onClick={() => { setOpen(false); onCodex(); }}><Icon name="diario" size={30} />{T('Codex: come funziona')}</button>
+          <button className={row} onClick={() => act(d => { d.settings.music = !d.settings.music; })}><span className={s.settings.music ? '' : 'opacity-40'}><Icon name="musica" size={30} /></span>{s.settings.music ? T('Musica attiva') : T('Musica spenta')}</button>
+          <button className={row} onClick={() => { setOpen(false); onFullscreen(); }}><Icon name="rito" size={30} />{T('Il Rito (schermo intero)')}</button>
+          {onSave && <button className={row} onClick={() => { onSave(); setOpen(false); }}><Icon name="opzioni" size={30} />{T('💾 Salva ora')}</button>}
         </div>
       )}
     </div>

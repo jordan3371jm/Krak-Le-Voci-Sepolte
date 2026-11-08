@@ -84,7 +84,7 @@ export function Codex({ state: s, onClose }: { state: GameState; onClose: () => 
         <div className="space-y-1 max-h-[55vh] overflow-y-auto pr-1">
           {all.map(e => (
             <button key={e.id} onClick={() => setSel(e.id)} className={`w-full text-left flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm ${cur?.id === e.id ? 'bg-ember/15 text-bone' : 'text-mist hover:text-bone'}`}>
-              <Icon name={e.icon} size={22} /> {e.name}
+              <Icon name={e.icon} size={30} /> {e.name}
             </button>
           ))}
         </div>
