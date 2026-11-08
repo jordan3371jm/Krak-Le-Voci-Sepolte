@@ -10,7 +10,7 @@ import { todayKey } from '../game/rng';
 import { sfx } from '../game/audio';
 import { Bar, Btn, Empty, Panel, Tag } from './ui';
 import { Icon } from './icons';
-import { artOr } from './art';
+import { artOr, artFor } from './art';
 
 // stelle di sfondo fisse (pseudo-casuali ma stabili)
 const BG_STARS = Array.from({ length: 90 }, (_, i) => ({ x: (i * 37.3) % 100, y: (i * 61.7 + i * i * 0.13) % 100, r: 0.15 + ((i * 13) % 7) / 25, o: 0.2 + ((i * 7) % 10) / 20 }));
@@ -119,7 +119,7 @@ export default function Compass({ state: s, act }: { state: GameState; act: Act 
               const u = fragmentUsable(s, f.defId);
               return (
                 <div key={f.uid} className="flex items-center gap-2 text-xs rounded border border-stone-700 p-2">
-                  <span className="text-xl">{def.icon}</span>
+                  <Icon name={artFor('frammento_' + f.defId) ? 'frammento_' + f.defId : def.icon} size={34} />
                   <div className="flex-1"><div className="text-bone">{def.name}{def.dark ? T(' · oscuro') : ''}</div><div className="text-mist">{def.desc}</div>{!u.ok && <div className="text-dissonance text-[10px]">{u.why}</div>}</div>
                   <Btn small kind="fate" disabled={!u.ok} onClick={() => act(d => useFragment(d, f.uid))}>{T('Attiva')}</Btn>
                 </div>
