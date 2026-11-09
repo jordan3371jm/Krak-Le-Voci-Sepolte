@@ -35,12 +35,13 @@ export default function App() {
   useEffect(() => { const id = window.setTimeout(gameReady, 300); return () => window.clearTimeout(id); }, []);
   const inDelve = !!s.delve;
   const delveBiome = s.delve?.biome;
+  const sessionStart = useRef(Date.now());
   const wasDelve = useRef(inDelve);
   useEffect(() => {
     if (inDelve && !wasDelve.current) platformMessage('level_started', { world: delveBiome || '', level: String(s.delve?.floor || 1) });
     if (!inDelve && wasDelve.current) {
       platformMessage(s.lastReport?.good === false ? 'level_failed' : 'level_completed');
-      if ((s.totals.delves || 0) >= 2) interstitial('delve_end'); // mai dopo la prima discesa
+      if (Date.now() - sessionStart.current > 300_000) interstitial('delve_end'); // mai nei primi 5 minuti
     }
     wasDelve.current = inDelve;
   }, [inDelve]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -61,10 +62,9 @@ export default function App() {
     ];
     for (const [id, ok] of steps) if (ok) trackOnce(id);
   });
-  // Pubblicità di pausa: mai nei primi 5 minuti della sessione né prima della prima discesa completata
-  const sessionStart = useRef(Date.now());
-  const delvesRef = useRef(0); delvesRef.current = s.totals.delves || 0;
-  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && delvesRef.current >= 1 && Date.now() - sessionStart.current > 300_000) interstitial('pause'); }, 60_000); return () => window.clearInterval(id); }, []);
+  // Pubblicità: niente all'apertura; dopo 5 minuti dall'ingresso parte la prima, poi ogni 5 minuti
+  // (Bridge rispetta minimumDelayBetweenInterstitial = 300 s) nei momenti tranquilli.
+  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && Date.now() - sessionStart.current > 300_000) interstitial('pause'); }, 15_000); return () => window.clearInterval(id); }, []);
   // banner in basso solo quando la scena è tranquilla e fuori dai dungeon
   const idle = s.scene !== 'game' || (!s.combat && !s.delve && !s.talk && !s.modal);
   useEffect(() => { setBanner(idle); }, [idle]);
