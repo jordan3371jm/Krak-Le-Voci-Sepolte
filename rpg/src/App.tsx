@@ -40,7 +40,7 @@ export default function App() {
     if (inDelve && !wasDelve.current) platformMessage('level_started', { world: delveBiome || '', level: String(s.delve?.floor || 1) });
     if (!inDelve && wasDelve.current) {
       platformMessage(s.lastReport?.good === false ? 'level_failed' : 'level_completed');
-      interstitial('delve_end');
+      if ((s.totals.delves || 0) >= 2) interstitial('delve_end'); // mai dopo la prima discesa
     }
     wasDelve.current = inDelve;
   }, [inDelve]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -49,7 +49,10 @@ export default function App() {
   // è il Bridge a decidere se mostrarlo davvero (al massimo uno ogni 5 minuti, vedi la configurazione)
   const calm = s.scene === 'game' && !s.combat && !s.talk && !s.modal && (!s.delve || (s.delve.floorCleared && !s.delve.room?.bossChoice));
   const calmRef = useRef(calm); calmRef.current = calm;
-  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden) interstitial('pause'); }, 30_000); return () => window.clearInterval(id); }, []);
+  // Pubblicità di pausa: mai nei primi 5 minuti della sessione né prima della prima discesa completata
+  const sessionStart = useRef(Date.now());
+  const delvesRef = useRef(0); delvesRef.current = s.totals.delves || 0;
+  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && delvesRef.current >= 1 && Date.now() - sessionStart.current > 300_000) interstitial('pause'); }, 60_000); return () => window.clearInterval(id); }, []);
   // banner in basso solo quando la scena è tranquilla e fuori dai dungeon
   const idle = s.scene !== 'game' || (!s.combat && !s.delve && !s.talk && !s.modal);
   useEffect(() => { setBanner(idle); }, [idle]);
