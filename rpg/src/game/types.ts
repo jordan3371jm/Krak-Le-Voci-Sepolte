@@ -311,6 +311,8 @@ export interface GameState {
   world: { day: string; bossDamage: number; bossTries: number };
 
   daily: { day: string; chest: boolean; missions: DailyMission[]; bonus: boolean };
+  weekly: { key: string; missions: DailyMission[]; bonus: boolean };
+  monthly: { key: string; missions: DailyMission[]; bonus: boolean };
   achievements: string[];
   bestiary: Record<string, number>;
   fish: string[];

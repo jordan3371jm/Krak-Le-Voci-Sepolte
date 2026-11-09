@@ -41,6 +41,8 @@ export function newGame(): GameState {
     valley: { prosperity: 30, tension: 20, blight: 25, eclipseUntil: 0, rebirthUntil: 0 },
     world: { day: todayKey(), bossDamage: 0, bossTries: 0 },
     daily: { day: '', chest: false, missions: [], bonus: false },
+    weekly: { key: '', missions: [], bonus: false },
+    monthly: { key: '', missions: [], bonus: false },
     achievements: [], bestiary: {}, fish: [], bait: 5, baitAt: now,
     requests: [], requestsAt: 0,
     events: { cart: 0, deer: 0, threat: null, nextAt: now + 90_000, buffs: [], bardReadyAt: 0 },

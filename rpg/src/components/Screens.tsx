@@ -1,4 +1,4 @@
-import { pick } from './art';
+import { pick, artFor, artOr } from './art';
 import { totalBuildings, completeRequest } from '../game/engine/village';
 import { canAfford } from '../game/engine/state';
 import { Cost } from './ui';
@@ -11,14 +11,14 @@ import type { Act } from '../game/useGame';
 import { COMPANIONS, FACTIONS, FACTION_IDS } from '../game/data/core';
 import { ENEMIES } from '../game/data/enemies';
 import { ACHIEVEMENTS, ENDINGS, EXPEDITIONS, FATE_CARDS, FRAGMENTS, SANCTUARY, RES_INFO } from '../game/data/world';
-import { DAILY_POOL } from '../game/data/world';
+import { DAILY_POOL, type MissionPeriod } from '../game/data/world';
 import { cardMod, fmt, fmtTime, repState } from '../game/engine/state';
 import { companionStats } from '../game/engine/hero';
 import {
   buyListing, canEndCycle, claimDream, endCycle, memorieGain, priceMult, refreshMarket, sellFragment, startNewCycle,
 } from '../game/engine/meta';
 import {
-  buySanctuary, claimDailyChest, claimMission, collectExpedition, expeditionDuration, expeditionSlots, missionProgress, recruit, sanctuaryCost, sendExpedition, toggleParty,
+  buySanctuary, claimDailyChest, claimMission, missionReward, collectExpedition, expeditionDuration, expeditionSlots, missionProgress, recruit, sanctuaryCost, sendExpedition, toggleParty,
 } from '../game/engine/village';
 import { deleteSave, exportCode, importCode } from '../game/save';
 import { GIFT_LIKES, giftableItems, giveGift, nextGiftScene } from '../game/engine/features';
@@ -32,35 +32,60 @@ import { Bar, Btn, Empty, ItemCard, Panel, Tag, rich } from './ui';
 export function Market({ state: s, act }: { state: GameState; act: Act }) {
   useEffect(() => { if (Date.now() >= s.market.refreshAt) act(d => refreshMarket(d)); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const pm = priceMult(s);
+  const ombre = repState(s, 'ombre');
   return (
-    <div className="grid lg:grid-cols-3 gap-4">
-      <div className="lg:col-span-2 space-y-4">
-        <Panel title={T('Mercato delle Anime')} icon="🎭" right={<span className="text-[11px] text-mist">{T('Nuove merci tra')}{' '}{fmtTime(s.market.refreshAt - Date.now())} · prezzi ×{pm.toFixed(2)}</span>}>
-          <p className="text-xs text-mist mb-3">{T('Qui non si vendono solo oggetti: si commercia destino. Ogni merce porta la storia di chi l\'ha posseduta. I prezzi dipendono dalla tua reputazione con le Ombre del Mercato.')}</p>
-          <div className="grid sm:grid-cols-2 gap-2">
-            {s.market.listings.map(l => (
-              <div key={l.uid} className="rounded-lg border border-stone-700 p-2 bg-black/30">
-                {l.item && <ItemCard it={l.item} />}
-                {l.item && <p className="text-[10px] text-fate/70 italic mt-1">«{l.item.origin}»</p>}
-                {l.fragment && <div className="text-xs"><Pic id={`frammento_${l.fragment}`} emoji={FRAGMENTS[l.fragment].icon} size={28} /> <b>{FRAGMENTS[l.fragment].name}</b><div className="text-mist">{FRAGMENTS[l.fragment].desc}</div></div>}
-                {l.res && <div className="text-xs">📦 {l.res.amount} {RES_INFO[l.res.key].name}</div>}
-                <div className="flex items-center justify-between mt-2 text-[11px]"><span className="text-mist">{T('da')}{' '}{l.seller}</span><Btn small kind="good" disabled={s.res.cenere < Math.round(l.price * pm)} onClick={() => act(d => buyListing(d, l.uid))}>⚱️{Math.round(l.price * pm)}</Btn></div>
-              </div>
-            ))}
+    <div className="space-y-4">
+      <section className="market-hero relative rounded-2xl overflow-hidden p-4 sm:p-6">
+        <div aria-hidden className="absolute inset-0 market-bg" />
+        <div className="relative flex flex-wrap items-center gap-4 sm:gap-6">
+          <span className="portrait-uncanny rounded-full"><Icon name={artOr('merchant', 'mercato')} size={120} /></span>
+          <div className="flex-1 min-w-[220px]">
+            <p className="text-[10px] uppercase tracking-[0.45em] text-fuchsia-200/70">{T('Ombre del Mercato')}</p>
+            <h2 className="font-display text-2xl sm:text-3xl text-gradient-ember">{T('Mercato delle Anime')}</h2>
+            <p className="text-xs sm:text-sm text-bone/75 italic mt-1">{T('Qui non si vendono solo oggetti: si commercia destino. Ogni merce porta la storia di chi l\'ha posseduta. I prezzi dipendono dalla tua reputazione con le Ombre del Mercato.')}</p>
           </div>
-        </Panel>
-        <Panel title={T('Vendi Frammenti')} icon="💠">
-          {s.fragments.length === 0 ? <Empty>{T('Nessun frammento da vendere.')}</Empty> : (
-            <div className="flex flex-wrap gap-2">{s.fragments.map(f => <Btn key={f.uid} small onClick={() => act(d => sellFragment(d, f.uid))}><Pic id={`frammento_${f.defId}`} emoji={FRAGMENTS[f.defId].icon} size={20} /> {FRAGMENTS[f.defId].name} · ⚱️{Math.round(FRAGMENTS[f.defId].value * 6 / pm)}</Btn>)}</div>
+          <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="market-stat"><div className="text-[9px] uppercase tracking-widest text-mist">{T('Nuove merci tra')}</div><div className="font-display text-lg text-amber-100">{fmtTime(s.market.refreshAt - Date.now())}</div></div>
+            <div className="market-stat"><div className="text-[9px] uppercase tracking-widest text-mist">{T('Prezzi')}</div><div className={`font-display text-lg ${pm < 1 ? 'text-teal-200' : pm > 1 ? 'text-red-300' : 'text-amber-100'}`}>×{pm.toFixed(2)}</div><div className="text-[9px] text-mist">{T(ombre)}</div></div>
+          </div>
+        </div>
+      </section>
+      <div className="grid lg:grid-cols-3 gap-4 items-start">
+        <div className="lg:col-span-2 space-y-4">
+          <Panel title={T('Merci in vendita')} icon="merchant">
+            <div className="grid sm:grid-cols-2 gap-3">
+              {s.market.listings.map(l => { const price = Math.round(l.price * pm); const ok = s.res.cenere >= price; return (
+                <div key={l.uid} className={`ware rounded-xl p-2.5 flex flex-col ${l.item ? 'r' + l.item.rarity : l.fragment ? 'frag' : 'res'}`}>
+                  {l.item && <ItemCard it={l.item} />}
+                  {l.item && <p className="text-[10px] text-fate/70 italic mt-1.5 leading-snug">«{l.item.origin}»</p>}
+                  {l.fragment && <div className="flex items-center gap-3"><Icon name={pick('frammento_', l.fragment, FRAGMENTS[l.fragment].icon)} size={56} /><div className="text-xs"><b className="text-fate font-display">{FRAGMENTS[l.fragment].name}</b><div className="text-mist leading-snug">{FRAGMENTS[l.fragment].desc}</div></div></div>}
+                  {l.res && <div className="flex items-center gap-3"><Icon name={l.res.key} size={56} /><div><div className="font-display text-xl text-amber-100">{fmt(l.res.amount)}</div><div className="text-xs text-mist">{RES_INFO[l.res.key].name}</div></div></div>}
+                  <div className="flex items-center justify-between mt-auto pt-2 text-[11px]">
+                    <span className="text-mist italic truncate">{T('da')}{' '}{l.seller}</span>
+                    <button disabled={!ok} onClick={() => act(d => buyListing(d, l.uid))} className="coin-btn"><Icon name="cenere" size={22} /> {fmt(price)}</button>
+                  </div>
+                </div>
+              ); })}
+            </div>
+          </Panel>
+          <Panel title={T('Vendi Frammenti')} icon="frammento_memoria">
+            {s.fragments.length === 0 ? <Empty>{T('Nessun frammento da vendere.')}</Empty> : (
+              <div className="grid sm:grid-cols-2 gap-2">{s.fragments.map(f => (
+                <button key={f.uid} onClick={() => act(d => sellFragment(d, f.uid))} className="flex items-center gap-2 rounded-lg border border-stone-700 hover:border-fate bg-black/40 p-2 text-left">
+                  <Icon name={pick('frammento_', f.defId, FRAGMENTS[f.defId].icon)} size={36} />
+                  <span className="flex-1 text-xs text-bone">{FRAGMENTS[f.defId].name}{FRAGMENTS[f.defId].dark ? <span className="text-dissonance"> · {T('oscuro')}</span> : null}</span>
+                  <span className="text-xs text-amber-200 flex items-center gap-1"><Icon name="cenere" size={20} />{fmt(Math.round(FRAGMENTS[f.defId].value * 6 / pm))}</span>
+                </button>))}</div>
+            )}
+            <p className="text-[10px] text-mist mt-2">{T('Vendere frammenti oscuri incupisce la valle. Per vendere equipaggiamento, usa l\'Inventario dell\'Eroe.')}</p>
+          </Panel>
+        </div>
+        <Panel title={T('Storico delle Anime')} icon="diario">
+          {s.market.history.length === 0 ? <Empty>{T('Nessuno scambio ancora.')}</Empty> : (
+            <div className="space-y-1.5 max-h-[560px] overflow-y-auto text-[11px] text-bone/70">{s.market.history.slice(0, 40).map((h, i) => <div key={i} className="border-l-2 border-fate/40 pl-2 py-0.5">{h}</div>)}</div>
           )}
-          <p className="text-[10px] text-mist mt-2">{T('Vendere frammenti oscuri incupisce la valle. Per vendere equipaggiamento, usa l\'Inventario dell\'Eroe.')}</p>
         </Panel>
       </div>
-      <Panel title={T('Storico delle Anime')} icon="📜">
-        {s.market.history.length === 0 ? <Empty>{T('Nessuno scambio ancora.')}</Empty> : (
-          <div className="space-y-1 max-h-[500px] overflow-y-auto text-[11px] text-bone/70">{s.market.history.slice(0, 40).map((h, i) => <div key={i} className="border-b border-stone-800 pb-1">{h}</div>)}</div>
-        )}
-      </Panel>
     </div>
   );
 }
@@ -82,44 +107,53 @@ const REP_EFFECTS: Record<FactionId, string> = {
 export function Factions({ state: s, act }: { state: GameState; act: Act }) {
   const now = Date.now();
   return (
-    <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 items-start">
-          <Panel title={T('Richieste delle Fazioni')} icon="fazioni">
-            {s.requests.length === 0 && <p className="text-xs text-mist italic">{totalBuildings(s) < 4 ? T('Le fazioni ti noteranno quando il villaggio avrà 4 edifici.') : T('Nessuna richiesta, per ora. Ne arriveranno altre.')}</p>}
-            <div className="space-y-2">
-              {s.requests.map(r => (
-                <div key={r.uid} className="rounded-lg border border-stone-700 p-2 text-xs">
-                  <div className="flex justify-between"><span className="text-bone flex items-center gap-1"><Pic id={`fazione_${r.faction}`} emoji={FACTIONS[r.faction].icon} size={20} /> {FACTIONS[r.faction].name}</span><span className="text-mist">{fmtTime(r.until - now)}</span></div>
-                  <p className="text-bone/70 italic my-1">{r.text}</p>
-                  <div className="flex items-center justify-between gap-2">
-                    <span>{T('Chiede:')}{' '}<Cost cost={r.need} have={s.res} /></span>
-                    <Btn small kind="good" disabled={!canAfford(s, r.need)} onClick={() => act(d => completeRequest(d, r.uid))}>{T('Consegna')}</Btn>
+    <div className="space-y-4">
+      <section className="panel rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+        <div aria-hidden className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_50%_0%,rgba(245,181,68,.12),transparent_60%)]" />
+        <h2 className="relative font-display text-2xl text-gradient-ember flex items-center gap-3"><Icon name="fazioni" size={44} />{T('Reputazione nella Valle')}</h2>
+        <p className="relative text-xs text-mist mt-1 max-w-3xl">{T('Niente karma unico. Guadagnare reputazione con una fazione spesso danneggia la sua rivale. Lo stato (Ignorato, Tollerato, Fidato, Temuto, Adorato, Bandito, Marchiato) cambia dialoghi, prezzi, eventi e finali.')}</p>
+      </section>
+      <div className="grid lg:grid-cols-[1.6fr_1fr] gap-4 items-start">
+        <div className="grid sm:grid-cols-2 gap-3">
+          {FACTION_IDS.map(f => {
+            const F = FACTIONS[f];
+            const v = s.factions[f];
+            const st = repState(s, f);
+            return (
+              <div key={f} className={`faction-card rounded-xl p-3 ${v >= 30 ? 'ally' : v <= -30 ? 'foe' : ''}`}>
+                <div className="flex items-center gap-3">
+                  <Icon name={pick('fazione_', F.id, F.icon)} size={60} />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-display text-bone leading-tight">{F.name}</div>
+                    <div className={`text-xs ${REP_COLORS[st]}`}>{T(st)} · {Math.round(v)}</div>
                   </div>
-                  <div className="text-[10px] text-mist mt-1">{T('Ricompensa: ⚱️{c} · reputazione +{rep} (−{down} {rival})', { c: r.reward.cenere || 0, rep: r.reward.rep, down: Math.round(r.reward.rep * 0.4), rival: FACTIONS[FACTIONS[r.faction].opposite].name })}{r.reward.reliquie ? ' · 🏺1' : ''}</div>
                 </div>
-              ))}
-            </div>
-          </Panel>
-    <Panel title={T('Reputazione nella Valle')} icon="⚖️">
-      <p className="text-xs text-mist mb-3">{T('Niente karma unico. Guadagnare reputazione con una fazione spesso danneggia la sua rivale. Lo stato (Ignorato, Tollerato, Fidato, Temuto, Adorato, Bandito, Marchiato) cambia dialoghi, prezzi, eventi e finali.')}</p>
-      <div className="grid sm:grid-cols-2 gap-3">
-        {FACTION_IDS.map(f => {
-          const F = FACTIONS[f];
-          const v = s.factions[f];
-          const st = repState(s, f);
-          return (
-            <div key={f} className="rounded-lg border border-stone-700 p-2">
-              <div className="flex justify-between text-sm"><span className="flex items-center gap-1.5"><Pic id={`fazione_${F.id}`} emoji={F.icon} size={28} /> {F.name}</span><span className={REP_COLORS[st]}>{T(st)} ({Math.round(v)})</span></div>
-              <div className="relative h-2 bg-black/60 rounded mt-1 border border-stone-800">
-                <div className="absolute top-0 bottom-0 left-1/2 w-px bg-stone-600" />
-                <div className={`absolute top-0 bottom-0 ${v >= 0 ? 'bg-resonance' : 'bg-dissonance'}`} style={{ left: v >= 0 ? '50%' : `${50 + v / 2}%`, width: `${Math.abs(v) / 2}%` }} />
+                <div className="rep-gauge mt-2"><span className="rep-mark" style={{ left: `${50 + v / 2}%` }} /></div>
+                <div className="flex justify-between text-[9px] uppercase tracking-widest text-mist mt-0.5"><span>{T('Marchiato')}</span><span>{T('Adorato')}</span></div>
+                <p className="text-[11px] text-mist mt-1.5 leading-snug">{F.desc}</p>
+                <p className="text-[10px] text-bone/60 mt-1">{REP_EFFECTS[f]}</p>
+                <p className="text-[10px] text-red-300/70 mt-1 flex items-center gap-1">{T('Rivale: {name}.', { name: FACTIONS[F.opposite].name })}</p>
               </div>
-              <p className="text-[11px] text-mist mt-1">{F.desc} {T('Rivale: {name}.', { name: FACTIONS[F.opposite].name })}</p>
-              <p className="text-[10px] text-bone/60">{REP_EFFECTS[f]}</p>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+        <Panel title={T('Richieste delle Fazioni')} icon="missioni">
+          {s.requests.length === 0 && <p className="text-xs text-mist italic">{totalBuildings(s) < 4 ? T('Le fazioni ti noteranno quando il villaggio avrà 4 edifici.') : T('Nessuna richiesta, per ora. Ne arriveranno altre.')}</p>}
+          <div className="space-y-2.5">
+            {s.requests.map(r => (
+              <div key={r.uid} className="request-card rounded-xl p-2.5 text-xs">
+                <div className="flex items-center gap-2"><Icon name={pick('fazione_', r.faction, FACTIONS[r.faction].icon)} size={36} /><span className="flex-1 text-bone font-display">{FACTIONS[r.faction].name}</span><span className="text-mist">{fmtTime(r.until - now)}</span></div>
+                <p className="text-bone/75 italic my-1.5">«{r.text}»</p>
+                <div className="flex items-center justify-between gap-2">
+                  <span>{T('Chiede:')}{' '}<Cost cost={r.need} have={s.res} /></span>
+                  <Btn small kind="good" disabled={!canAfford(s, r.need)} onClick={() => act(d => completeRequest(d, r.uid))}>{T('Consegna')}</Btn>
+                </div>
+                <div className="text-[10px] text-mist mt-1">{T('Ricompensa: ⚱️{c} · reputazione +{rep} (−{down} {rival})', { c: r.reward.cenere || 0, rep: r.reward.rep, down: Math.round(r.reward.rep * 0.4), rival: FACTIONS[FACTIONS[r.faction].opposite].name })}{r.reward.reliquie ? ' · 🏺1' : ''}</div>
+              </div>
+            ))}
+          </div>
+        </Panel>
       </div>
-    </Panel>
     </div>
   );
 }
@@ -203,65 +237,138 @@ export function Companions({ state: s, act }: { state: GameState; act: Act }) {
 // ============================================================
 // DIARIO: giornaliere, sogni, imprese, bestiario, cronaca
 // ============================================================
+const MISSION_ICON: Record<string, string> = { d_floors: 'discesa', d_kills: 'combat', d_clicks: 'legno', d_build: 'villaggio', d_fish: 'pesca', d_forge: 'fucina', d_cart: 'merchant', d_req: 'fazioni', d_exp: 'spedizioni', d_cenere: 'cenere', d_delves: 'porte', d_bosses: 'boss', d_echo: 'risonanza', d_coherent: 'fardello', d_colosso: 'colosso' };
+function resetIn(period: MissionPeriod) {
+  const n = new Date(); const t = new Date(n);
+  if (period === 'daily') { t.setHours(24, 0, 0, 0); }
+  else if (period === 'weekly') { t.setHours(0, 0, 0, 0); t.setDate(t.getDate() + (8 - (t.getDay() || 7))); }
+  else { t.setHours(0, 0, 0, 0); t.setMonth(t.getMonth() + 1, 1); }
+  return t.getTime() - n.getTime();
+}
+function MissionList({ state: s, act, period }: { state: GameState; act: Act; period: MissionPeriod }) {
+  const box = s[period];
+  const R = missionReward(s, period);
+  const title = { daily: T('Giornaliere'), weekly: T('Settimanali'), monthly: T('Mensili') }[period];
+  const bonusN = period === 'daily' ? 1 : period === 'weekly' ? 3 : 8;
+  return (
+    <section className={`mission-box ${period} rounded-2xl p-3 sm:p-4`}>
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <h3 className="font-display text-lg text-bone flex items-center gap-2"><Icon name={period === 'daily' ? 'sfida' : period === 'weekly' ? 'missioni' : 'imprese'} size={34} />{title}</h3>
+        <span className="text-[10px] uppercase tracking-widest text-mist">{T('Si rinnova tra {t}', { t: resetIn(period) > 172800000 ? T('{d}g {h}h', { d: Math.floor(resetIn(period) / 86400000), h: Math.floor((resetIn(period) % 86400000) / 3600000) }) : fmtTime(resetIn(period)) })}</span>
+      </div>
+      {period === 'daily' && <button disabled={s.daily.chest} onClick={() => act(d => claimDailyChest(d))} className={`w-full mb-3 flex items-center gap-3 rounded-xl border p-2 text-left ${s.daily.chest ? 'border-stone-800 opacity-50' : 'border-amber-500/70 bg-amber-900/20 hover:bg-amber-900/40 animate-pulseGlow'}`}>
+        <Icon name="treasure" size={44} /><span className="flex-1 font-display text-amber-100">{s.daily.chest ? T('🎁 Forziere già aperto oggi') : T('🎁 Apri il forziere giornaliero')}</span>
+      </button>}
+      <div className="space-y-2">
+        {box.missions.map(m => {
+          const def = DAILY_POOL.find(d => d.id === m.id); if (!def) return null;
+          const p = Math.min(m.target, Math.max(0, missionProgress(s, m.id, period)));
+          const done = p >= m.target;
+          return (
+            <div key={m.id} className={`mission-row rounded-xl p-2 flex items-center gap-3 ${m.claimed ? 'claimed' : done ? 'ready' : ''}`}>
+              <Icon name={MISSION_ICON[m.id] || 'missioni'} size={40} />
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-bone leading-tight">{def.text(m.target)}</div>
+                <div className="h-1.5 rounded-full bg-black/70 overflow-hidden mt-1"><div className={`h-full ${done ? 'bg-gradient-to-r from-teal-600 to-teal-300' : 'bg-gradient-to-r from-amber-800 to-amber-400'}`} style={{ width: `${(p / m.target) * 100}%` }} /></div>
+                <div className="text-[10px] text-mist mt-0.5">{fmt(p)}/{fmt(m.target)} · +{fmt(R.cenere)} {T('Cenere')}{R.reliquie ? ` · 🏺${R.reliquie}` : ''}</div>
+              </div>
+              {m.claimed ? <span className="text-teal-300 text-lg">✔</span> : <Btn small kind="good" disabled={!done} onClick={() => act(d => claimMission(d, m.id, period))}>{T('Riscuoti')}</Btn>}
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-[11px] text-mist mt-2">{box.bonus ? T('Premio completo riscosso.') : T('Completale tutte per {n} reliquie in più.', { n: bonusN })}</p>
+    </section>
+  );
+}
+
 export function Journal({ state: s, act }: { state: GameState; act: Act }) {
   const [tab, setTab] = useState<'oggi' | 'cronaca' | 'imprese' | 'bestiario'>('oggi');
+  const tabs = [
+    { id: 'oggi' as const, icon: 'missioni', name: T('Missioni') },
+    { id: 'cronaca' as const, icon: 'diario', name: T('Cronache') },
+    { id: 'imprese' as const, icon: 'imprese', name: T('Imprese') },
+    { id: 'bestiario' as const, icon: 'bestiario', name: T('Bestiario') },
+  ];
+  const kindColor: Record<string, string> = { fate: 'text-fate', promise: 'text-amber-300', combat: 'text-red-300', loot: 'text-teal-200', world: 'text-sky-200', choice: 'text-bone' };
+  const kindDot: Record<string, string> = { fate: 'bg-fate', promise: 'bg-amber-400', combat: 'bg-red-500', loot: 'bg-teal-400', world: 'bg-sky-400', choice: 'bg-bone' };
+  const groups: { day: string; items: typeof s.chronicle }[] = [];
+  for (const c of s.chronicle) { const day = new Date(c.t).toLocaleDateString(undefined, { day: '2-digit', month: 'long' }); const g = groups[groups.length - 1]; if (g && g.day === day) g.items.push(c); else groups.push({ day, items: [c] }); }
+  const seen = Object.values(ENEMIES).filter(e => !e.tags.includes('world') || s.bestiary[e.id]);
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        {(['oggi', 'cronaca', 'imprese', 'bestiario'] as const).map(t => <Btn key={t} kind={tab === t ? 'ember' : 'ghost'} onClick={() => setTab(t)}>{{ oggi: T('📅 Oggi'), cronaca: T('📜 Cronaca'), imprese: T('🏆 Imprese'), bestiario: T('👹 Bestiario') }[t]}</Btn>)}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} className={`journal-tab ${tab === t.id ? 'on' : ''}`}><Icon name={t.icon} size={44} /><span className="font-display">{t.name}</span></button>)}
       </div>
       {tab === 'oggi' && (
-        <div className="grid lg:grid-cols-2 gap-4">
-          <Panel title={T('Giornaliere')} icon="📅">
-            <Btn kind="good" disabled={s.daily.chest} onClick={() => act(d => claimDailyChest(d))}>{s.daily.chest ? T('🎁 Forziere già aperto oggi') : T('🎁 Apri il forziere giornaliero')}</Btn>
-            <div className="space-y-2 mt-3">
-              {s.daily.missions.map(m => {
-                const def = DAILY_POOL.find(d => d.id === m.id)!;
-                const p = Math.min(m.target, missionProgress(s, m.id));
-                return (
-                  <div key={m.id} className="rounded border border-stone-700 p-2 text-xs">
-                    <div className="flex justify-between gap-2"><span>{def.text(m.target)}</span>{m.claimed ? <Tag className="text-resonance">{T('Riscossa')}</Tag> : <Btn small kind="good" disabled={p < m.target} onClick={() => act(d => claimMission(d, m.id))}>{T('Riscuoti')}</Btn>}</div>
-                    <Bar className="mt-1" value={p} max={m.target} color="bg-amber-500" height="h-1" />
-                  </div>
-                );
-              })}
-            </div>
-            <p className="text-[11px] text-mist mt-2">{T('Completa tutte e tre per una reliquia. Si rinnovano ogni giorno.')}</p>
-          </Panel>
-          <Panel title={T('Diario Onirico')} icon="🌙">
+        <div className="space-y-4">
+          <div className="grid lg:grid-cols-3 gap-4 items-start">
+            <MissionList state={s} act={act} period="daily" />
+            <MissionList state={s} act={act} period="weekly" />
+            <MissionList state={s} act={act} period="monthly" />
+          </div>
+          <Panel title={T('Diario Onirico')} icon="sogni">
             <p className="text-xs text-mist mb-2">{T('Il tuo salvataggio sogna mentre sei via. Torni e trovi tracce di ciò che è accaduto.')}</p>
-            {s.dreams.length === 0 ? <Empty>{T('Nessun sogno. Torna dopo almeno un\'ora di assenza.')}</Empty> : s.dreams.map(d => (
-              <div key={d.id} className="rounded border border-indigo-800 bg-indigo-950/30 p-2 mb-2 text-xs">
-                <div className="text-bone">{d.title}</div>
+            {s.dreams.length === 0 ? <Empty>{T('Nessun sogno. Torna dopo almeno un\'ora di assenza.')}</Empty> : <div className="grid sm:grid-cols-2 gap-2">{s.dreams.map(d => (
+              <div key={d.id} className="rounded-xl border border-indigo-800 bg-indigo-950/30 p-3 text-xs">
+                <div className="text-bone font-display">{d.title}</div>
                 <p className="text-bone/70 italic my-1">{d.text}</p>
                 <Btn small kind="fate" onClick={() => act(x => claimDream(x, d.id))}>{T('Svegliati')}</Btn>
               </div>
-            ))}
+            ))}</div>}
           </Panel>
         </div>
       )}
       {tab === 'cronaca' && (
-        <Panel title={T('La Valle Ricorda')} icon="📜">
+        <Panel title={T('La Valle Ricorda')} icon="diario">
           {s.chronicle.length === 0 ? <Empty>{T('Ancora nulla da ricordare.')}</Empty> : (
-            <div className="space-y-1 max-h-[600px] overflow-y-auto text-xs">
-              {s.chronicle.map((c, i) => <div key={i} className="border-b border-stone-800 pb-1"><span className="text-mist">{new Date(c.t).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span> · <span className={c.kind === 'fate' ? 'text-fate' : c.kind === 'promise' ? 'text-amber-300' : c.kind === 'combat' ? 'text-red-300' : 'text-bone/80'}>{c.text}</span></div>)}
+            <div className="max-h-[680px] overflow-y-auto pr-1">
+              {groups.map(g => (
+                <div key={g.day} className="mb-4">
+                  <div className="sticky top-0 z-[1] bg-[#120e0c]/95 py-1 font-display text-sm text-amber-200/90 tracking-widest uppercase border-b border-amber-900/40">{g.day}</div>
+                  <div className="chron-line mt-2 space-y-2">
+                    {g.items.map((c, i) => (
+                      <div key={i} className="relative pl-6 text-xs">
+                        <span className={`absolute left-[3px] top-1 w-2.5 h-2.5 rounded-full ${kindDot[c.kind] || 'bg-bone'} shadow-[0_0_8px_currentColor]`} />
+                        <span className="text-mist mr-2">{new Date(c.t).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className={kindColor[c.kind] || 'text-bone/80'}>{c.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </Panel>
       )}
       {tab === 'imprese' && (
-        <Panel title={T('Imprese {achievements}/{ACHIEVEMENTS}', { achievements: s.achievements.length, ACHIEVEMENTS: ACHIEVEMENTS.length })} icon="🏆" right={<span className="text-xs text-amber-300">+{s.achievements.length * 2}{T('% produzione')}</span>}>
-          <div className="grid sm:grid-cols-2 gap-2">
-            {ACHIEVEMENTS.map(a => <div key={a.id} className={`rounded border p-2 text-xs ${s.achievements.includes(a.id) ? 'border-amber-500 text-amber-100' : 'border-stone-800 text-mist opacity-60'}`}><b className="flex items-center gap-1.5"><Icon name={pick('impresa_', a.id, 'imprese')} size={28} className={s.achievements.includes(a.id) ? '' : 'grayscale'} /> {a.name}</b><div>{a.desc}</div></div>)}
+        <Panel title={T('Imprese {achievements}/{ACHIEVEMENTS}', { achievements: s.achievements.length, ACHIEVEMENTS: ACHIEVEMENTS.length })} icon="imprese" right={<span className="text-xs text-amber-300">+{s.achievements.length * 2}{T('% produzione')}</span>}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {ACHIEVEMENTS.map(a => { const got = s.achievements.includes(a.id); const prog = a.stat && a.need ? Math.min(1, (s.totals[a.stat] || 0) / a.need) : 0; return (
+              <div key={a.id} className={`feat-card rounded-xl p-3 flex flex-col items-center text-center ${got ? 'got' : ''}`}>
+                <span className={got ? 'feat-medal' : 'grayscale brightness-[.35]'}><Icon name={pick('impresa_', a.id, 'imprese')} size={72} /></span>
+                <div className={`font-display text-sm mt-2 leading-tight ${got ? 'text-amber-100' : 'text-mist'}`}>{a.name}</div>
+                <div className="text-[10px] text-mist leading-snug mt-1">{a.desc}</div>
+                {!got && a.stat && a.need && <div className="w-full h-1 rounded-full bg-black/70 overflow-hidden mt-2"><div className="h-full bg-amber-600" style={{ width: `${prog * 100}%` }} /></div>}
+              </div>
+            ); })}
           </div>
         </Panel>
       )}
       {tab === 'bestiario' && (
-        <Panel title={T('Bestiario')} icon="👹">
-          <div className="grid sm:grid-cols-2 gap-2">
-            {Object.values(ENEMIES).filter(e => !e.tags.includes('world') || s.bestiary[e.id]).map(e => {
+        <Panel title={T('Bestiario')} icon="bestiario" right={<span className="text-xs text-mist">{seen.filter(e => s.bestiary[e.id]).length}/{seen.length}</span>}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {seen.map(e => {
               const n = s.bestiary[e.id] || 0;
-              return <div key={e.id} className={`rounded border p-2 text-xs ${n ? 'border-stone-700' : 'border-stone-900 opacity-40'}`}><div className="text-bone">{n ? e.icon : '❔'} {n ? e.name : '???'} {n ? <span className="text-mist">×{n}</span> : null}</div>{n > 0 && <div className="text-mist italic">{e.lore}</div>}{n > 0 && e.tags.length > 0 && <div className="text-[10px] text-fate">{e.tags.join(' · ')}</div>}</div>;
+              return (
+                <div key={e.id} className={`beast-card rounded-xl p-3 flex flex-col items-center text-center ${n ? '' : 'unknown'}`}>
+                  <span className={n ? 'portrait-uncanny rounded-full' : 'brightness-0 opacity-70'}><Icon name={artFor(e.id) ? e.id : e.icon} size={84} /></span>
+                  <div className={`font-display text-sm mt-2 ${n ? 'text-red-100' : 'text-stone-600'}`}>{n ? e.name : '???'}</div>
+                  {n > 0 && <div className="text-[10px] text-mist">{T('Abbattuti: {n}', { n })}</div>}
+                  {n > 0 && <p className="text-[10px] text-bone/65 italic leading-snug mt-1">{e.lore}</p>}
+                  {n > 0 && e.tags.length > 0 && <div className="text-[9px] text-fate mt-1 uppercase tracking-wider">{e.tags.join(' · ')}</div>}
+                </div>
+              );
             })}
           </div>
         </Panel>

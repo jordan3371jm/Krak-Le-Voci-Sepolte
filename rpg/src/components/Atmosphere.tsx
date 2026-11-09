@@ -102,3 +102,47 @@ export function Eyes({ every = 40 }: { every?: number }) {
 export function Fog() {
   return <div aria-hidden className="fixed inset-0 z-[1] pointer-events-none overflow-hidden"><div className="fog fog-a" /><div className="fog fog-b" /></div>;
 }
+
+// ============================================================
+// Il Terrore: apparizioni rare e brevi, mai bloccanti.
+// Più frequenti nei dungeon e con la corruzione alta.
+// ============================================================
+type DreadKind = 'flicker' | 'hand' | 'shadow' | 'scratch' | 'face' | 'drip';
+export function Dread({ every = 80, corruption = 0, deep = false }: { every?: number; corruption?: number; deep?: boolean }) {
+  const [d, setD] = useState<{ id: number; kind: DreadKind; x: number; y: number; flip: boolean } | null>(null);
+  useEffect(() => {
+    let tm = 0;
+    const kinds: DreadKind[] = ['flicker', 'hand', 'shadow', 'scratch', 'drip', ...(deep || corruption > 30 ? ['face' as DreadKind, 'hand' as DreadKind] : [])];
+    const go = () => {
+      const base = every * (1 - Math.min(0.55, corruption / 180)) * (deep ? 0.7 : 1);
+      tm = window.setTimeout(() => {
+        setD({ id: Date.now(), kind: kinds[Math.floor(Math.random() * kinds.length)], x: Math.random(), y: Math.random(), flip: Math.random() < 0.5 });
+        go();
+      }, (base * 0.6 + Math.random() * base * 0.8) * 1000);
+    };
+    go();
+    return () => clearTimeout(tm);
+  }, [every, corruption, deep]);
+  if (!d) return null;
+  const side = d.flip ? { right: `${2 + d.x * 8}%` } : { left: `${2 + d.x * 8}%` };
+  switch (d.kind) {
+    case 'flicker': return <div key={d.id} aria-hidden className="dread-flicker fixed inset-0 z-[45] pointer-events-none" />;
+    case 'shadow': return <div key={d.id} aria-hidden className={`dread-shadow fixed z-[3] pointer-events-none ${d.flip ? 'rev' : ''}`} style={{ top: `${15 + d.y * 40}%` }} />;
+    case 'face': return (
+      <div key={d.id} aria-hidden className="dread-face fixed z-[3] pointer-events-none" style={{ ...side, top: `${20 + d.y * 45}%` }}>
+        <svg viewBox="0 0 60 80" width="90"><ellipse cx="30" cy="38" rx="20" ry="28" fill="rgba(220,210,200,.16)" /><ellipse cx="22" cy="32" rx="4" ry="6" fill="#000" /><ellipse cx="38" cy="32" rx="4" ry="6" fill="#000" /><path d="M21 54 Q30 64 39 54 Q30 58 21 54Z" fill="#000" /></svg>
+      </div>);
+    case 'hand': return (
+      <div key={d.id} aria-hidden className="dread-hand fixed z-[3] pointer-events-none" style={{ ...side, top: `${15 + d.y * 55}%`, transform: `rotate(${(d.x - 0.5) * 60}deg)` }}>
+        <svg viewBox="0 0 60 80" width="70"><path d="M18 78 C10 60 8 48 10 38 L8 14 C8 9 14 9 15 14 L17 34 L18 6 C18 1 25 1 25 6 L26 33 L28 3 C28 -2 35 -2 35 3 L35 33 L38 9 C38 4 45 4 45 9 L43 38 C48 32 54 30 56 34 C54 44 48 52 46 62 L44 78Z" fill="rgba(110,8,8,.7)" /></svg>
+      </div>);
+    case 'scratch': return (
+      <div key={d.id} aria-hidden className="dread-scratch fixed z-[3] pointer-events-none" style={{ ...side, top: `${10 + d.y * 60}%` }}>
+        <svg viewBox="0 0 120 90" width="150">{[0, 1, 2, 3].map(i => <path key={i} d={`M${10 + i * 22} 4 Q${26 + i * 22} 45 ${18 + i * 24} 86`} stroke="rgba(140,15,15,.75)" strokeWidth="3.5" fill="none" strokeLinecap="round" />)}</svg>
+      </div>);
+    case 'drip': return (
+      <div key={d.id} aria-hidden className="fixed top-0 inset-x-0 z-[3] pointer-events-none h-0">
+        {Array.from({ length: 5 }, (_, i) => <span key={i} className="dread-drip" style={{ left: `${(d.x * 70 + i * 6.5) % 98}%`, animationDelay: `${i * 0.35}s`, height: `${40 + ((i * 37) % 70)}px` }} />)}
+      </div>);
+  }
+}

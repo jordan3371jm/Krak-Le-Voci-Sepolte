@@ -1,3 +1,4 @@
+import { MISSION_PERIODS, type MissionPeriod } from '../data/world';
 import { t as T } from '../../i18n';
 import type { ClassId, FactionId, FardelloId, GameState, ResKey, Resources } from '../types';
 import { COMPANIONS, FACTIONS, FACTION_IDS, FARDELLI } from '../data/core';
@@ -436,22 +437,37 @@ export function catchFish(s: GameState, quality: number): FishDef | null {
 // ============================================================
 // Giornaliere e imprese
 // ============================================================
-export function ensureDaily(s: GameState) {
-  const today = todayKey();
-  if (s.daily.day === today) return;
-  const pool = [...DAILY_POOL];
+function pickMissions(s: GameState, period: MissionPeriod) {
+  const P = MISSION_PERIODS[period];
+  const pool = DAILY_POOL.filter(m => period === 'daily' || m.id !== 'd_clicks');
   const missions = [];
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < P.count && pool.length; i++) {
     const m = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
-    const target = Math.round(m.base * (1 + s.hero.level / 12) * (m.id === 'd_cenere' ? 1 + s.hero.level / 3 : 1));
-    s.totals[`dbase_${m.id}`] = s.totals[m.stat] || 0;
+    const target = Math.max(1, Math.round(m.base * P.mult * (1 + s.hero.level / 12) * (m.id === 'd_cenere' || m.id === 'd_colosso' ? 1 + s.hero.level / 3 : 1)));
+    s.totals[`${P.prefix}${m.id}`] = s.totals[m.stat] || 0;
     missions.push({ id: m.id, target, progress: 0, claimed: false });
   }
-  s.daily = { day: today, chest: false, missions, bonus: false };
+  return missions;
 }
-export function missionProgress(s: GameState, id: string) {
+export function weekKey(t = Date.now()) {
+  const d = new Date(t); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return 'W' + todayKey(d.getTime());
+}
+export function monthKey(t = Date.now()) { return todayKey(t).slice(0, 7); }
+export function ensureDaily(s: GameState) {
+  const today = todayKey();
+  if (s.daily.day !== today) s.daily = { day: today, chest: false, missions: pickMissions(s, 'daily'), bonus: false };
+  else if (s.daily.missions.length < MISSION_PERIODS.daily.count) {
+    // salvataggi precedenti: completa la lista di oggi senza toccare le missioni già iniziate
+    const have = new Set(s.daily.missions.map(m => m.id));
+    for (const m of pickMissions(s, 'daily')) if (!have.has(m.id) && s.daily.missions.length < MISSION_PERIODS.daily.count) { s.daily.missions.push(m); s.daily.bonus = false; }
+  }
+  if (!s.weekly || s.weekly.key !== weekKey()) s.weekly = { key: weekKey(), missions: pickMissions(s, 'weekly'), bonus: false };
+  if (!s.monthly || s.monthly.key !== monthKey()) s.monthly = { key: monthKey(), missions: pickMissions(s, 'monthly'), bonus: false };
+}
+export function missionProgress(s: GameState, id: string, period: MissionPeriod = 'daily') {
   const def = DAILY_POOL.find(d => d.id === id)!;
-  return (s.totals[def.stat] || 0) - (s.totals[`dbase_${id}`] || 0);
+  return (s.totals[def.stat] || 0) - (s.totals[`${MISSION_PERIODS[period].prefix}${id}`] || 0);
 }
 export function claimDailyChest(s: GameState) {
   if (s.daily.chest) return;
@@ -461,17 +477,27 @@ export function claimDailyChest(s: GameState) {
   if (Math.random() < 0.25) s.reliquie++;
   toast(s, T('🎁 Forziere giornaliero aperto'), 'good');
 }
-export function claimMission(s: GameState, id: string) {
-  const m = s.daily.missions.find(m => m.id === id);
-  if (!m || m.claimed || missionProgress(s, id) < m.target) return;
+export function missionReward(s: GameState, period: MissionPeriod) {
+  const L = s.hero.level;
+  return period === 'daily' ? { cenere: 80 + L * 30, intuizione: 1, reliquie: 0, xp: 30 + L * 10 }
+    : period === 'weekly' ? { cenere: 600 + L * 160, intuizione: 3, reliquie: 1, xp: 200 + L * 50 }
+    : { cenere: 3000 + L * 650, intuizione: 8, reliquie: 3, xp: 900 + L * 180 };
+}
+export function claimMission(s: GameState, id: string, period: MissionPeriod = 'daily') {
+  const box = s[period];
+  const m = box.missions.find(m => m.id === id);
+  if (!m || m.claimed || missionProgress(s, id, period) < m.target) return;
   m.claimed = true;
-  addRes(s, { cenere: 80 + s.hero.level * 30, intuizione: 1 });
-  gainXp(s, 30 + s.hero.level * 10);
-  toast(s, T('✅ Missione giornaliera completata'), 'good');
-  if (s.daily.missions.every(x => x.claimed) && !s.daily.bonus) {
-    s.daily.bonus = true;
-    s.reliquie++;
-    toast(s, T('🏺 Tutte le missioni: +1 reliquia'), 'fate');
+  const R = missionReward(s, period);
+  addRes(s, { cenere: R.cenere, intuizione: R.intuizione });
+  s.reliquie += R.reliquie;
+  gainXp(s, R.xp);
+  toast(s, period === 'daily' ? T('✅ Missione giornaliera completata') : period === 'weekly' ? T('✅ Missione settimanale completata') : T('✅ Missione mensile completata'), 'good');
+  if (box.missions.every(x => x.claimed) && !box.bonus) {
+    box.bonus = true;
+    const n = period === 'daily' ? 1 : period === 'weekly' ? 3 : 8;
+    s.reliquie += n;
+    toast(s, T('🏺 Tutte le missioni: +{n} reliquie', { n }), 'fate');
   }
 }
 export function checkAchievements(s: GameState) {

@@ -326,17 +326,23 @@ export function refreshMarket(s: GameState, force = false) {
   if (!force && now < s.market.refreshAt && s.market.listings.length) return;
   const L: Listing[] = [];
   const lv = s.hero.level;
-  for (let i = 0; i < 4; i++) {
-    const it = makeItem(lv + 1, rollRarity(1 + Math.random()));
-    L.push({ uid: uid('ls'), seller: pick(BOT_NAMES), kind: 'item', item: it, price: Math.round((40 + it.ilvl * 14) * (1 + it.rarity * 0.9)) });
+  // Prezzi bilanciati: la rarità pesa davvero, frammenti e risorse seguono il livello dell'economia.
+  const RAR = [1, 1.8, 3.4, 6.5, 12, 22];
+  for (let i = 0; i < 5; i++) {
+    const it = makeItem(lv + 1, rollRarity(1 + Math.random() + (i === 4 ? 0.6 : 0)));
+    L.push({ uid: uid('ls'), seller: pick(BOT_NAMES), kind: 'item', item: it, price: Math.round((60 + it.ilvl * 18) * RAR[Math.min(5, it.rarity)]) });
   }
   for (let i = 0; i < 2; i++) {
     const f = randomFragment(s);
-    L.push({ uid: uid('ls'), seller: pick(BOT_NAMES), kind: 'fragment', fragment: f, price: FRAGMENTS[f].value * 9 });
+    L.push({ uid: uid('ls'), seller: pick(BOT_NAMES), kind: 'fragment', fragment: f, price: Math.round(FRAGMENTS[f].value * 9 * (1 + lv / 25)) });
   }
-  const rk = pick(['provviste', 'ferro', 'pietra', 'intuizione'] as const);
-  const amt = rk === 'provviste' ? 8 : rk === 'intuizione' ? 2 : 100 + lv * 20;
-  L.push({ uid: uid('ls'), seller: T('Gilde di Hondovalle'), kind: 'res', res: { key: rk, amount: amt }, price: rk === 'provviste' ? 90 : rk === 'intuizione' ? 120 : Math.round(amt * 1.2) });
+  const kinds = ['provviste', 'ferro', 'pietra', 'legno', 'intuizione'] as const;
+  const a = pick(kinds); const b = pick(kinds.filter(k => k !== a));
+  for (const rk of [a, b]) {
+    const amt = rk === 'provviste' ? 6 + Math.floor(lv / 4) : rk === 'intuizione' ? 2 : 80 + lv * 25;
+    const price = rk === 'provviste' ? amt * (12 + lv) : rk === 'intuizione' ? 140 + lv * 18 : Math.round(amt * (rk === 'ferro' ? 2.2 : 1.1));
+    L.push({ uid: uid('ls'), seller: T('Gilde di Hondovalle'), kind: 'res', res: { key: rk, amount: amt }, price });
+  }
   s.market.listings = L;
   s.market.refreshAt = now + 10 * 60_000;
 }

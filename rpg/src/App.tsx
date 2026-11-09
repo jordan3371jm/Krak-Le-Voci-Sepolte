@@ -21,7 +21,7 @@ import { gameReady, interstitial, platformMessage, setBanner, bannerSupported } 
 import { hasTrack, playClip, playTrack } from './game/music';
 import { setRecorded } from './game/audio';
 import { BG } from './components/art';
-import { Eyes, Fog, Particles, Whispers } from './components/Atmosphere';
+import { Dread, Eyes, Fog, Particles, Whispers } from './components/Atmosphere';
 import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from './components/Screens';
 
 export default function App() {
@@ -143,6 +143,8 @@ export default function App() {
         <Fog />
         {(s.delve || s.corruption > 20) && <Whispers every={s.delve ? 45 : 90} corruption={s.corruption} />}
         {s.delve && !s.combat && <Eyes every={35} />}
+        {!s.combat && <Dread every={s.delve ? 55 : 110} corruption={s.corruption} deep={!!s.delve} />}
+        <div aria-hidden className="edge-dread" />
       </>}
       {(s.delve || s.combat) && s.hero.hp < heroStats(s).maxHp * 0.3 && !s.settings.reduceFx && <div className="vignette vignette-low" />}
       {corrupt && <div className="vignette vignette-corrupt" />}

@@ -120,7 +120,7 @@ const TABS: { id: TabId; icon: string; name: string }[] = [
 export function Nav({ state: s, act }: { state: GameState; act: Act }) {
   const now = Date.now();
   const badge: Partial<Record<TabId, number | string>> = {
-    diario: (s.dreams.length + (s.daily.chest ? 0 : 1) + s.daily.missions.filter(m => !m.claimed && missionProgress(s, m.id) >= m.target).length) || 0,
+    diario: (s.dreams.length + (s.daily.chest ? 0 : 1) + (['daily', 'weekly', 'monthly'] as const).reduce((n, p) => n + (s[p]?.missions || []).filter(m => !m.claimed && missionProgress(s, m.id, p) >= m.target).length, 0)) || 0,
     spedizioni: s.companions.filter(c => c.mission && c.mission.end <= now).length || 0,
     eroe: s.hero.talentPoints || 0,
     discesa: s.delve ? '●' : 0,

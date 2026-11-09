@@ -57,6 +57,8 @@ export function migrate(raw: any): GameState | null {
   out.dailyRun ??= { day: '', best: 0, tries: 0, allBest: 0 };
   out.glitchUntil ??= 0;
   out.lostSatchel ??= null;
+  out.weekly ??= { key: '', missions: [], bonus: false };
+  out.monthly ??= { key: '', missions: [], bonus: false };
   return out as GameState;
 }
 

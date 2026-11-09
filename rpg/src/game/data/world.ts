@@ -177,7 +177,19 @@ export const DAILY_POOL: { id: string; text: (n: number) => string; stat: string
   { id: 'd_req', text: n => t('Completa {n} richieste delle fazioni', { n }), stat: 'requests', base: 2 },
   { id: 'd_exp', text: n => t('Completa {n} spedizioni dei compagni', { n }), stat: 'expeditions', base: 2 },
   { id: 'd_cenere', text: n => t('Guadagna {n} Cenere', { n }), stat: 'cenereEarned', base: 1500 },
+  { id: 'd_delves', text: n => t('Torna vivo da {n} discese', { n }), stat: 'delves', base: 2 },
+  { id: 'd_bosses', text: n => t('Abbatti {n} boss nei dungeon', { n }), stat: 'bosses', base: 1 },
+  { id: 'd_echo', text: n => t('Scatena {n} Eco', { n }), stat: 'echoes', base: 2 },
+  { id: 'd_coherent', text: n => t('Agisci {n} volte secondo il tuo Fardello', { n }), stat: 'coherent', base: 10 },
+  { id: 'd_colosso', text: n => t('Infliggi {n} danni al Colosso di Cenere', { n }), stat: 'worldBossDmg', base: 1500 },
 ];
+
+export type MissionPeriod = 'daily' | 'weekly' | 'monthly';
+export const MISSION_PERIODS: Record<MissionPeriod, { count: number; mult: number; prefix: string }> = {
+  daily: { count: 5, mult: 1, prefix: 'dbase_' },
+  weekly: { count: 4, mult: 6, prefix: 'wbase_' },
+  monthly: { count: 3, mult: 22, prefix: 'mbase_' },
+};
 
 export interface AchievementDef { id: string; name: string; desc: string; stat?: string; need?: number; flag?: string }
 export const ACHIEVEMENTS: AchievementDef[] = [

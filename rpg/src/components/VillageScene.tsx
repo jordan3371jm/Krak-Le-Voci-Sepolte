@@ -1,5 +1,5 @@
 import { t as T } from '../i18n';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { GameState } from '../game/types';
 import type { Act } from '../game/useGame';
 import { BUILDINGS } from '../game/data/world';
@@ -35,6 +35,8 @@ function Bird({ d, top, s }: { d: number; top: number; s: number }) {
 export function VillageScene({ state: s, act }: { state: GameState; act: Act }) {
   const now = Date.now();
   const [, tick] = useState(0);
+  const scroller = useRef<HTMLDivElement>(null);
+  useEffect(() => { const el = scroller.current; if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2; }, []);
   const [stalker, setStalker] = useState<{ id: number; x: number } | null>(null);
   useEffect(() => { const i = window.setInterval(() => tick(x => x + 1), 1000); return () => clearInterval(i); }, []);
   // Una figura immobile tra gli alberi morti, per un istante.
@@ -61,6 +63,7 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
     <section className={`hamlet relative rounded-2xl overflow-hidden ${TH ? 'hamlet-raid' : ''} ${s.corruption >= 60 && !s.settings.reduceFx ? 'hamlet-corrupt' : ''}`}>
       {/* Panorama */}
       <div className="hamlet-stage relative w-full">
+        <div ref={scroller} className="hamlet-scroll absolute inset-0 no-scrollbar"><div className="hamlet-canvas relative h-full">
         <div aria-hidden className={`absolute inset-0 bg-cover bg-center ${s.settings.reduceFx ? '' : 'hamlet-pan'}`} style={{ backgroundImage: `url(${BG.villaggio})`, filter: `saturate(${0.75 + Math.min(total, 40) / 160}) brightness(${night ? 0.55 : 0.8 + Math.min(total, 40) / 200})` }} />
         <div aria-hidden className="absolute inset-0" style={{ background: tint, mixBlendMode: 'multiply' }} />
         <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_55%,transparent_35%,rgba(4,3,5,.85)_100%)]" />
@@ -120,8 +123,9 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
           </button>
         )}
 
+        </div></div>
         {/* Intestazione */}
-        <div className="absolute left-0 top-0 p-3 sm:p-5 z-[5] max-w-[70%]">
+        <div className="absolute left-0 top-0 p-3 sm:p-5 z-[5] max-w-[70%] pointer-events-none">
           <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.45em] text-amber-200/70">{T('Il villaggio')}</p>
           <h2 className="font-display text-2xl sm:text-4xl text-gradient-ember title-beat leading-none drop-shadow-[0_2px_8px_#000]">{T('Hondovalle Bassa')}</h2>
           <p className="text-[11px] sm:text-sm text-bone/80 italic mt-1 drop-shadow-[0_1px_4px_#000]">{subtitle}</p>
