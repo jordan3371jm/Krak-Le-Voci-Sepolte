@@ -31,20 +31,21 @@ function BiomeMedal({ id }: { id: string }) {
 export function OmensPanel({ state: s }: { state: GameState }) {
   if (!s.omens.length) return null;
   return (
-    <Panel title={T('Presagi')} icon={artOr('presagi', '👁️')}>
-      <div className="space-y-2">
+    <Panel title={T('Presagi')} icon={artOr('presagi', '👁️')} right={<span className="text-[10px] uppercase tracking-widest text-fate/80">{s.omens.length}</span>}>
+      <div className="space-y-2.5">
         {s.omens.map(o => {
           const def = OMENS.find(x => x.id === o.id)!;
+          const doom = o.left <= 1;
           return (
-            <div key={o.id} className={`flex gap-3 items-start rounded-lg border p-2 ${o.left <= 1 ? 'border-dissonance/70 bg-red-950/30 animate-breathe' : 'border-fate/40 bg-black/40'}`}>
-              {artOr('omen_' + o.id, '') ? <Icon name={'omen_' + o.id} size={52} /> : <div className="text-2xl">{def.icon}</div>}
-              <div className="flex-1 text-xs text-bone/85">{omenText(s, o)}</div>
-              <div className="text-center shrink-0"><div className={`text-2xl font-black ${o.left <= 1 ? 'text-dissonance' : 'text-ember'}`}>{o.left}</div><div className="text-[9px] uppercase text-mist">{T('discese')}</div></div>
+            <div key={o.id} className={`omen-card flex gap-3 items-center p-2.5 ${doom ? 'doom' : ''}`}>
+              <span className={`relative shrink-0 ${doom ? 'portrait-uncanny' : 'portrait-alive'}`}><Icon name={artOr('omen_' + o.id, def.icon)} size={60} /></span>
+              <div className="relative flex-1 text-xs text-bone/90 leading-snug">{omenText(s, o)}</div>
+              <div className="relative omen-seal shrink-0"><span className="font-display text-xl text-red-50 leading-none">{o.left}</span><span className="text-[7px] uppercase tracking-wider text-red-200/80">{T('discese')}</span></div>
             </div>
           );
         })}
       </div>
-      <p className="text-[11px] text-mist mt-2">{T('Ogni discesa consuma un giorno del presagio. Se lo ignori, si compie.')}</p>
+      <p className="text-[11px] text-mist mt-2 italic">{T('Ogni discesa consuma un giorno del presagio. Se lo ignori, si compie.')}</p>
     </Panel>
   );
 }

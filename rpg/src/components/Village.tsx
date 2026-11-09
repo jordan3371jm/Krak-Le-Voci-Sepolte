@@ -20,6 +20,7 @@ import { TalkersPanel, Face, Typewriter } from './Talk';
 import { BG, pick } from './art';
 import { Particles } from './Atmosphere';
 import { SceneBg } from './SceneBg';
+import { VillageScene } from './VillageScene';
 import { OmensPanel } from './Delve';
 import { TALKERS } from '../game/data/dialogues';
 import { recoverSatchel } from '../game/engine/features';
@@ -178,7 +179,7 @@ export function PortalScreen({ act }: { act: Act }) {
 // ------------------------------------------------------------
 function Pond({ state: s, act }: { state: GameState; act: Act }) {
   const [phase, setPhase] = useState<'idle' | 'wait' | 'bite'>('idle');
-  const [msg, setMsg] = useState('Tocca lo stagno per lanciare la lenza.');
+  const [msg, setMsg] = useState(T('Tocca lo stagno per lanciare la lenza.'));
   const biteAt = useRef(0);
   const timer = useRef<number | null>(null);
   const windowMs = hasGoldenRod(s) ? 1300 : 900;
@@ -204,14 +205,32 @@ function Pond({ state: s, act }: { state: GameState; act: Act }) {
       timer.current = window.setTimeout(() => { setPhase('idle'); setMsg(T('È scappato…')); }, windowMs);
     }, 1500 + Math.random() * 3500);
   };
+  const caught = s.fish.length;
   return (
-    <Panel title={T('Lo Stagno delle Voci')} icon="pesca" right={<span className="text-xs text-mist">{T('Esche')}{' '}{s.bait}/{baitMax(s)}</span>}>
-      <button onClick={cast} className={`w-full h-24 rounded-xl border transition relative overflow-hidden ${phase === 'bite' ? 'border-resonance bg-teal-900/40 animate-shake' : 'border-sky-900 bg-gradient-to-b from-sky-950 to-slate-950'}`}>
-        <span className={`text-2xl ${phase === 'wait' ? 'animate-bob inline-block' : ''}`}>{phase === 'bite' ? '💥' : phase === 'wait' ? '🎈' : '🌊'}</span>
-        <div className="text-xs text-bone/80 mt-1">{msg}</div>
+    <Panel title={T('Lo Stagno delle Voci')} icon="pesca" right={<span className="flex items-center gap-1 text-[11px] text-mist">{T('Esche')}{Array.from({ length: baitMax(s) }, (_, i) => <span key={i} className={`w-1.5 h-3 rounded-full ${i < s.bait ? 'bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,.8)]' : 'bg-stone-800'}`} />)}</span>}>
+      <button onClick={cast} className={`pond w-full rounded-xl relative overflow-hidden text-left ${phase === 'bite' ? 'pond-bite' : ''}`}>
+        <span aria-hidden className="pond-moon" />
+        <span aria-hidden className="pond-fish" style={{ top: '58%', animationDuration: '17s' }} />
+        <span aria-hidden className="pond-fish" style={{ top: '74%', animationDuration: '23s', animationDelay: '-9s', transform: 'scale(.7)' }} />
+        <span aria-hidden className="pond-fish rev" style={{ top: '66%', animationDuration: '29s', animationDelay: '-4s' }} />
+        {phase !== 'idle' && <span aria-hidden className="pond-ripple" />}
+        {phase !== 'idle' && <span aria-hidden className={`pond-float ${phase === 'bite' ? 'bite' : ''}`} />}
+        {phase === 'bite' && <span aria-hidden className="pond-ripple big" />}
+        <span aria-hidden className="pond-reeds left" /><span aria-hidden className="pond-reeds right" />
+        <span className={`absolute inset-x-0 bottom-2 text-center text-xs sm:text-sm px-3 drop-shadow-[0_1px_3px_#000] ${phase === 'bite' ? 'text-amber-200 font-bold tracking-widest' : 'text-bone/85 italic'}`}>{msg}</span>
       </button>
-      <p className="text-[11px] text-mist mt-2">{T('Ogni specie è una memoria della valle: +1% produzione per sempre. Memorie:')}{' '}{s.fish.length}/{FISH.length}{hasGoldenRod(s) ? T(' · 🏆 Canna d\'oro') : ''}</p>
-      <div className="flex flex-wrap gap-1 mt-1">{FISH.map(f => <span key={f.id} title={s.fish.includes(f.id) ? `${f.name}: ${f.lore}` : '???'} className={s.fish.includes(f.id) ? '' : 'opacity-20 grayscale'}><Icon name={pick('pesce_', f.id, f.icon)} size={34} /></span>)}</div>
+      <div className="flex items-center justify-between mt-3 mb-1.5 text-[11px]">
+        <span className="uppercase tracking-[0.25em] text-mist">{T('Memorie pescate')}</span>
+        <span className="text-amber-200">{caught}/{FISH.length} · +{caught}%{hasGoldenRod(s) ? T(' · 🏆 Canna d\'oro') : ''}</span>
+      </div>
+      <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+        {FISH.map(f => { const got = s.fish.includes(f.id); return (
+          <div key={f.id} title={got ? `${f.name}: ${f.lore}` : '???'} className={`flex flex-col items-center rounded-lg p-1 border ${got ? 'border-sky-800/60 bg-sky-950/20' : 'border-stone-900 bg-black/30'}`}>
+            <span className={got ? '' : 'brightness-0 opacity-60'}><Icon name={pick('pesce_', f.id, f.icon)} size={40} /></span>
+            <span className={`text-[9px] leading-tight text-center mt-0.5 line-clamp-2 ${got ? 'text-sky-100/90' : 'text-stone-600'}`}>{got ? f.name : '???'}</span>
+          </div>
+        ); })}
+      </div>
     </Panel>
   );
 }
@@ -257,41 +276,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
         </section>
       )}
 
-      <OmensPanel state={s} />
-
-      {/* Scena del villaggio */}
-      <section className="panel rounded-xl p-4 relative overflow-hidden min-h-[150px]">
-        <div className="absolute inset-0 bg-gradient-to-t from-orange-950/40 via-transparent to-indigo-950/30 pointer-events-none" />
-        <div className="relative flex items-start justify-between gap-2 mb-2">
-          <div>
-            <h2 className="text-xl text-bone">{T('Hondovalle Bassa')}</h2>
-            <p className="text-xs text-mist italic">{totalBuildings(s) === 0 ? T('Solo cenere e un fuoco morente. Ricostruisci.') : totalBuildings(s) < 15 ? T('Il villaggio rinasce, una trave alla volta.') : totalBuildings(s) < 60 ? T('Hondovalle vive di nuovo. I bambini corrono tra le case.') : T('Hondovalle è diventata la capitale della valle.')}</p>
-          </div>
-          {s.events.buffs.filter(b => b.until > now).map(b => <Tag key={b.id} className="border-fate text-fate">{b.label} · {fmtTime(b.until - now)}</Tag>)}
-        </div>
-        <div className="relative flex flex-wrap gap-1 text-2xl min-h-[44px] items-end">
-          <span title={displayName(s)} className="animate-flicker"><Icon name={s.aberration ? "corruzione" : s.classId} size={44} /></span>
-          {BUILDINGS.filter(b => s.village.buildings[b.id]).map(b => (
-            <span key={b.id} title={`${b.name} ×${s.village.buildings[b.id]}`} className="relative">
-              <Icon name={b.id} size={44} /><span className="absolute -bottom-1 -right-1 text-[9px] bg-black/85 border border-amber-800 rounded px-1 text-bone">{s.village.buildings[b.id]}</span>
-            </span>
-          ))}
-          {s.valley.blight > 60 && <span title={T('Case bruciate')}>🏚️</span>}
-          {s.companions.filter(c => c.recruited && !c.mission && !c.left).map(c => <span key={c.id} title={c.name}><Face id={c.id} emoji={c.icon} size={34} tone="teal" /></span>)}
-        </div>
-        {/* eventi */}
-        <div className="relative flex flex-wrap gap-2 mt-3">
-          {s.events.cart > now && <Btn kind="good" onClick={() => { sfx.coin(); act(d => clickCart(d)); }}>{T('🛒 Un mercante è arrivato! (')}{fmtTime(s.events.cart - now)})</Btn>}
-          {s.events.deer > now && <button onClick={() => { sfx.resonance(); act(d => clickDeer(d)); }} className="text-3xl animate-bob" title={T('Il Cervo di Cenere!')}>🦌✨</button>}
-          {TH && (
-            <div className="w-full rounded-lg border border-dissonance/60 bg-red-950/40 p-2">
-              <div className="flex items-center justify-between text-sm mb-1"><span>{TH.icon} {T('Incursione: {name}', { name: TH.name })}</span><span className="text-xs text-mist">{fmtTime(TH.until - now)}</span></div>
-              <Bar value={TH.hp} max={TH.maxHp} color="bg-dissonance" />
-              <Btn kind="bad" className="mt-2 w-full" onClick={() => { sfx.hit(); act(d => hitThreat(d)); }}>{T('⚔️ Colpisci!')}{' '}{s.village.buildings.torre ? T('(le {torre} torri aiutano)', { torre: s.village.buildings.torre }) : ''}</Btn>
-            </div>
-          )}
-        </div>
-      </section>
+      <VillageScene state={s} act={act} />
 
       <div className="grid lg:grid-cols-3 gap-4">
         {/* Raccolta e produzione */}
@@ -328,6 +313,8 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
             ); })()}
           </Panel>}
 
+          <Infirmary state={s} act={act} />
+          <Altar state={s} act={act} />
         </div>
 
         {/* Edifici */}
@@ -341,7 +328,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
                 const cost = buildingCost(s, b.id);
                 const maxed = !!b.max && n >= b.max;
                 if (!unlocked) return (
-                  <div key={b.id} className="flex items-center gap-3 rounded-xl border border-dashed border-stone-800 p-2 opacity-60">
+                  <div key={b.id} id={'b-' + b.id} className="flex items-center gap-3 rounded-xl border border-dashed border-stone-800 p-2 opacity-60">
                     <span className="grayscale brightness-50"><Icon name={b.id} size={44} /></span>
                     <div className="text-xs text-mist"><div className="text-bone/60 font-display">???</div>{T('Costruisci {n} × {b}', { n: b.unlock!.count, b: BUILDINGS.find(x => x.id === b.unlock!.building)?.name || '' })}</div>
                   </div>
@@ -351,7 +338,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
                 const mult = Math.pow(2, s.village.upgrades.filter(u => u.startsWith(b.id + '_')).length);
                 const ok = !maxed && canAfford(s, cost);
                 return (
-                  <button key={b.id} disabled={!ok} onClick={() => { sfx.build(); act(d => build(d, b.id)); }}
+                  <button key={b.id} id={'b-' + b.id} disabled={!ok} onClick={() => { sfx.build(); act(d => build(d, b.id)); }}
                     className={`group w-full text-left rounded-xl border p-2.5 flex items-center gap-3 transition bg-gradient-to-r from-black/50 to-stone-950/40 ${ok ? 'border-amber-700/60 hover:border-amber-400 hover:shadow-[0_0_18px_rgba(245,158,11,.18)]' : 'border-stone-800'} ${maxed ? 'opacity-70' : ''}`}>
                     <div className="relative shrink-0">
                       <span className={ok ? '' : 'opacity-60'}><Icon name={b.id} size={52} /></span>
@@ -396,49 +383,101 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
         {/* Persone, storie e servizi */}
         <div className="space-y-4">
 
+          <OmensPanel state={s} />
+
           {totalBuildings(s) >= 1 && <TalkersPanel state={s} act={act} />}
 
           {isUnlocked(s, 'f_stagno') && <Pond state={s} act={act} />}
 
-          {(s.village.buildings.infermeria || 0) > 0 || s.hero.pledgedMaxHp > 0 || s.aberration ? <Panel title={T('Infermeria di Elara')} icon="infermeria">
-            {!s.village.buildings.infermeria ? <p className="text-xs text-mist italic">{T('Costruisci l\'Infermeria per preparare pozioni ed elisir.')}</p> : (
-              <div className="space-y-2">
-                <Btn className="w-full" onClick={() => act(d => brewPotion(d))}>{T('🧪 Prepara pozione (')}{s.potions}) · <Cost cost={potionCost()} have={s.res} /></Btn>
-                {(s.village.buildings.infermeria || 0) >= 2 && Object.entries(ELIXIRS).map(([id, e]) => (
-                  <div key={id} className="flex items-center gap-2 text-xs">
-                    <Btn small onClick={() => act(d => brewElixir(d, id))}><Icon name={pick('elisir_', id, e.icon)} size={22} className="inline-block align-middle" /> {e.name} <Cost cost={e.cost} have={s.res} /></Btn>
-                    {(s.elixirs[id] || 0) > 0 && <Btn small kind="fate" disabled={!!s.activeElixir} onClick={() => act(d => activateElixir(d, id))}>{T('Bevi (')}{s.elixirs[id]})</Btn>}
-                  </div>
-                ))}
-                {(s.village.buildings.infermeria || 0) < 2 && <p className="text-[10px] text-mist">{T('Infermeria livello 2: elisir per le spedizioni.')}</p>}
-                {s.activeElixir && <Tag className="border-fate text-fate">{T('Attivo:')}{' '}{ELIXIRS[s.activeElixir].name}</Tag>}
-              </div>
-            )}
-            {s.hero.pledgedMaxHp > 0 && (
-              <div className="mt-3 border-t border-stone-800 pt-2 text-xs">
-                <p className="text-dissonance">{T('⛓️ Pegno sulla salute futura: -')}{s.hero.pledgedMaxHp}</p>
-                <Btn small className="mt-1" onClick={() => act(d => curePledge(d))}>{T('Rituale di Elara: ⚱️')}{pledgeCureCost(s).cenere} + 🏺1</Btn>
-              </div>
-            )}
-            {s.aberration && (
-              <div className="mt-3 border-t border-stone-800 pt-2 text-xs">
-                <p className="text-fate">{T('🦷 Sei un\'Aberrazione. Elara conosce un rito per tornare umano, a un prezzo enorme.')}</p>
-                <Btn small className="mt-1" onClick={() => act(d => cureAberration(d))}>{T('Rito: ⚱️3000 + 🏺8')}</Btn>
-              </div>
-            )}
-          </Panel> : null}
-
-          {(s.village.buildings.altare || 0) > 0 && (
-            <Panel title={T('Altare della Veglia')} icon="altare">
-              <div className="space-y-2 text-xs">
-                <Btn className="w-full" small disabled={s.corruption < 60} onClick={() => act(d => purifyUI(d))}>{T('Purifica l\'interfaccia (🔮2)')}{' '}{s.corruption < 60 ? T('· la corruzione è bassa') : ''}</Btn>
-                {s.nameCorrupted && <Btn className="w-full" small kind="fate" onClick={() => act(d => restoreName(d))}>{T('Pronuncia il tuo vero nome (🏺3)')}</Btn>}
-                <p className="text-mist">{T('Corruzione personale: {n}%. Oltre il 60% l\'interfaccia comincia a mentire.', { n: Math.round(s.corruption) })}</p>
-              </div>
-            </Panel>
-          )}
         </div>
       </div>
     </div>
+  );
+}
+
+// ------------------------------------------------------------
+// Infermeria di Elara
+// ------------------------------------------------------------
+function Infirmary({ state: s, act }: { state: GameState; act: Act }) {
+  const lvl = s.village.buildings.infermeria || 0;
+  if (!lvl && !s.hero.pledgedMaxHp && !s.aberration) return null;
+  return (
+    <section className="panel infirmary rounded-xl p-3 sm:p-4 relative overflow-hidden">
+      <div aria-hidden className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_15%_0%,rgba(45,212,191,.12),transparent_55%)]" />
+      <div className="relative flex items-center gap-3 mb-3">
+        <Face id="elara" emoji="🌿" tone="teal" size={58} />
+        <div className="flex-1 min-w-0">
+          <h3 className="font-display text-base text-bone tracking-wide">{T('Infermeria di Elara')}</h3>
+          <p className="text-[11px] italic text-teal-100/70">{T('«Ogni cura ha un prezzo. Io lo pago in notti insonni.»')}</p>
+        </div>
+        {lvl > 0 && <span className="text-[10px] uppercase tracking-widest text-teal-200/80 border border-teal-800/60 rounded-full px-2 py-0.5">{T('Livello {n}', { n: lvl })}</span>}
+      </div>
+      {!lvl ? <p className="relative text-xs text-mist italic">{T('Costruisci l\'Infermeria per preparare pozioni ed elisir.')}</p> : (
+        <div className="relative space-y-2">
+          <button onClick={() => act(d => brewPotion(d))} disabled={!canAfford(s, potionCost())} className="w-full flex items-center gap-3 rounded-xl border border-teal-800/60 bg-gradient-to-r from-teal-950/50 to-black/40 p-2 text-left hover:border-teal-400 disabled:opacity-50 transition">
+            <Icon name="pozione" size={46} />
+            <div className="flex-1 min-w-0"><div className="text-sm text-bone font-display">{T('Pozione di cura')}</div><Cost cost={potionCost()} have={s.res} /></div>
+            <div className="text-center"><div className="font-display text-xl text-teal-200 leading-none">{s.potions}</div><div className="text-[9px] uppercase text-mist">{T('in borsa')}</div></div>
+          </button>
+          {lvl >= 2 ? (
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(ELIXIRS).map(([id, e]) => { const owned = s.elixirs[id] || 0; const active = s.activeElixir === id; return (
+                <div key={id} className={`rounded-xl border p-2 flex flex-col items-center text-center ${active ? 'border-fate bg-fate/10 shadow-[0_0_18px_rgba(168,85,247,.35)]' : 'border-stone-700 bg-black/40'}`}>
+                  <Icon name={pick('elisir_', id, e.icon)} size={50} />
+                  <div className="text-xs text-bone font-display mt-1 leading-tight">{e.name}</div>
+                  <div className="text-[10px] text-mist leading-tight my-1">{e.desc}</div>
+                  <Cost cost={e.cost} have={s.res} />
+                  <div className="flex gap-1 mt-1.5">
+                    <Btn small onClick={() => act(d => brewElixir(d, id))}>{T('Prepara')}</Btn>
+                    <Btn small kind="fate" disabled={!owned || !!s.activeElixir} onClick={() => act(d => activateElixir(d, id))}>{T('Bevi')} ({owned})</Btn>
+                  </div>
+                </div>
+              ); })}
+            </div>
+          ) : <p className="text-[10px] text-mist">{T('Infermeria livello 2: elisir per le spedizioni.')}</p>}
+          {s.activeElixir && <p className="text-[11px] text-fate text-center">{T('Attivo:')}{' '}{ELIXIRS[s.activeElixir].name}</p>}
+        </div>
+      )}
+      {s.hero.pledgedMaxHp > 0 && (
+        <div className="relative mt-3 rounded-lg border border-red-900/70 bg-red-950/30 p-2 text-xs">
+          <p className="text-dissonance">{T('⛓️ Pegno sulla salute futura: -')}{s.hero.pledgedMaxHp}</p>
+          <Btn small className="mt-1" onClick={() => act(d => curePledge(d))}>{T('Rituale di Elara: ⚱️')}{pledgeCureCost(s).cenere} + 🏺1</Btn>
+        </div>
+      )}
+      {s.aberration && (
+        <div className="relative mt-3 rounded-lg border border-fate/60 bg-fuchsia-950/30 p-2 text-xs">
+          <p className="text-fate">{T('🦷 Sei un\'Aberrazione. Elara conosce un rito per tornare umano, a un prezzo enorme.')}</p>
+          <Btn small className="mt-1" onClick={() => act(d => cureAberration(d))}>{T('Rito: ⚱️3000 + 🏺8')}</Btn>
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ------------------------------------------------------------
+// Altare della Veglia
+// ------------------------------------------------------------
+function Altar({ state: s, act }: { state: GameState; act: Act }) {
+  if (!(s.village.buildings.altare || 0)) return null;
+  const c = Math.round(s.corruption);
+  const hot = c >= 60;
+  return (
+    <section className={`panel altar rounded-xl p-3 sm:p-4 relative overflow-hidden ${hot ? 'altar-hot' : ''}`}>
+      <div aria-hidden className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_50%_100%,rgba(245,181,68,.14),transparent_60%)]" />
+      <h3 className="relative font-display text-base text-bone tracking-wide flex items-center gap-2 mb-3"><Icon name="altare" size={30} />{T('Altare della Veglia')}</h3>
+      <div className="relative flex items-center gap-4">
+        <div className="altar-gauge shrink-0" style={{ ['--p' as any]: `${Math.min(100, c)}%` }}>
+          <div className="altar-gauge-in"><span className={`font-display text-2xl leading-none ${hot ? 'text-fuchsia-300' : 'text-amber-100'}`}>{c}%</span><span className="text-[8px] uppercase tracking-widest text-mist">{T('Corruzione')}</span></div>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div aria-hidden className="flex gap-2 mb-2">{[0, 1, 2, 3, 4].map(i => <span key={i} className={`altar-candle ${i < Math.ceil((100 - c) / 20) ? '' : 'out'}`} style={{ animationDelay: `${i * 0.37}s` }} />)}</div>
+          <p className="text-[11px] text-bone/75">{T('Corruzione personale: {n}%. Oltre il 60% l\'interfaccia comincia a mentire.', { n: c })}</p>
+        </div>
+      </div>
+      <div className="relative grid gap-2 mt-3">
+        <Btn className="w-full" small kind={hot ? 'fate' : 'default'} disabled={s.corruption < 60} onClick={() => act(d => purifyUI(d))}>{T('Purifica l\'interfaccia (🔮2)')}{' '}{s.corruption < 60 ? T('· la corruzione è bassa') : ''}</Btn>
+        {s.nameCorrupted && <Btn className="w-full" small kind="fate" onClick={() => act(d => restoreName(d))}>{T('Pronuncia il tuo vero nome (🏺3)')}</Btn>}
+      </div>
+    </section>
   );
 }
