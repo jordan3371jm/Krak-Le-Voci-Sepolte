@@ -128,7 +128,7 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
 
         {/* Eventi del villaggio, dentro la scena */}
         {s.events.cart > now && (
-          <button onClick={() => { sfx.coin(); act(d => clickCart(d)); }} className="hamlet-event absolute left-[54%] top-[74%] -translate-x-1/2 z-[4]">
+          <button onClick={() => { sfx.coin(); act(d => clickCart(d)); }} className="hamlet-event absolute -translate-x-1/2 -translate-y-1/2 z-[4]" style={{ left: `${Math.min(88, (art.spots.fire?.x ?? 50) + 15)}%`, top: `${Math.min(84, (art.spots.fire?.y ?? 80) - 4)}%` }}>
             <Icon name="merchant" size={52} /><span className="hamlet-event-label">{T('Un mercante è arrivato!')} · {fmtTime(s.events.cart - now)}</span>
           </button>
         )}
