@@ -15,7 +15,7 @@ import { heroStats } from '../game/engine/hero';
 import { sharedWorld } from '../game/engine/meta';
 import { todayKey } from '../game/rng';
 import { sfx } from '../game/audio';
-import { Bar, Btn, ItemCard, Panel, Tag, rich } from './ui';
+import { Bar, Btn, ItemCard, Panel, Tag, iconize, rich } from './ui';
 import { Icon, Sigil } from './icons';
 import { Tip } from './Guide';
 import { isUnlocked } from '../game/engine/onboarding';
@@ -170,7 +170,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
                           {cps.map(f => <option key={f} value={f}>{T('Dal piano')}{' '}{f}</option>)}
                         </select>
                       )}
-                      <button disabled={!s.fardello || !!s.delve || s.res.provviste < 1} onClick={() => { sfx.door(); act(d => enterDelve(d, id as BiomeId, sel)); }} className="descend-btn flex-1">{T('Scendi (🍞1)')}</button>
+                      <button disabled={!s.fardello || !!s.delve || s.res.provviste < 1} onClick={() => { sfx.door(); act(d => enterDelve(d, id as BiomeId, sel)); }} className="descend-btn flex-1">{iconize(T('Scendi (🍞1)'))}</button>
                       {s.fardello && !s.delve && s.res.provviste < 1 && <p className="basis-full text-[11px] text-amber-300/90 mt-1">{T('Ti serve 1 provvista per scendere: premi «Raccogli» al villaggio o costruisci una Capanna dei Raccoglitori.')}</p>}
                       {s.hero.level < B.minLevel && <span className="basis-full text-[11px] text-dissonance">{T('Sei di livello {n}: pericoloso.', { n: s.hero.level })}</span>}
                     </div>

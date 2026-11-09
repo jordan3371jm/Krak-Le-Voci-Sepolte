@@ -53,7 +53,9 @@ export function buildingCost(s: GameState, id: string): Partial<Resources> {
   const n = s.village.buildings[id] || 0;
   const disc = 1 - cardMod(s, 'build') - (s.factions.gilde >= 60 ? 0.1 : 0);
   const out: Partial<Resources> = {};
-  for (const [k, v] of Object.entries(b.cost)) out[k as ResKey] = Math.ceil((v || 0) * Math.pow(1.15, n) * disc);
+  // Gli edifici con un limite crescono molto più in fretta: pochi esemplari, ognuno conquistato.
+  const growth = b.max ? 1.15 + 3.4 / (b.max + 1) : 1.15;
+  for (const [k, v] of Object.entries(b.cost)) out[k as ResKey] = Math.ceil((v || 0) * Math.pow(growth, n) * disc);
   return out;
 }
 export function buildingUnlocked(s: GameState, id: string) {

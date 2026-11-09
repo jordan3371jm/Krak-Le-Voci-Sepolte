@@ -24,7 +24,7 @@ import { deleteSave, exportCode, importCode } from '../game/save';
 import { GIFT_LIKES, giftableItems, giveGift, nextGiftScene } from '../game/engine/features';
 import { RARITY_COLORS, SLOT_INFO } from '../game/data/world';
 import { LangGrid } from './LangPicker';
-import { Bar, Btn, Empty, ItemCard, Panel, Tag, rich } from './ui';
+import { Bar, Btn, Empty, Ico, ItemCard, Panel, Tag, rich } from './ui';
 
 // ============================================================
 // MERCATO DELLE ANIME
@@ -148,7 +148,7 @@ export function Factions({ state: s, act }: { state: GameState; act: Act }) {
                   <span>{T('Chiede:')}{' '}<Cost cost={r.need} have={s.res} /></span>
                   <Btn small kind="good" disabled={!canAfford(s, r.need)} onClick={() => act(d => completeRequest(d, r.uid))}>{T('Consegna')}</Btn>
                 </div>
-                <div className="text-[10px] text-mist mt-1">{T('Ricompensa: ⚱️{c} · reputazione +{rep} (−{down} {rival})', { c: r.reward.cenere || 0, rep: r.reward.rep, down: Math.round(r.reward.rep * 0.4), rival: FACTIONS[FACTIONS[r.faction].opposite].name })}{r.reward.reliquie ? ' · 🏺1' : ''}</div>
+                <div className="text-[10px] text-mist mt-1"><Ico>{T('Ricompensa: ⚱️{c} · reputazione +{rep} (−{down} {rival})', { c: r.reward.cenere || 0, rep: r.reward.rep, down: Math.round(r.reward.rep * 0.4), rival: FACTIONS[FACTIONS[r.faction].opposite].name })}{r.reward.reliquie ? ' · 🏺1' : ''}</Ico></div>
               </div>
             ))}
           </div>
@@ -270,7 +270,7 @@ function MissionList({ state: s, act, period }: { state: GameState; act: Act; pe
               <div className="flex-1 min-w-0">
                 <div className="text-xs text-bone leading-tight">{def.text(m.target)}</div>
                 <div className="h-1.5 rounded-full bg-black/70 overflow-hidden mt-1"><div className={`h-full ${done ? 'bg-gradient-to-r from-teal-600 to-teal-300' : 'bg-gradient-to-r from-amber-800 to-amber-400'}`} style={{ width: `${(p / m.target) * 100}%` }} /></div>
-                <div className="text-[10px] text-mist mt-0.5">{fmt(p)}/{fmt(m.target)} · +{fmt(R.cenere)} {T('Cenere')}{R.reliquie ? ` · 🏺${R.reliquie}` : ''}</div>
+                <div className="text-[10px] text-mist mt-0.5"><Ico>{fmt(p)}/{fmt(m.target)} · +{fmt(R.cenere)} {T('Cenere')}{R.reliquie ? ` · 🏺${R.reliquie}` : ''}</Ico></div>
               </div>
               {m.claimed ? <span className="text-teal-300 text-lg">✔</span> : <Btn small kind="good" disabled={!done} onClick={() => act(d => claimMission(d, m.id, period))}>{T('Riscuoti')}</Btn>}
             </div>
@@ -402,7 +402,7 @@ export function Legacy({ state: s, act }: { state: GameState; act: Act }) {
           ))}
         </Panel>
       </div>
-      <Panel title={T('Santuario delle Reliquie')} icon="🏺" right={<span className="text-sm text-yellow-200">🏺 {s.reliquie}</span>}>
+      <Panel title={T('Santuario delle Reliquie')} icon="reliquie" right={<span className="text-sm text-yellow-200"><Ico>{`🏺 ${s.reliquie}`}</Ico></span>}>
         <p className="text-xs text-mist mb-3">{T('Offri reliquie per potenziamenti permanenti che sopravvivono a ogni Ciclo.')}</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {SANCTUARY.map(x => {
@@ -410,7 +410,7 @@ export function Legacy({ state: s, act }: { state: GameState; act: Act }) {
             return (
               <button key={x.id} disabled={lvl >= x.max || s.reliquie < sanctuaryCost(s, x.id)} onClick={() => act(d => buySanctuary(d, x.id, x.max))} className="text-left rounded-lg border border-stone-700 p-2 text-xs disabled:opacity-50 hover:border-ember">
                 <div className="flex justify-between"><span className="text-bone flex items-center gap-1.5"><Icon name={pick('eredita_', x.id, x.icon)} size={26} /> {x.name}</span><span className="text-mist">{lvl}/{x.max}</span></div>
-                <div className="text-mist">{x.desc}: +{lvl * x.per}{x.id === 'memoria' ? 'h' : '%'} {lvl < x.max && <span className="text-amber-300">{T('→ costo 🏺')}{sanctuaryCost(s, x.id)}</span>}</div>
+                <div className="text-mist"><Ico>{x.desc}: +{lvl * x.per}{x.id === 'memoria' ? 'h' : '%'} {lvl < x.max && <span className="text-amber-300">{T('→ costo 🏺')}{sanctuaryCost(s, x.id)}</span>}</Ico></div>
               </button>
             );
           })}

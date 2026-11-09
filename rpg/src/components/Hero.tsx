@@ -1,4 +1,5 @@
 import { t as T } from '../i18n';
+import { BG } from './art';
 import { canAfford } from '../game/engine/state';
 import { useEffect, useRef, useState } from 'react';
 import type { GameState, Item, Slot } from '../game/types';
@@ -68,6 +69,7 @@ function Forge({ state: s, act }: { state: GameState; act: Act }) {
   if (!s.village.buildings.fucina) return <Panel title={T('Fucina')} icon="fucina"><Empty>{T('Costruisci una Fucina nel villaggio per forgiare equipaggiamento.')}</Empty></Panel>;
   return (
     <section className="forge rounded-2xl relative overflow-hidden p-4 sm:p-5">
+      {BG.fucina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-70" style={{ backgroundImage: `linear-gradient(90deg, rgba(10,6,4,.35), rgba(10,6,4,.55) 45%, rgba(10,6,4,.9) 70%), url(${BG.fucina})` }} />}
       <div aria-hidden className="absolute inset-0 pointer-events-none forge-glow" />
       <div className="relative flex items-center gap-3 mb-4">
         <span className="animate-flicker"><Icon name="fucina" size={52} /></span>

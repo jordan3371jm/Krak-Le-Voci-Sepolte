@@ -17,6 +17,14 @@ const SPOT: Record<string, { x: number; y: number }> = {
   torre: { x: 70, y: 42 }, boschi: { x: 8, y: 56 }, rovine: { x: 80.5, y: 38 }, miniere: { x: 77, y: 25 },
 };
 
+// Una illustrazione per ogni fase di crescita del villaggio (se presente), con le sue posizioni.
+const STAGE_SPOTS: Record<string, Record<string, { x: number; y: number }>> = {};
+function stageOf(total: number) { return total === 0 ? 1 : total < 15 ? 2 : total < 60 ? 3 : 4; }
+export function villageArt(total: number) {
+  for (let st = stageOf(total); st >= 1; st--) { const k = 'villaggio_' + st; if (BG[k]) return { img: BG[k], spots: STAGE_SPOTS[k] || SPOT }; }
+  return { img: BG.villaggio, spots: SPOT };
+}
+
 export function scrollToBuilding(id: string) {
   const el = document.getElementById('b-' + id);
   if (!el) return;
@@ -51,6 +59,7 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
   const vs = valleyState(s);
   const VE = valleyFx(s);
   const total = totalBuildings(s);
+  const art = villageArt(total);
   const souls = 3 + total * 3 + s.companions.filter(c => c.recruited && !c.left).length;
   const blight = s.valley.blight;
   const TH = s.events.threat;
@@ -64,7 +73,7 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
       {/* Panorama */}
       <div className="hamlet-stage relative w-full">
         <div ref={scroller} className="hamlet-scroll absolute inset-0 no-scrollbar"><div className="hamlet-canvas relative h-full">
-        <div aria-hidden className={`absolute inset-0 bg-cover bg-center ${s.settings.reduceFx ? '' : 'hamlet-pan'}`} style={{ backgroundImage: `url(${BG.villaggio})`, filter: `saturate(${0.75 + Math.min(total, 40) / 160}) brightness(${night ? 0.55 : 0.8 + Math.min(total, 40) / 200})` }} />
+        <div aria-hidden className={`absolute inset-0 bg-cover bg-center ${s.settings.reduceFx ? '' : 'hamlet-pan'}`} style={{ backgroundImage: `url(${art.img})`, filter: `saturate(${0.75 + Math.min(total, 40) / 160}) brightness(${night ? 0.55 : 0.8 + Math.min(total, 40) / 200})` }} />
         <div aria-hidden className="absolute inset-0" style={{ background: tint, mixBlendMode: 'multiply' }} />
         <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_55%,transparent_35%,rgba(4,3,5,.85)_100%)]" />
         <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/80" />
@@ -78,8 +87,8 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
         {blight > 55 && <div aria-hidden className="absolute inset-0 hamlet-burn pointer-events-none" style={{ opacity: Math.min(1, (blight - 55) / 35) }} />}
 
         {/* Luci alle finestre: più edifici, più vita */}
-        {BUILDINGS.filter(b => (s.village.buildings[b.id] || 0) > 0 && SPOT[b.id]).map(b => (
-          <span key={'l' + b.id} aria-hidden className="hamlet-light" style={{ left: `${SPOT[b.id].x}%`, top: `${SPOT[b.id].y}%`, ['--w' as any]: `${Math.min(110, 46 + (s.village.buildings[b.id] || 0) * 3)}px` }} />
+        {BUILDINGS.filter(b => (s.village.buildings[b.id] || 0) > 0 && art.spots[b.id]).map(b => (
+          <span key={'l' + b.id} aria-hidden className="hamlet-light" style={{ left: `${art.spots[b.id].x}%`, top: `${art.spots[b.id].y}%`, ['--w' as any]: `${Math.min(110, 46 + (s.village.buildings[b.id] || 0) * 3)}px` }} />
         ))}
 
         {/* La figura tra gli alberi */}
@@ -88,11 +97,11 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
         </div>}
 
         {/* Edifici sulla mappa */}
-        {BUILDINGS.filter(b => SPOT[b.id] && buildingUnlocked(s, b.id)).map(b => {
+        {BUILDINGS.filter(b => art.spots[b.id] && buildingUnlocked(s, b.id)).map(b => {
           const n = s.village.buildings[b.id] || 0;
           return (
             <button key={b.id} onClick={() => { sfx.click(); scrollToBuilding(b.id); }} title={`${b.name}${n ? ` ×${n}` : ''}`}
-              className={`hamlet-pin group ${n ? 'built' : 'ghost'}`} style={{ left: `${SPOT[b.id].x}%`, top: `${SPOT[b.id].y}%` }}>
+              className={`hamlet-pin group ${n ? 'built' : 'ghost'}`} style={{ left: `${art.spots[b.id].x}%`, top: `${art.spots[b.id].y}%` }}>
               <span className="hamlet-pin-ring relative"><Icon name={b.id} size={n ? 44 : 34} />
                 {n > 0 && <span className="hamlet-pin-count">{n}</span>}
                 {!n && <span className="hamlet-pin-count ghost">+</span>}</span>

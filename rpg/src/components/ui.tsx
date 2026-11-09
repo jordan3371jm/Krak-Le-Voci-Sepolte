@@ -8,6 +8,23 @@ import { sfx } from '../game/audio';
 import { Icon, Sigil } from './icons';
 import { artFor } from './art';
 
+// I simboli delle risorse dentro i testi diventano le icone dipinte.
+const RES_GLYPH: Record<string, string> = { '🍞': 'provviste', '⚱️': 'cenere', '🏺': 'reliquie', '🔮': 'intuizione', '🪵': 'legno', '🪨': 'pietra' };
+const GLYPH_RE = /(🍞|⚱️|🏺|🔮|🪵|🪨)/u;
+export function iconize(node: ReactNode): ReactNode {
+  if (typeof node === 'string') {
+    if (!GLYPH_RE.test(node)) return node;
+    return node.split(/(🍞|⚱️|🏺|🔮|🪵|🪨)/u).map((part, i) => {
+      const id = RES_GLYPH[part]; const src = id && artFor(id);
+      return src ? <img key={i} src={src} alt="" className="inline-block w-[1.35em] h-[1.35em] rounded-full ring-1 ring-ember/40 align-[-0.35em] mx-[1px]" /> : part;
+    });
+  }
+  if (Array.isArray(node)) return node.map((n, i) => <span key={i}>{iconize(n)}</span>);
+  return node;
+}
+
+export function Ico({ children }: { children: ReactNode }) { return <>{iconize(children)}</>; }
+
 export function Panel({ title, icon, children, className = '', right }: { title?: ReactNode; icon?: string; children: ReactNode; className?: string; right?: ReactNode }) {
   return (
     <section className={`panel rounded-xl p-3 sm:p-4 ${className}`}>
@@ -38,7 +55,7 @@ export function Btn({ children, onClick, disabled, kind = 'default', className =
       onClick={() => { if (!disabled) { sfx.click(); onClick?.(); } }}
       className={`rounded-lg border transition-colors ${small ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-sm'} disabled:opacity-35 disabled:cursor-not-allowed ${k} ${className}`}
     >
-      {children}
+      {iconize(children)}
     </button>
   );
 }
