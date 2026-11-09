@@ -12,10 +12,10 @@ import { COMPANIONS, FACTIONS, FACTION_IDS } from '../game/data/core';
 import { ENEMIES } from '../game/data/enemies';
 import { ACHIEVEMENTS, ENDINGS, EXPEDITIONS, FATE_CARDS, FRAGMENTS, SANCTUARY, RES_INFO } from '../game/data/world';
 import { DAILY_POOL, type MissionPeriod } from '../game/data/world';
-import { cardMod, fmt, fmtTime, repState } from '../game/engine/state';
+import { cardMod, fmt, fmtTime, hasFlag, repState } from '../game/engine/state';
 import { companionStats } from '../game/engine/hero';
 import {
-  buyListing, canEndCycle, claimDream, endCycle, memorieGain, priceMult, refreshMarket, sellFragment, startNewCycle,
+  buyListing, canEndCycle, cycleGoals, claimDream, endCycle, memorieGain, priceMult, refreshMarket, sellFragment, startNewCycle,
 } from '../game/engine/meta';
 import {
   buySanctuary, claimDailyChest, claimMission, missionReward, collectExpedition, expeditionDuration, expeditionSlots, missionProgress, recruit, sanctuaryCost, sendExpedition, toggleParty,
@@ -394,7 +394,16 @@ export function Legacy({ state: s, act }: { state: GameState; act: Act }) {
             <div>{T('Memorie se chiudi ora:')}{' '}<b className="text-amber-300">{memorieGain(s)}</b></div>
             {card && <div>{T('Carta del Destino:')}{' '}{card.icon} {card.name} — <span className="text-teal-200">{card.good}</span> / <span className="text-red-300">{card.bad}</span></div>}
           </div>
-          <Btn kind="fate" className="mt-3" disabled={!can} onClick={() => act(d => endCycle(d))}>{can ? T('Chiudi il Ciclo e scopri il tuo finale') : T('Sconfiggi il Cuore di Krak (o accumula 150K cenere al livello 12)')}</Btn>
+          <div className="mt-3 rounded-lg border border-red-900/60 bg-red-950/20 p-2 text-xs">
+            <div className="flex items-center gap-2"><Icon name={artOr('cuore_krak', 'boss')} size={36} /><div><b className={hasFlag(s, 'boss_cuore_krak') ? 'text-teal-200' : 'text-red-100'}>{T('Via del Cuore')}</b>{hasFlag(s, 'boss_cuore_krak') ? ' ✔' : ''}<div className="text-mist">{T('Sconfiggi il Cuore di Krak in fondo alla Torre del Silenzio: Memorie raddoppiate.')}</div></div></div>
+          </div>
+          <div className="mt-2 rounded-lg border border-stone-700 bg-black/30 p-2 text-xs">
+            <b className="text-bone">{T('Via lunga')}</b>
+            <div className="space-y-1 mt-1">{cycleGoals(s).map(g => (
+              <div key={g.label}><div className="flex justify-between"><span className={g.done ? 'text-teal-200' : 'text-bone/80'}>{g.done ? '✔ ' : ''}{g.label}</span><span className="text-mist">{fmt(Math.min(g.have, g.need))}/{fmt(g.need)}</span></div>
+                <div className="h-1 rounded-full bg-black/70 overflow-hidden"><div className={`h-full ${g.done ? 'bg-teal-400' : 'bg-amber-600'}`} style={{ width: `${Math.min(100, (g.have / g.need) * 100)}%` }} /></div></div>))}</div>
+          </div>
+          <Btn kind="fate" className="mt-3" disabled={!can} onClick={() => act(d => endCycle(d))}>{can ? T('Chiudi il Ciclo e scopri il tuo finale') : T('Completa una delle due vie per chiudere il Ciclo')}</Btn>
         </Panel>
         <Panel title={T('Echi dei Portatori Passati')} icon="👤">
           {s.legacies.length === 0 ? <Empty>{T('Nessuna eredità ancora. Il tuo sarà il primo nome che la valle ricorderà.')}</Empty> : s.legacies.map((l, i) => (

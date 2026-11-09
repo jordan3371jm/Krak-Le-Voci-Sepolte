@@ -106,6 +106,8 @@ export function buyAllUpgrades(s: GameState) {
   if (!n) toast(s, T('Nessun miglioramento acquistabile'), 'info');
 }
 
+/** Moltiplicatore dei miglioramenti: i primi tre raddoppiano, i successivi valgono ×1,5. */
+export function upgradeMult(ups: number) { return Math.pow(2, Math.min(ups, 3)) * Math.pow(1.5, Math.max(0, ups - 3)); }
 export function productionPerSec(s: GameState): Resources {
   const out: Resources = { cenere: 0, provviste: 0, legno: 0, pietra: 0, ferro: 0, intuizione: 0 };
   const now = Date.now();
@@ -113,7 +115,7 @@ export function productionPerSec(s: GameState): Resources {
     const n = s.village.buildings[b.id] || 0;
     if (!n) continue;
     const ups = s.village.upgrades.filter(u => u.startsWith(b.id + '_')).length;
-    for (const [k, v] of Object.entries(b.prod)) out[k as ResKey] += (v || 0) * n * Math.pow(2, ups);
+    for (const [k, v] of Object.entries(b.prod)) out[k as ResKey] += (v || 0) * n * upgradeMult(ups);
   }
   // le spedizioni dei compagni sono lavoro: piccola produzione passiva
   for (const k of Object.keys(out) as ResKey[]) out[k] *= prodMult(s, k, now);
@@ -474,16 +476,18 @@ export function missionProgress(s: GameState, id: string, period: MissionPeriod 
 export function claimDailyChest(s: GameState) {
   if (s.daily.chest) return;
   s.daily.chest = true;
-  addRes(s, { cenere: 100 + s.hero.level * 40, provviste: 3, intuizione: 1 });
+  // il forziere vale qualche minuto di produzione, non una cifra fissa che stravolge l'inizio
+  addRes(s, { cenere: Math.round(40 + s.hero.level * 8 + productionPerSec(s).cenere * 180), provviste: 3, intuizione: 1 });
   s.potions++;
   if (Math.random() < 0.25) s.reliquie++;
   toast(s, T('🎁 Forziere giornaliero aperto'), 'good');
 }
 export function missionReward(s: GameState, period: MissionPeriod) {
   const L = s.hero.level;
-  return period === 'daily' ? { cenere: 80 + L * 30, intuizione: 1, reliquie: 0, xp: 30 + L * 10 }
-    : period === 'weekly' ? { cenere: 600 + L * 160, intuizione: 3, reliquie: 1, xp: 200 + L * 50 }
-    : { cenere: 3000 + L * 650, intuizione: 8, reliquie: 3, xp: 900 + L * 180 };
+  const p = productionPerSec(s).cenere;
+  return period === 'daily' ? { cenere: Math.round(40 + L * 15 + p * 120), intuizione: 1, reliquie: 0, xp: 30 + L * 10 }
+    : period === 'weekly' ? { cenere: Math.round(400 + L * 100 + p * 900), intuizione: 3, reliquie: 1, xp: 200 + L * 50 }
+    : { cenere: Math.round(2000 + L * 400 + p * 3600), intuizione: 8, reliquie: 3, xp: 900 + L * 180 };
 }
 export function claimMission(s: GameState, id: string, period: MissionPeriod = 'daily') {
   const box = s[period];

@@ -8,8 +8,9 @@ import { BUILDINGS, FISH, RES_INFO, UPGRADE_NAMES, UPGRADE_THRESHOLDS } from '..
 import { canAfford, displayName, fmt, fmtTime, hasFlag, repState } from '../game/engine/state';
 import {
   availableUpgrades, baitMax, build, buildingCost, buildingUnlocked, buyAllUpgrades, buyUpgrade, catchFish, chooseFardello, clickCart, clickDeer,
-  clickValue, completeRequest, gather, hasGoldenRod, hitThreat, nextThreshold, playBard, productionPerSec, totalBuildings, useBait,
+  clickValue, completeRequest, gather, hasGoldenRod, hitThreat, nextThreshold, upgradeMult, playBard, productionPerSec, totalBuildings, useBait,
 } from '../game/engine/village';
+import { firstBlood } from '../game/engine/delve';
 import { activateElixir, brewElixir, brewPotion, ELIXIRS, potionCost } from '../game/engine/hero';
 import { cureAberration, curePledge, pledgeCureCost, purifyUI, restoreName } from '../game/engine/meta';
 import { heartbeat, sfx } from '../game/audio';
@@ -84,7 +85,13 @@ export function PortalScreen({ act }: { act: Act }) {
     setSealing(true); sfx.chain(); sfx.door();
     window.setTimeout(() => act(d => {
       chooseFardello(d, N.f);
-      d.modal = { kind: 'info', title: F.name, text: T('{description}\n\nLe azioni coerenti con il tuo Fardello caricano la Risonanza; quelle contrarie accumulano Dissonanza. Il mondo ricorderà entrambe.\n\nOra ricostruisci Hondovalle. La Guida in alto ti dirà cosa puoi fare, mai cosa scegliere.', { description: F.description }) };
+      if (d.cycle.n > 1 || (d.totals.delves || 0) > 0) {
+        d.modal = { kind: 'info', title: F.name, text: T('{description}\n\nLe azioni coerenti con il tuo Fardello caricano la Risonanza; quelle contrarie accumulano Dissonanza. Il mondo ricorderà entrambe.\n\nOra ricostruisci Hondovalle. La Guida in alto ti dirà cosa puoi fare, mai cosa scegliere.', { description: F.description }) };
+      } else {
+        // inizio rapido: il portale si richiude e qualcosa ne esce subito
+        d.toasts.push({ id: Date.now(), text: T('Dal portale che si richiude, qualcosa striscia fuori. Difenditi!'), kind: 'bad' } as any);
+        firstBlood(d);
+      }
     }), 1400);
   };
   return (
@@ -105,12 +112,12 @@ export function PortalScreen({ act }: { act: Act }) {
           <p className="text-center text-[15px] sm:text-base text-bone/85 italic max-w-2xl mx-auto leading-relaxed mb-6">{n.text}</p>
           <div className="voice-grid grid grid-cols-1 sm:grid-cols-3 gap-4">
             {NIGHT.map((N, i) => (
-              <button key={N.f} onClick={() => go(n.choices[i].go)} className="voice-card group text-center" style={{ ['--vc' as any]: VOICE_UI[i].rgb }}>
+              <button key={N.f} onClick={() => go(`c${i}`)} className="voice-card group text-center" style={{ ['--vc' as any]: VOICE_UI[i].rgb }}>
                 <div className="relative mx-auto w-fit"><span aria-hidden className="voice-halo" /><Face id={N.npc.toLowerCase()} emoji={N.icon} size={132} tone={N.f === 'silenzio' ? 'violet' : 'blood'} /></div>
                 <div className="mt-3 font-display text-lg text-bone">{N.who}</div>
                 <div className="text-[10px] uppercase tracking-[0.3em] text-mist mt-0.5">{VOICE_UI[i].place}</div>
                 <p className="mt-3 text-sm italic text-bone/85">{VOICE_UI[i].tag}</p>
-                <div className="mt-4 text-xs voice-cta">{n.choices[i].text} ›</div>
+                <div className="mt-4 text-xs voice-cta">{N.choice} ›</div>
               </button>
             ))}
           </div>
@@ -335,7 +342,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
                 );
                 const nxt = nextThreshold(s, b.id);
                 const prev = [0, ...UPGRADE_THRESHOLDS].filter(t => t <= n).pop() || 0;
-                const mult = Math.pow(2, s.village.upgrades.filter(u => u.startsWith(b.id + '_')).length);
+                const mult = upgradeMult(s.village.upgrades.filter(u => u.startsWith(b.id + '_')).length);
                 const ok = !maxed && canAfford(s, cost);
                 return (
                   <button key={b.id} id={'b-' + b.id} disabled={!ok} onClick={() => { sfx.build(); act(d => build(d, b.id)); }}
@@ -348,7 +355,7 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
                       <div className="flex justify-between items-baseline gap-2"><span className="font-display text-bone text-[15px] truncate">{b.name}</span>{b.max ? <span className="text-[10px] text-mist">{n}/{b.max}</span> : null}</div>
                       <div className="text-[11px] text-mist truncate">{b.desc}</div>
                       {Object.keys(b.prod).length > 0 && <div className="text-[11px] text-amber-200/90">{Object.entries(b.prod).map(([k, v]) => `+${fmt((v || 0) * mult * 60)} ${RES_INFO[k as ResKey].name}/min ${T('ciascuno')}`).join(' · ')}{mult > 1 ? ` · ×${mult}` : ''}</div>}
-                      {nxt && Object.keys(b.prod).length > 0 && <div className="mt-1 flex items-center gap-2"><div className="flex-1 h-1 rounded bg-stone-900 overflow-hidden"><div className="h-full bg-gradient-to-r from-violet-700 to-fuchsia-400" style={{ width: `${((n - prev) / (nxt - prev)) * 100}%` }} /></div><span className="text-[9px] text-violet-200/80 whitespace-nowrap">{T('×2 a {n}', { n: nxt })}</span></div>}
+                      {nxt && Object.keys(b.prod).length > 0 && <div className="mt-1 flex items-center gap-2"><div className="flex-1 h-1 rounded bg-stone-900 overflow-hidden"><div className="h-full bg-gradient-to-r from-violet-700 to-fuchsia-400" style={{ width: `${((n - prev) / (nxt - prev)) * 100}%` }} /></div><span className="text-[9px] text-violet-200/80 whitespace-nowrap">{UPGRADE_THRESHOLDS.indexOf(nxt) >= 3 ? T('×1,5 a {n}', { n: nxt }) : T('×2 a {n}', { n: nxt })}</span></div>}
                       <div className="mt-1">{maxed ? <span className="text-[10px] text-teal-300">{T('Al massimo')}</span> : <Cost cost={cost} have={s.res} />}</div>
                     </div>
                   </button>
@@ -366,10 +373,10 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
                   return (
                     <button key={u.id} disabled={!ok} onClick={() => { sfx.build(); act(d => buyUpgrade(d, u.id)); }}
                       className={`w-full text-left rounded-xl border p-2 flex items-center gap-3 transition ${ok ? 'border-fuchsia-700/60 bg-fuchsia-950/20 hover:border-fuchsia-400 hover:shadow-[0_0_16px_rgba(217,70,239,.2)]' : 'border-stone-800 opacity-60'}`}>
-                      <div className="relative shrink-0"><Icon name={b.id} size={40} /><span className="absolute -top-1 -right-1 text-[9px] font-bold rounded bg-fuchsia-700 text-white px-1">×2</span></div>
+                      <div className="relative shrink-0"><Icon name={b.id} size={40} /><span className="absolute -top-1 -right-1 text-[9px] font-bold rounded bg-fuchsia-700 text-white px-1">{tier >= 3 ? '×1,5' : '×2'}</span></div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-bone font-display truncate">{UPGRADE_NAMES[tier] || ''}</div>
-                        <div className="text-[11px] text-mist">{T('{name}: produzione raddoppiata (soglia {n})', { name: b.name, n: u.threshold })}</div>
+                        <div className="text-[11px] text-mist">{tier >= 3 ? T('{name}: produzione ×1,5 (soglia {n})', { name: b.name, n: u.threshold }) : T('{name}: produzione raddoppiata (soglia {n})', { name: b.name, n: u.threshold })}</div>
                         <Cost cost={u.cost} have={s.res} />
                       </div>
                     </button>

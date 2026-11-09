@@ -24,7 +24,7 @@ export const UNLOCKS: UnlockDef[] = [
     codex: t('Ogni edificio produce una risorsa al secondo. Ogni copia costa il 15% in più della precedente. A 5, 15, 30, 60 e 100 copie compaiono miglioramenti che raddoppiano la produzione.') },
   { id: 'f_produzione', kind: 'feature', name: t('Produzione'), icon: 'bottega', cond: s => totalBuildings(s) >= 2,
     codex: t('Qui vedi quanto produce il villaggio al minuto. Imprese, Memorie, carte e stato della Valle moltiplicano la produzione.') },
-  { id: 'discesa', kind: 'tab', name: t('Discesa'), icon: 'discesa', cond: s => (s.village.buildings.segheria || 0) >= 1 || (s.village.buildings.capanna || 0) >= 1 || (s.totals.delves || 0) > 0,
+  { id: 'discesa', kind: 'tab', name: t('Discesa'), icon: 'discesa', cond: s => (s.village.buildings.segheria || 0) >= 1 || (s.village.buildings.capanna || 0) >= 1 || (s.totals.delves || 0) > 0 || !!s.delve,
     codex: t('I dungeon sono specchi del tuo Fardello. Scendere costa 1 Provvista per piano. Ciò che trovi finisce nella Bisaccia: è tuo solo se torni in superficie. Se cadi, ne perdi tre quarti. Ogni 5 piani c\'è un boss.') },
   { id: 'eroe', kind: 'tab', name: t('Eroe'), icon: 'eroe', cond: s => (s.totals.kills || 0) >= 1 || s.inventory.length > 0,
     codex: t('Equipaggiamento in 7 slot, con rarità da Comune ad Ancestrale. Puoi potenziare, smontare, vendere e forgiare. Ogni livello dà un Punto Talento per le Vie (Culto, Capitale, Contadini, Rivolta).') },

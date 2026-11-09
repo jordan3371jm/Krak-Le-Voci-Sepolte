@@ -17,7 +17,7 @@ import Compass from './components/Compass';
 import Modals from './components/Modals';
 import { TalkOverlay } from './components/Talk';
 import { KrakWake } from './components/KrakWake';
-import { gameReady, interstitial, platformMessage, setBanner, bannerSupported } from './game/platform';
+import { gameReady, interstitial, platformMessage, setBanner, bannerSupported, trackOnce } from './game/platform';
 import { hasTrack, playClip, playTrack } from './game/music';
 import { setRecorded } from './game/audio';
 import { BG } from './components/art';
@@ -49,6 +49,18 @@ export default function App() {
   // è il Bridge a decidere se mostrarlo davvero (al massimo uno ogni 5 minuti, vedi la configurazione)
   const calm = s.scene === 'game' && !s.combat && !s.talk && !s.modal && (!s.delve || (s.delve.floorCleared && !s.delve.room?.bossChoice));
   const calmRef = useRef(calm); calmRef.current = calm;
+  // Tappe del percorso, inviate una volta sola per misurare dove si fermano i giocatori
+  useEffect(() => {
+    const tb = Object.values(s.village.buildings).reduce((a, b) => a + (b || 0), 0);
+    const steps: [string, boolean][] = [
+      ['fun_intro_done', s.scene !== 'intro'], ['fun_fardello', !!s.fardello], ['fun_first_combat', !!s.combat || (s.totals.kills || 0) > 0],
+      ['fun_first_kill', (s.totals.kills || 0) >= 1], ['fun_first_delve', (s.totals.delves || 0) >= 1], ['fun_first_build', tb >= 1],
+      ['fun_build_15', tb >= 15], ['fun_level_5', s.hero.level >= 5], ['fun_level_10', s.hero.level >= 10], ['fun_first_boss', (s.totals.bosses || 0) >= 1],
+      ['fun_cimitero_done', s.biomes.cimitero.conquered], ['fun_paludi_done', s.biomes.paludi.conquered], ['fun_torre_done', s.biomes.torre.conquered],
+      ['fun_cycle_closed', (s.totals.cycles || 0) >= 1 || s.cycle.n > 1], ['fun_cycle_3', s.cycle.n >= 3], ['fun_cycle_5', s.cycle.n >= 5],
+    ];
+    for (const [id, ok] of steps) if (ok) trackOnce(id);
+  });
   // Pubblicità di pausa: mai nei primi 5 minuti della sessione né prima della prima discesa completata
   const sessionStart = useRef(Date.now());
   const delvesRef = useRef(0); delvesRef.current = s.totals.delves || 0;

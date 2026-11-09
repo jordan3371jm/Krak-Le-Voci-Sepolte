@@ -118,3 +118,18 @@ export function setBanner(show: boolean) {
     else if (show) a.showBanner('bottom', 'idle'); else a.hideBanner();
   } catch { /* */ }
 }
+
+// ------------------------------------------------------------
+// Telemetria del percorso del giocatore (Bridge analytics): ogni tappa una volta sola.
+// ------------------------------------------------------------
+const TM_KEY = 'krak_tm';
+let tmSent: Set<string> | null = null;
+export function trackOnce(id: string) {
+  try {
+    if (!tmSent) { let raw: string | null = null; try { raw = localStorage.getItem(TM_KEY); } catch { /* */ } tmSent = new Set(raw ? JSON.parse(raw) : []); }
+    if (tmSent.has(id)) return;
+    tmSent.add(id);
+    try { localStorage.setItem(TM_KEY, JSON.stringify([...tmSent])); } catch { /* */ }
+    w().bridge?.platform?.sendCustomMessage?.(id);
+  } catch { /* */ }
+}

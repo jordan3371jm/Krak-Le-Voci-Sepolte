@@ -467,8 +467,22 @@ export function restoreName(s: GameState) {
 // ============================================================
 // Fine del Ciclo, finali ed Eredità
 // ============================================================
+// Strada lunga per chiudere un Ciclo senza il Cuore di Krak: ogni Ciclo chiede di più.
+export function cycleGoals(s: GameState): { label: string; have: number; need: number; done: boolean }[] {
+  const n = Math.max(1, s.cycle.n);
+  const cen = 150_000 * Math.pow(3, n - 1);
+  const lvl = 12 + 3 * (n - 1);
+  const goals = [
+    { label: T('Cenere guadagnata in questo Ciclo'), have: Math.floor(s.totals.cycleCenere || 0), need: cen },
+    { label: T('Livello dell\'eroe'), have: s.hero.level, need: lvl },
+    { label: T('Paludi di Vhalzareth conquistate'), have: s.biomes.paludi.conquered ? 1 : 0, need: 1 },
+  ];
+  if (n >= 3) goals.push({ label: T('Torre del Silenzio conquistata'), have: s.biomes.torre.conquered ? 1 : 0, need: 1 });
+  if (n >= 4) goals.push({ label: T('Piano raggiunto nell\'Abisso'), have: s.biomes.abisso.best || 0, need: 10 + 5 * (n - 4) });
+  return goals.map(g => ({ ...g, done: g.have >= g.need }));
+}
 export function canEndCycle(s: GameState) {
-  return hasFlag(s, 'boss_cuore_krak') || ((s.totals.cycleCenere || 0) >= 150_000 && s.hero.level >= 12);
+  return hasFlag(s, 'boss_cuore_krak') || cycleGoals(s).every(g => g.done);
 }
 export function computeEnding(s: GameState): string {
   const kept = s.promises.filter(p => p.status === 'kept').length;
@@ -488,7 +502,8 @@ export function computeEnding(s: GameState): string {
 export function memorieGain(s: GameState) {
   const base = Math.pow((s.totals.cycleCenere || 0) / 20000, 0.25) * 2 + s.hero.level / 10 + (hasFlag(s, 'boss_cuore_krak') ? 5 : 0)
     + (['cimitero', 'paludi', 'torre'] as const).filter(b => s.biomes[b].conquered).length * 2 + (s.totals.abyssBest || 0) / 10;
-  return Math.max(1, Math.floor(base * (1 + cardMod(s, 'memorie'))));
+  // Abbattere il Cuore di Krak vale il doppio della strada lunga
+  return Math.max(1, Math.floor(base * (1 + cardMod(s, 'memorie')) * (hasFlag(s, 'boss_cuore_krak') ? 2 : 1)));
 }
 export function endCycle(s: GameState) {
   if (!canEndCycle(s)) return;

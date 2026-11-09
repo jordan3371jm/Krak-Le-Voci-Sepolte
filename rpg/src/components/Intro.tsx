@@ -15,6 +15,7 @@ import { LangPicker } from './LangPicker';
 import { BG } from './art';
 import { Particles } from './Atmosphere';
 
+const NAMES = ['Nera', 'Aldo', 'Mirra', 'Teo', 'Sabra', 'Ilde', 'Corvo', 'Lena', 'Bruno', 'Vesna', 'Oren', 'Ada'];
 const VISION = [
   T('La notte in cui si aprì il portale, Hondovalle bruciava.'),
   T('Sotto la valle, qualcosa di sepolto cominciò a parlare.'),
@@ -28,7 +29,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
   const [awake, setAwake] = useState(false);
   useEffect(() => { tryAutoplay(); }, []);
   const [line, setLine] = useState(0);
-  const [name, setName] = useState('');
+  const [name, setName] = useState(() => NAMES[Math.floor(Math.random() * NAMES.length)]);
   const [cls, setCls] = useState<ClassId>('custode');
   const newCycle = state.cycle.n > 1;
   const legacy = state.legacies[0];
@@ -52,7 +53,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
         <h1 className="text-4xl sm:text-6xl font-black text-gradient-ember title-beat mb-2 leading-tight">{T('KRAK')}</h1>
         <h2 className="text-lg sm:text-2xl text-bone/90 mb-10 tracking-widest">{T('Le Voci Sepolte')}</h2>
         {!awake ? (
-          <button onClick={() => { initAudio(); sfx.door(); setAwake(true); }} className="relative z-10 mt-2 px-8 py-4 rounded-full border-2 border-ember/80 bg-black/60 text-ember text-lg sm:text-xl font-display tracking-[0.2em] uppercase animate-breathe hover:bg-ember/15 shadow-[0_0_40px_rgba(251,146,60,.35)]">▶ {T('Ascolta la valle')}</button>
+          <button onClick={() => { initAudio(); sfx.door(); if (newCycle) setAwake(true); else setStep(1); }} className="relative z-10 mt-2 px-8 py-4 rounded-full border-2 border-ember/80 bg-black/60 text-ember text-lg sm:text-xl font-display tracking-[0.2em] uppercase animate-breathe hover:bg-ember/15 shadow-[0_0_40px_rgba(251,146,60,.35)]">▶ {T('Ascolta la valle')}</button>
         ) : (
         <div className="min-h-[140px] max-w-2xl relative z-10 space-y-2">
           {VISION.slice(0, line + 1).map((l, i) => (
@@ -95,7 +96,8 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
       <div className="w-full max-w-5xl animate-rise relative z-10">
         <p className="text-center text-[10px] uppercase tracking-[0.5em] text-amber-300/80 mb-1">{T('Prologo')}</p>
         <h2 className="text-3xl sm:text-4xl text-center text-gradient-ember title-beat mb-1">{T('Chi porta il Fardello?')}</h2>
-        <p className="text-center text-sm text-mist mb-6 italic">{T('Il tuo nome diventerà un incantesimo. Alcuni lo pronunceranno con amore, altri lo malediranno.')}</p>
+        <p className="text-center text-sm text-mist mb-4 italic">{T('Il tuo nome diventerà un incantesimo. Alcuni lo pronunceranno con amore, altri lo malediranno.')}</p>
+        <div className="text-center mb-5"><Btn kind="ember" disabled={!name.trim()} onClick={() => { initAudio(); sfx.door(); act(d => beginGame(d, name, cls)); }}>{T('Scendi a Hondovalle Bassa')}</Btn></div>
         <input
           value={name}
           onChange={e => setName(e.target.value)}
@@ -109,6 +111,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
             return (
               <button key={c.id} onClick={() => { sfx.click(); setCls(c.id); }} className={`class-card p-3 sm:p-4 text-center flex flex-col items-center ${cls === c.id ? 'sel' : ''}`} style={{ ['--cc' as any]: CC[c.id] }}>
                 <span aria-hidden className="halo" />
+                {c.id === 'custode' && <span className="absolute top-2 left-1/2 -translate-x-1/2 z-[1] text-[9px] uppercase tracking-[0.25em] rounded-full border border-amber-400/70 bg-black/80 text-amber-200 px-2 py-0.5">{T('Consigliata')}</span>}
                 <div className="relative"><Icon name={c.id} size={120} /></div>
                 <span className="font-display text-bone mt-3 leading-tight text-[15px]">{c.name}</span>
                 <p className="text-[11px] text-mist mt-1 min-h-[2.5em]">{c.desc}</p>
@@ -127,10 +130,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
             );
           })}
         </div>
-        <div className="text-center">
-          <Btn kind="ember" disabled={!name.trim()} onClick={() => { initAudio(); sfx.door(); act(d => beginGame(d, name, cls)); }}>{T('Scendi a Hondovalle Bassa')}</Btn>
-          {!name.trim() && <p className="text-[11px] text-mist mt-2">{T('Scrivi il tuo nome per cominciare.')}</p>}
-        </div>
+        {!name.trim() && <p className="text-center text-[11px] text-mist">{T('Scrivi il tuo nome per cominciare.')}</p>}
       </div>
     </div>
   );

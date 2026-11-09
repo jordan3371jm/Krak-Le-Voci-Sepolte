@@ -756,3 +756,15 @@ function buildReport(s: GameState, d: DelveState, success: boolean): GameState['
   for (const m of memories) lines.push('“' + m.text + '”');
   return { title: T('Il mondo ricorda · {biome}', { biome: B.name }), good: success, lines };
 }
+
+/** Inizio rapido: subito dopo il Fardello, il primo scontro nel Cimitero (senza aspettare il villaggio). */
+export function firstBlood(s: GameState) {
+  if (s.delve || (s.totals.delves || 0) > 0 || s.cycle.n > 1) return;
+  s.res.provviste += 1; // la prima discesa è un dono della valle
+  enterDelve(s, 'cimitero', 1);
+  const d = s.delve as DelveState | null;
+  if (!d) return;
+  s.tab = 'discesa';
+  const i = d.doors.findIndex(o => o.type === 'combat');
+  chooseDoor(s, i >= 0 ? i : 0);
+}
