@@ -112,3 +112,26 @@ In sintesi: **il gioco piace a chi resta, ma oggi quasi nessuno resta abbastanza
 - [Gold, Goblins, and Good Game Design](https://funovus.com/blogs/Gold-and-Goblins)
 - [GameAnalytics — How to make an idle game](https://www.gameanalytics.com/blog/how-to-make-an-idle-game-adjust)
 - [Juego Studio — Retention for HTML5 game platforms](https://www.juegostudio.com/blog/html5-game-platform)
+
+---
+
+## 5. Applicato nella versione 1.0.11 — risultati misurati
+
+| | Prima | Dopo |
+|---|---|---|
+| Dal caricamento al primo combattimento | 1–3 minuti, ~8 schermate | **8 secondi**, 4 tocchi |
+| Ore di gioco per arrivare a fine 5° Ciclo | ~4 ore | **6–10 ore** |
+| Durata del 1° Ciclo | ~1 ora | **1–3,5 ore** |
+| Cuore di Krak e Torre del Silenzio | quasi mai visti | **affrontati da tutti dal 3° Ciclo** |
+| Livello dell'eroe a fine Ciclo | 12–16 | **15–27** |
+| Memorie per Ciclo | 6–15 | 8–14 (via lunga), **40–70 (Cuore di Krak)** |
+| Morti in combattimento: Custode / Veggente / Penitente | 4% / 10% / 9% (con la nuova economia salivano a 3% / 12% / 20%) | **3% / 6% / 17%** |
+
+Cosa è cambiato:
+1. **Inizio rapido**: un tocco per entrare, nome casuale già scritto, classe consigliata, una voce del Portale → sigillo → **subito il primo scontro** nel Cimitero (la prima discesa è gratis). I dialoghi del Portale restano disponibili con «Aspetta… non ancora».
+2. **Cicli**: due vie per chiudere. *Via del Cuore*: sconfiggere il Cuore di Krak (Memorie ×2). *Via lunga*: cenere 150.000 × 3 a ogni Ciclo, livello 12 (+3 a Ciclo), Paludi conquistate; dal 3° Ciclo anche la Torre, dal 4° un piano dell'Abisso. Nella scheda Eredità si vedono le barre di avanzamento di entrambe.
+3. **Economia**: i primi tre miglioramenti di ogni edificio raddoppiano, il 4° e il 5° valgono ×1,5. Forziere e missioni ora valgono alcuni minuti della tua produzione invece di cifre fisse (all'inizio 48 cenere invece di 140).
+4. **Classi**: Veggente e Penitente un po' più robusti e crescono meglio per livello. I rombi della scelta della classe sono rimasti identici.
+5. **Telemetria**: il gioco invia a Playgama ogni tappa una volta sola (fine intro, Fardello, primo combattimento, prima uccisione, prima discesa, primo edificio, 15 edifici, livello 5 e 10, primo boss, Cimitero/Paludi/Torre conquistati, 1°, 3° e 5° Ciclo). Tra qualche giorno potremo vedere esattamente dove si fermano i giocatori.
+
+Da tenere d'occhio: il Penitente resta la classe più difficile (17% di sconfitte in auto-battaglia). È coerente col suo stile «lento e corazzato», ma se i dati reali lo confermano si può rinforzare ancora.
