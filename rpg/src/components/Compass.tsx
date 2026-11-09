@@ -15,8 +15,10 @@ import { artOr, artFor } from './art';
 // stelle di sfondo fisse (pseudo-casuali ma stabili)
 const BG_STARS = Array.from({ length: 90 }, (_, i) => ({ x: (i * 37.3) % 100, y: (i * 61.7 + i * i * 0.13) % 100, r: 0.15 + ((i * 13) % 7) / 25, o: 0.2 + ((i * 7) % 10) / 20 }));
 
+// Le costellazioni stanno dentro un riquadro sicuro: niente esce dal bordo.
+function cpos(cons: string) { const c = CONSTELLATIONS[cons]; return { x: 8 + c.x * 0.84, y: 6 + c.y * 0.7 }; }
 function starPos(cons: string, i: number) {
-  const c = CONSTELLATIONS[cons];
+  const c = cpos(cons);
   const a = (i / 5) * Math.PI * 2 + cons.length;
   const r = 7 + (i % 2) * 3;
   return { x: c.x + Math.cos(a) * r, y: c.y + Math.sin(a) * r * 0.9 };
@@ -36,7 +38,7 @@ export default function Compass({ state: s, act }: { state: GameState; act: Act 
         <div className="lg:col-span-2">
           <Panel title={T('Bussola del Fato')} icon="bussola" right={<span className="text-xs text-violet-300">🔮 {Math.floor(s.res.intuizione)}{' '}{T('Intuizione')}</span>}>
             <p className="text-xs text-mist mb-2">{T('La valle non è un menu di livelli: è una costellazione viva. Le tue scelte accendono stelle; con l\'Intuizione puoi leggerne altre e rivelare segreti, PNG, minacce e memorie del mondo.')}</p>
-            <div className="relative w-full aspect-[16/10] rounded-2xl border border-amber-900/60 overflow-hidden shadow-[inset_0_0_60px_rgba(0,0,0,.9)]" style={{ background: 'radial-gradient(ellipse at 50% 55%, #2a1446 0%, #120a22 45%, #05040a 80%)' }}>
+            <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-2xl border border-amber-900/60 overflow-hidden shadow-[inset_0_0_60px_rgba(0,0,0,.9)]" style={{ background: 'radial-gradient(ellipse at 50% 55%, #2a1446 0%, #120a22 45%, #05040a 80%)' }}>
               {/* nebulosa e stelle di fondo */}
               <div aria-hidden className="absolute inset-0 opacity-60" style={{ background: 'radial-gradient(circle at 20% 30%, rgba(168,85,247,.25), transparent 35%), radial-gradient(circle at 80% 70%, rgba(220,38,38,.18), transparent 40%), radial-gradient(circle at 60% 20%, rgba(56,189,248,.12), transparent 30%)' }} />
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
@@ -58,8 +60,8 @@ export default function Compass({ state: s, act }: { state: GameState; act: Act 
                 })}
               </svg>
               {Object.entries(CONSTELLATIONS).map(([cons, c]) => (
-                <div key={cons} className="absolute -translate-x-1/2 flex flex-col items-center text-center" style={{ left: `${c.x}%`, top: `${c.y + 11}%` }}>
-                  <span className={lit.includes(cons) ? 'drop-shadow-[0_0_8px_rgba(216,180,254,.8)]' : 'opacity-60 grayscale'}><Icon name={artOr('cost_' + cons, c.icon)} size={26} /></span>
+                <div key={cons} className="absolute -translate-x-1/2 flex flex-col items-center text-center z-[2]" style={{ left: `${cpos(cons).x}%`, top: `${cpos(cons).y + 10}%` }}>
+                  <span className={lit.includes(cons) ? 'drop-shadow-[0_0_8px_rgba(216,180,254,.8)]' : 'opacity-60 grayscale'}><Icon name={artOr('cost_' + cons, c.icon)} size={38} /></span>
                   <div className={`text-[10px] whitespace-nowrap font-display ${lit.includes(cons) ? 'text-fate' : 'text-mist/80'}`}>{c.name}</div>
                   <button onClick={() => { sfx.resonance(); act(d => readStar(d, cons)); }} className="mt-0.5 text-[9px] rounded-full border border-violet-500/60 bg-violet-950/60 px-2 text-violet-200 hover:bg-violet-800/60">🔮 {T('leggi')}</button>
                 </div>

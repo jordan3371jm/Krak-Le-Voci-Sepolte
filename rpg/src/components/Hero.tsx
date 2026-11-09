@@ -1,4 +1,5 @@
 import { t as T } from '../i18n';
+import { canAfford } from '../game/engine/state';
 import { useEffect, useRef, useState } from 'react';
 import type { GameState, Item, Slot } from '../game/types';
 import type { Act } from '../game/useGame';
@@ -62,34 +63,51 @@ function Forge({ state: s, act }: { state: GameState; act: Act }) {
     } else setStep(step + 1);
   };
   const cost = forgeCost(s);
+  const [sparks, setSparks] = useState(0);
+  const hit = () => { setSparks(x => x + 1); strike(); };
+  if (!s.village.buildings.fucina) return <Panel title={T('Fucina')} icon="fucina"><Empty>{T('Costruisci una Fucina nel villaggio per forgiare equipaggiamento.')}</Empty></Panel>;
   return (
-    <Panel title={T('Fucina')} icon="fucina">
-      {!s.village.buildings.fucina ? <Empty>{T('Costruisci una Fucina nel villaggio per forgiare equipaggiamento.')}</Empty> : (
-        <>
-          <div className="flex items-center gap-3 mb-3 rounded-xl border border-orange-900/50 bg-gradient-to-b from-orange-950/40 to-black/60 p-2">
-            <span className="animate-flicker"><Icon name="fucina" size={56} /></span>
-            <p className="text-[11px] text-bone/75">{T('Scegli cosa forgiare, poi batti il ferro tre volte nel momento giusto.')}</p>
+    <section className="forge rounded-2xl relative overflow-hidden p-4 sm:p-5">
+      <div aria-hidden className="absolute inset-0 pointer-events-none forge-glow" />
+      <div className="relative flex items-center gap-3 mb-4">
+        <span className="animate-flicker"><Icon name="fucina" size={52} /></span>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-display text-xl sm:text-2xl text-amber-100 tracking-wide">{T('Fucina')}</h3>
+          <p className="text-[11px] sm:text-xs text-bone/70 italic">{T('Scegli cosa forgiare, poi batti il ferro tre volte nel momento giusto.')}</p>
+        </div>
+        <span className="hidden sm:block text-[10px] uppercase tracking-widest text-orange-200/80 border border-orange-900/70 rounded-full px-2 py-0.5">{T('Livello {n}', { n: s.village.buildings.fucina })}</span>
+      </div>
+      <div className="relative grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] gap-5 items-center">
+        <div className="flex flex-col items-center">
+          <div className="forge-anvil relative">
+            <span key={sparks} aria-hidden className={sparks ? 'forge-sparks' : ''} />
+            <SlotArt slot={slot} size={128} />
           </div>
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 mb-3">{SLOTS.map(sl => (
-            <button key={sl} onClick={() => setSlot(sl)} title={SLOT_INFO[sl].name} className={`flex flex-col items-center rounded-lg border p-1 transition ${slot === sl ? 'border-amber-400 bg-amber-900/30 shadow-[0_0_12px_rgba(245,158,11,.3)]' : 'border-stone-800 hover:border-amber-700'}`}>
-              <SlotArt slot={sl} size={34} /><span className="text-[9px] text-mist mt-0.5 truncate w-full text-center">{SLOT_INFO[sl].name}</span>
+          <div className="font-display text-lg text-amber-100 mt-2">{SLOT_INFO[slot].name}</div>
+          <div className="grid grid-cols-7 gap-1.5 mt-3 w-full max-w-sm">{SLOTS.map(sl => (
+            <button key={sl} disabled={step >= 0} onClick={() => setSlot(sl)} title={SLOT_INFO[sl].name} className={`rounded-full transition ${slot === sl ? 'ring-2 ring-amber-400 shadow-[0_0_14px_rgba(245,158,11,.55)] scale-110' : 'opacity-60 hover:opacity-100'}`}>
+              <SlotArt slot={sl} size={40} />
             </button>))}</div>
+        </div>
+        <div>
+          <div className="flex justify-center gap-3 mb-3">{[0, 1, 2].map(i => (
+            <span key={i} className={`forge-pip ${scores[i] === undefined ? (i === step ? 'now' : '') : scores[i] >= 1 ? 'perfect' : scores[i] > 0.3 ? 'good' : 'bad'}`}>{scores[i] === undefined ? i + 1 : scores[i] >= 1 ? '✦' : scores[i] > 0.3 ? '•' : '✕'}</span>))}</div>
+          <div className="forge-bar relative h-12 sm:h-14 rounded-xl overflow-hidden">
+            {step >= 0 && <div className="absolute inset-y-0 forge-zone" style={{ left: `${zone[0] * 100}%`, width: `${(zone[1] - zone[0]) * 100}%` }} />}
+            {step >= 0 && <div className="absolute inset-y-0 w-1.5 -ml-[3px] bg-white shadow-[0_0_14px_white,0_0_30px_rgba(255,200,120,.9)]" style={{ left: `${pos * 100}%` }} />}
+            {step < 0 && <div className="absolute inset-0 flex items-center justify-center text-xs text-orange-100/60 italic">{T('La forgia è spenta.')}</div>}
+          </div>
           {step < 0 ? (
-            <Btn kind="ember" onClick={() => { setScores([]); setStep(0); }}>{T('Accendi la forgia ·')}{' '}<Cost cost={cost} have={s.res} /></Btn>
+            <button onClick={() => { setScores([]); setStep(0); }} disabled={!canAfford(s, cost)} className="forge-btn mt-3 w-full">
+              <span className="font-display tracking-wider">{T('Accendi la forgia')}</span> <Cost cost={cost} have={s.res} />
+            </button>
           ) : (
-            <div>
-              <p className="text-xs text-mist mb-1">{T('Colpo')}{' '}{step + 1}{T('/3 — batti quando il calore è nella zona luminosa.')}</p>
-              <div className="relative h-8 rounded-lg bg-gradient-to-r from-stone-950 via-orange-800 to-stone-950 border border-orange-900 overflow-hidden shadow-inner">
-                <div className="absolute inset-y-0 bg-amber-400/40" style={{ left: `${zone[0] * 100}%`, width: `${(zone[1] - zone[0]) * 100}%` }} />
-                <div className="absolute inset-y-0 w-1 bg-white shadow-[0_0_8px_white]" style={{ left: `${pos * 100}%` }} />
-              </div>
-              <Btn kind="ember" className="mt-2 w-full" onClick={strike}>{T('🔨 Batti!')}</Btn>
-            </div>
+            <button onClick={hit} className="forge-btn hot mt-3 w-full"><span className="font-display text-lg tracking-widest">{T('🔨 Batti!')}</span><span className="block text-[10px] opacity-80">{T('Colpo')}{' '}{step + 1}{T('/3 — batti quando il calore è nella zona luminosa.')}</span></button>
           )}
           <p className="text-[11px] text-mist mt-2">{T('La qualità dei colpi aumenta la rarità. Le Gilde (Fidato) migliorano ogni forgiatura.')}</p>
-        </>
-      )}
-    </Panel>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -281,7 +299,7 @@ export default function Hero({ state: s, act }: { state: GameState; act: Act }) 
         <Btn kind={sub === 'talenti' ? 'ember' : 'ghost'} onClick={() => setSub('talenti')}>{T('Talenti')}{' '}{s.hero.talentPoints ? `(${s.hero.talentPoints})` : ''}</Btn>
         <Btn kind={sub === 'ascensione' ? 'ember' : 'ghost'} onClick={() => setSub('ascensione')}>{T('Ascensione')}</Btn>
       </div>
-      {sub === 'equip' && <div className="grid lg:grid-cols-3 gap-4"><div className="lg:col-span-2"><Inventory state={s} act={act} /></div><Forge state={s} act={act} /></div>}
+      {sub === 'equip' && <div className="space-y-4"><Forge state={s} act={act} /><Inventory state={s} act={act} /></div>}
       {sub === 'talenti' && <Talents state={s} act={act} />}
       {sub === 'ascensione' && <Ascension state={s} act={act} />}
       <p className="text-[10px] text-mist">{T('Rarità:')}{' '}{RARITY_NAMES.join(' · ')}</p>

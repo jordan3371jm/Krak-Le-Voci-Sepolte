@@ -143,32 +143,40 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
           const cps = checkpoints(s, id);
           const sel = start[id] || 1;
           return (
-            <section key={id} className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg} ${unlocked ? '' : 'opacity-50'} bg-cover bg-center`} style={BG[id] ? { backgroundImage: `linear-gradient(to bottom, rgba(8,6,10,.72), rgba(8,6,10,.93)), url(${BG[id]})` } : undefined}>
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h3 className="text-lg text-bone flex items-center gap-2"><BiomeMedal id={id} /> {biomeName(s, id, B)}</h3>
+            <section key={id} className={`biome-card group relative rounded-2xl overflow-hidden ${unlocked ? '' : 'locked'}`}>
+              {BG[id] && <div aria-hidden className="absolute inset-0 bg-cover bg-center biome-bg" style={{ backgroundImage: `url(${BG[id]})` }} />}
+              <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-black/20" />
+              {!unlocked && <div aria-hidden className="absolute inset-0 biome-chains" />}
+              <div className="relative p-4 flex flex-col min-h-[300px]">
+                <div className="flex items-start justify-between gap-2">
+                  <BiomeMedal id={id} />
+                  <span className="hamlet-chip text-bone/90">{lc.name}</span>
+                </div>
+                <div className="mt-auto">
+                  <h3 className="font-display text-2xl text-bone drop-shadow-[0_2px_6px_#000]">{biomeName(s, id, B)}</h3>
                   {s.fardello && biomeName(s, id, B) !== B.name && <p className="text-[10px] text-mist">{T('Gli altri lo chiamano «')}{B.name}{T('». Tu lo vedi diversamente.')}</p>}
-                  <p className="text-xs text-bone/70 italic mt-1">{B.desc}</p>
+                  <p className="text-xs text-bone/75 italic mt-1">{B.desc}</p>
+                  <p className="text-[11px] text-mist mt-1">{lc.desc}</p>
+                  <div className="mt-2">
+                    <div className="flex justify-between text-[10px] uppercase tracking-widest text-mist"><span>{T('Profondità')}</span><span className="text-amber-200">{B.depth ? `${b.best}/${B.depth}` : `${b.best} · ∞`}{b.conquered ? ' · 🏆' : ''}</span></div>
+                    <div className="h-1.5 rounded-full bg-black/70 overflow-hidden mt-1 border border-stone-800"><div className="h-full bg-gradient-to-r from-red-900 via-ember to-amber-300" style={{ width: `${B.depth ? Math.min(100, (b.best / B.depth) * 100) : Math.min(100, b.best * 2)}%` }} /></div>
+                  </div>
+                  <div className="text-[11px] text-mist mt-1">{T('Livello consigliato:')}{' '}{B.minLevel}+</div>
+                  {b.memory.length > 0 && <div className="text-[11px] text-fate/80 italic mt-1">{T('Ricorda: «')}{b.memory[0]}»</div>}
+                  {unlocked ? (
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      {cps.length > 1 && (
+                        <select value={sel} onChange={e => setStart({ ...start, [id]: +e.target.value })} className="bg-black/70 border border-stone-700 rounded-lg px-2 py-2 text-xs">
+                          {cps.map(f => <option key={f} value={f}>{T('Dal piano')}{' '}{f}</option>)}
+                        </select>
+                      )}
+                      <button disabled={!s.fardello || !!s.delve || s.res.provviste < 1} onClick={() => { sfx.door(); act(d => enterDelve(d, id as BiomeId, sel)); }} className="descend-btn flex-1">{T('Scendi (🍞1)')}</button>
+                      {s.fardello && !s.delve && s.res.provviste < 1 && <p className="basis-full text-[11px] text-amber-300/90 mt-1">{T('Ti serve 1 provvista per scendere: premi «Raccogli» al villaggio o costruisci una Capanna dei Raccoglitori.')}</p>}
+                      {s.hero.level < B.minLevel && <span className="basis-full text-[11px] text-dissonance">{T('Sei di livello {n}: pericoloso.', { n: s.hero.level })}</span>}
+                    </div>
+                  ) : <p className="text-xs text-mist mt-3">{T('🔒 Conquista')}{' '}{BIOMES[B.requires!].name}{' '}{T('per sbloccarlo.')}</p>}
                 </div>
-                <Tag className="shrink-0" >{lc.icon} {lc.name}</Tag>
               </div>
-              <div className="text-xs text-mist mt-2 space-y-0.5">
-                <div>{lc.desc}</div>
-                <div>{T('Livello consigliato:')}{' '}{B.minLevel}+ · {T('Record: piano {n}', { n: B.depth ? `${b.best}/${B.depth}` : b.best })}{B.depth ? '' : T(' (infinito)')} {b.conquered ? T('· 🏆 Conquistato') : ''}</div>
-                {b.memory.length > 0 && <div className="text-fate/80">{T('Ricorda: «')}{b.memory[0]}»</div>}
-              </div>
-              {unlocked ? (
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {cps.length > 1 && (
-                    <select value={sel} onChange={e => setStart({ ...start, [id]: +e.target.value })} className="bg-black/60 border border-stone-700 rounded px-2 py-1 text-xs">
-                      {cps.map(f => <option key={f} value={f}>{T('Dal piano')}{' '}{f}</option>)}
-                    </select>
-                  )}
-                  <Btn kind="ember" disabled={!s.fardello || !!s.delve || s.res.provviste < 1} onClick={() => { sfx.door(); act(d => enterDelve(d, id as BiomeId, sel)); }}>{T('Scendi (🍞1)')}</Btn>
-                  {s.fardello && !s.delve && s.res.provviste < 1 && <p className="basis-full text-[11px] text-amber-300/90 mt-1">{T('Ti serve 1 provvista per scendere: premi «Raccogli» al villaggio o costruisci una Capanna dei Raccoglitori.')}</p>}
-                  {s.hero.level < B.minLevel && <span className="text-[11px] text-dissonance">{T('Sei di livello {n}: pericoloso.', { n: s.hero.level })}</span>}
-                </div>
-              ) : <p className="text-xs text-mist mt-3">{T('🔒 Conquista')}{' '}{BIOMES[B.requires!].name}{' '}{T('per sbloccarlo.')}</p>}
             </section>
           );
         })}
@@ -179,14 +187,28 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
         <KrakPanel state={s} act={act} />
       </div>
 
-      {isUnlocked(s, 'f_worldboss') && <Panel title={T('Boss Mondiale: il Colosso di Cenere')} icon="boss" right={<span className="text-xs text-mist">{T('Tentativi oggi:')}{' '}{s.world.bossTries}/3</span>}>
-        <p className="text-xs text-bone/70 mb-2">{T('Ogni giorno tutti i portatori della valle colpiscono lo stesso Colosso.')}{' '}{w.bearers}{' '}{T('portatori oggi. Più danni infliggi in 10 round, migliori le ricompense.')}</p>
-        <Bar value={bossHp} max={w.bossMax} color="bg-gradient-to-r from-orange-700 to-red-600" label={<><span>{T('Salute condivisa')}</span><span>{fmt(bossHp)} / {fmt(w.bossMax)}</span></>} />
-        <div className="flex items-center gap-3 mt-2">
-          <Btn kind="bad" disabled={!s.fardello || !!s.delve || s.world.bossTries >= 3 || s.hero.hp < heroStats(s).maxHp * 0.3} onClick={() => act(d => startWorldBoss(d))}>{T('Affronta il Colosso')}</Btn>
-          <span className="text-xs text-mist">{T('I tuoi danni oggi:')}{' '}{fmt(s.world.bossDamage)}</span>
-        </div>
-      </Panel>}
+      {isUnlocked(s, 'f_worldboss') && (
+        <section className="colossus relative rounded-2xl overflow-hidden">
+          <div aria-hidden className="absolute inset-0 colossus-bg" />
+          <div className="relative grid sm:grid-cols-[auto_1fr] gap-4 sm:gap-6 items-center p-4 sm:p-6">
+            <div className="flex justify-center"><span className="colossus-portrait"><Icon name={artOr('colosso', 'boss')} size={170} /></span></div>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.45em] text-red-300/80">{T('Boss Mondiale')}</p>
+              <h3 className="font-display text-2xl sm:text-3xl text-red-50 title-beat">{T('Il Colosso di Cenere')}</h3>
+              <p className="text-xs text-bone/75 mt-1">{T('Ogni giorno tutti i portatori della valle colpiscono lo stesso Colosso.')}{' '}{w.bearers}{' '}{T('portatori oggi. Più danni infliggi in 10 round, migliori le ricompense.')}</p>
+              <div className="mt-3">
+                <div className="flex justify-between text-[11px] text-red-100/90 mb-1"><span className="uppercase tracking-widest">{T('Salute condivisa')}</span><span className="font-display">{fmt(bossHp)} / {fmt(w.bossMax)}</span></div>
+                <div className="colossus-hp"><div className="h-full colossus-hp-fill" style={{ width: `${(bossHp / Math.max(1, w.bossMax)) * 100}%` }} /></div>
+              </div>
+              <div className="flex flex-wrap items-center gap-3 mt-4">
+                <button className="descend-btn blood" disabled={!s.fardello || !!s.delve || s.world.bossTries >= 3 || s.hero.hp < heroStats(s).maxHp * 0.3} onClick={() => act(d => startWorldBoss(d))}>{T('Affronta il Colosso')}</button>
+                <div className="flex items-center gap-1" title={T('Tentativi oggi:')}>{[0, 1, 2].map(i => <span key={i} className={`w-3 h-3 rotate-45 border ${i < 3 - s.world.bossTries ? 'bg-red-500 border-red-300 shadow-[0_0_8px_rgba(239,68,68,.8)]' : 'bg-black border-stone-700'}`} />)}</div>
+                <span className="text-xs text-red-100/80">{T('I tuoi danni oggi:')}{' '}<b className="text-amber-200">{fmt(s.world.bossDamage)}</b></span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {s.fardello && s.influence >= 8 && (
         <Panel title={T('L\'Ombra del Fardello: {shadowName}', { shadowName: FARDELLI[s.fardello].shadowName })} icon="shadow">
@@ -211,15 +233,23 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
   return (
     <div className="grid lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2 space-y-4">
-        <section className={`panel rounded-xl p-4 bg-gradient-to-br ${B.bg}`}>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h2 className="text-lg text-bone flex items-center gap-2"><BiomeMedal id={d.biome} /> {biomeName(s, d.biome, B)}</h2>
-              <p className="text-xs text-mist">{T('Piano')}{' '}<b className="text-ember text-base">{d.floor}</b>{B.depth ? ` / ${B.depth}` : ''} · {T('Specchio:')} <span className="text-fate">{T(d.emotion)}</span> · {valleyFx(s).icon}</p>
+        <section className="delve-head relative rounded-2xl overflow-hidden p-4 sm:p-5">
+          {BG[d.biome] && <div aria-hidden className="absolute inset-0 bg-cover bg-center kenburns opacity-60" style={{ backgroundImage: `url(${BG[d.biome]})` }} />}
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/85" />
+          <div className="relative flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <BiomeMedal id={d.biome} />
+              <div>
+                <h2 className="font-display text-xl sm:text-2xl text-bone">{biomeName(s, d.biome, B)}</h2>
+                <p className="text-xs text-mist">{T('Specchio:')} <span className="text-fate">{T(d.emotion)}</span></p>
+              </div>
             </div>
+            <div className="text-right"><div className="text-[10px] uppercase tracking-[0.4em] text-mist">{T('Piano')}</div><div className="font-display text-4xl text-ember leading-none drop-shadow-[0_0_12px_rgba(196,66,26,.7)]">{d.floor}<span className="text-base text-mist">{B.depth ? ` / ${B.depth}` : ''}</span></div></div>
+          </div>
+          <div className="relative flex flex-wrap items-center justify-between gap-2 mt-2">
             <div className="flex flex-wrap gap-1">{d.modifiers.map(m => <Tag key={m} className="border-fate/50 text-purple-200"><span title={DUNGEON_MODIFIERS[m].desc}>{DUNGEON_MODIFIERS[m].name}</span></Tag>)}{d.ghostAlly && <Tag className="text-teal-200">{T('👻 Eco alleata')}</Tag>}{d.daily && <Tag className="text-amber-200 border-amber-500/60">{T('🗓️ Sfida del giorno')}</Tag>}{s.krak.level > 0 && <Tag className="text-red-200 border-red-500/60">{T('💀 Krak {n}', { n: s.krak.level })}</Tag>}</div>
           </div>
-          <div className="mt-2 text-[11px] text-mist">{d.modifiers.map(m => DUNGEON_MODIFIERS[m].desc).join(' · ')}</div>
+          <div className="relative mt-2 text-[11px] text-mist">{d.modifiers.map(m => DUNGEON_MODIFIERS[m].desc).join(' · ')}</div>
         </section>
 
         {/* Porte */}
@@ -230,11 +260,12 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
           </Tip>
         )}
         {!room && !d.floorCleared && (
-          <Panel title={T('Scegli una porta')} icon="🚪">
+          <Panel title={T('Scegli una porta')} icon="porte">
             <div className={`grid gap-3 ${d.doors.length === 1 ? '' : d.doors.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
               {d.doors.map((o, i) => (
-                <button key={i} onClick={() => { sfx.door(); act(x => chooseDoor(x, i)); }} className="rounded-xl border border-stone-700 hover:border-ember bg-black/50 p-4 text-center transition hover:-translate-y-0.5">
-                  <div className="flex justify-center mb-2"><Icon name={lie && o.type !== 'boss' ? 'event' : o.type === 'puzzle' ? artOr('puzzle', '🕯️') : o.type} size={64} /></div>
+                <button key={i} onClick={() => { sfx.door(); act(x => chooseDoor(x, i)); }} className={`door-card ${o.type === 'boss' ? 'boss' : ''}`}>
+                  <span aria-hidden className="door-light" />
+                  <div className="relative flex justify-center mb-2"><Icon name={lie && o.type !== 'boss' ? 'event' : o.type === 'puzzle' ? artOr('puzzle', '🕯️') : o.type} size={84} /></div>
                   <div className="text-sm text-bone">{lie && o.type !== 'boss' ? '???' : ROOM_NAMES[o.type]}</div>
                   <div className="text-[11px] text-mist italic mt-1">«{o.hint}»</div>
                 </button>
@@ -321,11 +352,11 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
       {/* Bisaccia */}
       <div className="space-y-4">
         <OmensPanel state={s} />
-        <Panel title={T('Bisaccia (non al sicuro)')} icon="🎒">
-          <div className="grid grid-cols-2 gap-1 text-xs">
-            <span>⚱️ {fmt(d.satchel.cenere)}</span><span>⛓️ {fmt(d.satchel.ferro)}</span>
-            <span>🪵 {fmt(d.satchel.legno)}</span><span>🪨 {fmt(d.satchel.pietra)}</span>
-            <span>🍞 {d.satchel.provviste}</span><span>🏺 {d.satchel.reliquie}</span>
+        <Panel title={T('Bisaccia (non al sicuro)')} icon="bisaccia">
+          <div className="grid grid-cols-3 gap-1.5 text-xs">
+            {(['cenere', 'ferro', 'legno', 'pietra', 'provviste', 'reliquie'] as const).map(k => (
+              <div key={k} className="flex flex-col items-center rounded-lg border border-stone-800 bg-black/40 py-1.5"><Icon name={k} size={30} /><span className="text-bone mt-0.5">{fmt((d.satchel as any)[k] || 0)}</span></div>
+            ))}
           </div>
           {d.satchel.fragments.length > 0 && <div className="text-xs mt-2 text-fate">{d.satchel.fragments.map((f, i) => <span key={i} className="mr-2">{FRAGMENTS[f].icon} {FRAGMENTS[f].name}</span>)}</div>}
           <div className="mt-2 space-y-1">{d.satchel.items.map(it => <div key={it.uid} className={`text-xs ${RARITY_COLORS[it.rarity]}`}>• {it.name}</div>)}</div>
@@ -333,7 +364,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
           <div className="mt-3 text-[11px] text-mist">{T('Provviste al villaggio: {p} · Pozioni: {n}', { p: Math.floor(s.res.provviste), n: s.potions })}</div>
           <Btn small className="mt-2" disabled={s.potions < 1 || s.hero.hp >= st.maxHp} onClick={() => act(x => { x.potions--; x.hero.hp = Math.min(st.maxHp, x.hero.hp + st.maxHp * 0.4); })}>{T('🧪 Bevi una pozione')}</Btn>
         </Panel>
-        <Panel title={T('Gruppo')} icon="👥">
+        <Panel title={T('Gruppo')} icon="compagni">
           <Bar value={s.hero.hp} max={st.maxHp} color="bg-red-600" label={<><span>{s.playerName}</span><span>{Math.round(s.hero.hp)}/{st.maxHp}</span></>} />
           {s.companions.filter(c => c.inParty && c.recruited && !c.left && !c.mission).map(c => (
             <Bar key={c.id} className="mt-2" value={c.hp} max={1} color="bg-red-800" label={<><span>{c.icon} {c.name} · {T('fiducia {n}', { n: Math.round(c.trust) })}</span><span>{Math.round(c.hp * 100)}%</span></>} />
