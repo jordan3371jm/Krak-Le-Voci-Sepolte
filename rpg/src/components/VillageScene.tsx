@@ -18,7 +18,13 @@ const SPOT: Record<string, { x: number; y: number }> = {
 };
 
 // Una illustrazione per ogni fase di crescita del villaggio (se presente), con le sue posizioni.
-const STAGE_SPOTS: Record<string, Record<string, { x: number; y: number }>> = {};
+type Spots = Record<string, { x: number; y: number }>;
+const STAGE_SPOTS: Record<string, Spots> = {
+  villaggio_1: { segheria: { x: 12, y: 41 }, locanda: { x: 28, y: 37 }, bottega: { x: 44, y: 47 }, fucina: { x: 65, y: 47 }, altare: { x: 50, y: 18 }, torre: { x: 63, y: 24 }, rovine: { x: 76, y: 24 }, miniere: { x: 93, y: 22 }, cava: { x: 86, y: 57 }, infermeria: { x: 63.5, y: 68 }, capanna: { x: 17, y: 68 }, boschi: { x: 5, y: 30 }, fire: { x: 48, y: 79 } },
+  villaggio_2: { segheria: { x: 11, y: 47 }, locanda: { x: 32.5, y: 39 }, bottega: { x: 48, y: 55 }, altare: { x: 49, y: 20 }, torre: { x: 60.5, y: 32 }, infermeria: { x: 64.5, y: 49 }, fucina: { x: 63.5, y: 71 }, rovine: { x: 74, y: 30 }, miniere: { x: 91.5, y: 22 }, cava: { x: 82.5, y: 68 }, capanna: { x: 19, y: 73 }, boschi: { x: 5, y: 29 }, fire: { x: 45.5, y: 80 } },
+  villaggio_3: { segheria: { x: 9, y: 55 }, locanda: { x: 31, y: 43 }, capanna: { x: 21, y: 68 }, bottega: { x: 44, y: 51 }, fucina: { x: 60, y: 54 }, infermeria: { x: 63.5, y: 68 }, altare: { x: 47, y: 15 }, torre: { x: 66, y: 29 }, rovine: { x: 84, y: 40 }, miniere: { x: 88.5, y: 20 }, cava: { x: 80, y: 72 }, boschi: { x: 5, y: 27 }, fire: { x: 48, y: 90 } },
+  villaggio_4: { segheria: { x: 11.5, y: 55 }, locanda: { x: 32, y: 44 }, bottega: { x: 44, y: 52 }, fucina: { x: 65, y: 47 }, infermeria: { x: 66.5, y: 65 }, altare: { x: 47.5, y: 20 }, torre: { x: 60.5, y: 22 }, miniere: { x: 85, y: 13 }, rovine: { x: 80, y: 38 }, cava: { x: 90, y: 72 }, capanna: { x: 20, y: 78 }, boschi: { x: 4, y: 30 }, fire: { x: 46, y: 72 } },
+};
 function stageOf(total: number) { return total === 0 ? 1 : total < 15 ? 2 : total < 60 ? 3 : 4; }
 export function villageArt(total: number) {
   for (let st = stageOf(total); st >= 1; st--) { const k = 'villaggio_' + st; if (BG[k]) return { img: BG[k], spots: STAGE_SPOTS[k] || SPOT }; }
@@ -72,11 +78,11 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
     <section className={`hamlet relative rounded-2xl overflow-hidden ${TH ? 'hamlet-raid' : ''} ${s.corruption >= 60 && !s.settings.reduceFx ? 'hamlet-corrupt' : ''}`}>
       {/* Panorama */}
       <div className="hamlet-stage relative w-full">
-        <div ref={scroller} className="hamlet-scroll absolute inset-0 no-scrollbar"><div className="hamlet-canvas relative h-full">
-        <div aria-hidden className={`absolute inset-0 bg-cover bg-center ${s.settings.reduceFx ? '' : 'hamlet-pan'}`} style={{ backgroundImage: `url(${art.img})`, filter: `saturate(${0.75 + Math.min(total, 40) / 160}) brightness(${night ? 0.55 : 0.8 + Math.min(total, 40) / 200})` }} />
+        <div ref={scroller} className="hamlet-scroll absolute inset-0 no-scrollbar"><div className={`hamlet-canvas relative h-full ${s.settings.reduceFx ? '' : 'hamlet-pan'}`}>
+        <div aria-hidden className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${art.img})`, filter: `saturate(${0.75 + Math.min(total, 40) / 160}) brightness(${night ? 0.7 : 0.95 + Math.min(total, 40) / 300})` }} />
         <div aria-hidden className="absolute inset-0" style={{ background: tint, mixBlendMode: 'multiply' }} />
-        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_55%,transparent_35%,rgba(4,3,5,.85)_100%)]" />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/80" />
+        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,transparent_50%,rgba(4,3,5,.6)_100%)]" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent via-70% to-black/55" />
         {!s.settings.reduceFx && <div aria-hidden className="absolute inset-0 overflow-hidden"><div className="fog fog-a" /><div className="fog fog-b" /></div>}
         {/* Braci che salgono dal villaggio */}
         {!s.settings.reduceFx && <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -111,7 +117,7 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
         })}
 
         {/* Il fuoco del portatore */}
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-[4%] flex items-end gap-1 sm:gap-2 z-[3]">
+        <div className="absolute -translate-x-1/2 -translate-y-[70%] flex items-end gap-1 sm:gap-2 z-[3]" style={art.spots.fire ? { left: `${art.spots.fire.x}%`, top: `${art.spots.fire.y}%` } : { left: '50%', top: '90%' }}>
           {companions.slice(0, 2).map(c => <span key={c.id} title={c.name} className="hidden sm:block"><Face id={c.id} emoji={c.icon} size={40} tone="teal" /></span>)}
           <div className="relative flex flex-col items-center">
             <span aria-hidden className="campfire" />
@@ -122,7 +128,7 @@ export function VillageScene({ state: s, act }: { state: GameState; act: Act }) 
 
         {/* Eventi del villaggio, dentro la scena */}
         {s.events.cart > now && (
-          <button onClick={() => { sfx.coin(); act(d => clickCart(d)); }} className="hamlet-event absolute left-[14%] bottom-[16%] z-[4]">
+          <button onClick={() => { sfx.coin(); act(d => clickCart(d)); }} className="hamlet-event absolute left-[54%] top-[74%] -translate-x-1/2 z-[4]">
             <Icon name="merchant" size={52} /><span className="hamlet-event-label">{T('Un mercante è arrivato!')} · {fmtTime(s.events.cart - now)}</span>
           </button>
         )}

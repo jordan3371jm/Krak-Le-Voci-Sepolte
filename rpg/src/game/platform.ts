@@ -105,9 +105,16 @@ export function hasLeaderboard() {
 // Banner: solo nelle schermate tranquille (villaggio, menu), mai in combattimento.
 // ------------------------------------------------------------
 let bannerOn = false;
-export function bannerSupported() { try { return bridgeActive() && !!w().bridge?.advertisement?.isBannerSupported; } catch { return false; } }
+// Sul portale Playgama (e su CrazyGames/MSN) si usano gli Advanced Banners; altrove il banner classico.
+function advancedOk() { try { return bridgeActive() && !!w().bridge?.advertisement?.isAdvancedBannersSupported; } catch { return false; } }
+function classicOk() { try { return bridgeActive() && !!w().bridge?.advertisement?.isBannerSupported; } catch { return false; } }
+export function bannerSupported() { return advancedOk() || classicOk(); }
 export function setBanner(show: boolean) {
   if (!bannerSupported() || show === bannerOn) return;
   bannerOn = show;
-  try { const a = w().bridge.advertisement; if (show) a.showBanner('bottom', 'idle'); else a.hideBanner(); } catch { /* */ }
+  try {
+    const a = w().bridge.advertisement;
+    if (advancedOk()) { if (show) a.showAdvancedBanners('idle'); else a.hideAdvancedBanners(); }
+    else if (show) a.showBanner('bottom', 'idle'); else a.hideBanner();
+  } catch { /* */ }
 }

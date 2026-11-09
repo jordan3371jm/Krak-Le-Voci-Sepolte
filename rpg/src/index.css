@@ -210,12 +210,12 @@ input[type=range], input[type=checkbox] { accent-color: #f59e0b; }
 /* ===================== Hondovalle: il villaggio dipinto ===================== */
 .hamlet { border: 1px solid rgba(196, 120, 60, .35); box-shadow: 0 0 0 1px #000 inset, 0 20px 70px rgba(0,0,0,.7), 0 0 60px rgba(196,66,26,.08); background: #060406; }
 .hamlet-stage::before { content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(245,181,68,.12), inset 0 0 80px rgba(0,0,0,.9); }
-.hamlet-stage { aspect-ratio: 16 / 9; min-height: 300px; max-height: 620px; }
+.hamlet-stage { aspect-ratio: 2000 / 1116; min-height: 300px; max-height: 720px; }
 .hamlet-scroll { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; }
-.hamlet-canvas { width: 100%; }
-@media (max-width: 767px) { .hamlet-stage { aspect-ratio: auto; height: 400px; } .hamlet-canvas { width: 700px; } }
-@media (min-width: 1024px) { .hamlet-stage { aspect-ratio: 16 / 7; } }
-@keyframes hamletPan { 0% { transform: scale(1.08) translate(1%, 0) } 100% { transform: scale(1.14) translate(-1.5%, -1%) } }
+.hamlet-canvas { width: 100%; transform-origin: 50% 60%; }
+@media (max-width: 767px) { .hamlet-stage { aspect-ratio: auto; height: 400px; } .hamlet-canvas { width: 717px; } }
+
+@keyframes hamletPan { 0% { transform: scale(1.0) } 100% { transform: scale(1.045) translate(-.8%, -.6%) } }
 .hamlet-pan { animation: hamletPan 70s ease-in-out infinite alternate; will-change: transform; }
 .hamlet-light { position: absolute; width: var(--w); height: calc(var(--w) * .7); transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
   background: radial-gradient(ellipse, rgba(255,170,70,.55), rgba(255,110,30,.18) 45%, transparent 70%); animation: windowFlicker 4s ease-in-out infinite; }
