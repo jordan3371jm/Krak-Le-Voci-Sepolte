@@ -16,7 +16,7 @@ nsjfy0	Cette Veillée a déjà commencé.
 1g3u6th	Impossible de joindre les autres Veillées. Réessaie.
 qopmsa	L’invitation a expiré.
 4xz2gc	Multijoueur · 1–4 porteurs
-150ireo	Une nuit hors du temps. Autour du dernier feu de Hondovalle, des porteurs de vallées différentes résistent ensemble aux vagues des Ensevelis. Toutes les trois vagues, Krak murmure un pacte : votez, la majorité décide.
+150ireo	Une nuit hors du temps. Autour du dernier feu de Hondovalle, des porteurs de vallées différentes résistent ensemble aux vagues des Enfouis. Toutes les trois vagues, Krak murmure un pacte : votez, la majorité décide.
 1wr4me9	Partie rapide
 tnlcm7	Créer une Veillée privée
 1fogluw	Veillée en solo (avec les échos)
@@ -25,7 +25,7 @@ hajeas	Code
 1cilsrl	Les parties en ligne sont disponibles sur Playgama. Ici, tu peux veiller avec les échos.
 fztobv	À la recherche d’autres feux dans la nuit…
 1v2em5f	À chaque manche, vous avez 12 secondes pour choisir. Qui ne choisit pas, frappe. Si le feu s’éteint, la Veillée prend fin.
-13sothb	Chaque classe excelle dans une action : le Pénitent protège, la Lame frappe, la Voyante charge le Rite, le Gardien fait un peu de tout.
+13sothb	Chaque classe excelle dans une action : le Pénitent protège, la Lame frappe, le Voyant charge le Rite, le Gardien fait un peu de tout.
 1it4jrc	Tes records
 1eccqye	Vague la plus haute : {n}
 8u0fzd	Récompenses : 60 cendres par vague et 1 relique toutes les 5 vagues (3 reliques max par jour).
@@ -48,14 +48,14 @@ zunup9	Le feu s’est éteint
 436egl	{n} dégâts
 13hlg39	Retour au feu de la maison
 od7psd	Encore une Veillée
-1qdesnp	La Veillée est une nuit hors du temps : jusqu’à 4 porteurs, même d’autres vallées, défendent ensemble le dernier feu contre les vagues des Ensevelis. En ligne ou en solo avec les échos. Toutes les 3 vagues, on vote un pacte avec Krak.
+1qdesnp	La Veillée est une nuit hors du temps : jusqu’à 4 porteurs, même d’autres vallées, défendent ensemble le dernier feu contre les vagues des Enfouis. En ligne ou en solo avec les échos. Toutes les 3 vagues, on vote un pacte avec Krak.
 13yte3i	Noyé
 wnkdwo	Sangsue
 16bvla5	Héraut du Colosse
 578gyj	Pacte du Sang
 15ambrj	Coups +40 %, mais le feu perd 20 de maximum.
 c9jvpo	Veillée Silencieuse
-knrs87	Le feu redevient plein, mais chaque vague amène un Enseveli de plus.
+knrs87	Le feu redevient plein, mais chaque vague amène un Enfoui de plus.
 81ale2	Promesse de Cendre
 a81efg	Le Rite se charge deux fois plus vite, mais les ennemis frappent +20 %.
 rl6eqh	Racines de la Vallée
@@ -64,9 +64,9 @@ rl6eqh	Racines de la Vallée
 1kfpd7u	Faim de Krak
 1vd7fi9	Les ennemis frappent −25 %, mais le feu perd la moitié de sa vie.
 1u5t0l	Porteur
-6stfxn	Vague {n} : les Ensevelis sortent du brouillard.
-ar7mhm	✨ Le Rite s’accomplit : un Écho balaie tous les Ensevelis (−{d}).
-8bff16	Les Ensevelis frappent le feu : −{n}.
+6stfxn	Vague {n} : les Enfouis sortent du brouillard.
+ar7mhm	✨ Le Rite s’accomplit : un Écho balaie tous les Enfouis (−{d}).
+8bff16	Les Enfouis frappent le feu : −{n}.
 yu20y1	Le feu s’éteint. La Veillée s’est achevée à la vague {n}.
 1v1oqts	Vague {n} repoussée.
 v4yxg	Krak murmure un pacte. Votez.

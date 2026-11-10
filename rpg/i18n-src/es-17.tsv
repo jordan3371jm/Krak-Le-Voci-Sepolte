@@ -1,6 +1,6 @@
 qsgfim	La Vigilia
 1fmnqdb	Golpear
-1vkx2qf	Hiere al Sepultado más cercano.
+1vkx2qf	Hiere al Enterrado más cercano.
 m2jtug	Proteger
 153xaad	Detén los golpes dirigidos al fuego.
 1yljzje	Avivar
@@ -16,7 +16,7 @@ nsjfy0	Esta Vigilia ya ha comenzado.
 1g3u6th	No se puede llegar a las otras Vigilias. Inténtalo de nuevo.
 qopmsa	La invitación ha caducado.
 4xz2gc	Multijugador · 1–4 portadores
-150ireo	Una noche fuera del tiempo. Alrededor del último fuego de Hondovalle, portadores de valles distintos resisten juntos las oleadas de los Sepultados. Cada tres oleadas Krak susurra un pacto: votad, y la mayoría decide.
+150ireo	Una noche fuera del tiempo. Alrededor del último fuego de Hondovalle, portadores de valles distintos resisten juntos las oleadas de los Enterrados. Cada tres oleadas Krak susurra un pacto: votad, y la mayoría decide.
 1wr4me9	Partida rápida
 tnlcm7	Crear una Vigilia privada
 1fogluw	Vigilia en solitario (con los ecos)
@@ -25,7 +25,7 @@ hajeas	Código
 1cilsrl	Las partidas en línea están disponibles cuando juegas en Playgama. Aquí puedes velar con los ecos.
 fztobv	Buscando otros fuegos en la noche…
 1v2em5f	Cada ronda tenéis 12 segundos para elegir. Quien no elige, golpea. Si el fuego se apaga, la Vigilia termina.
-13sothb	Cada clase es más fuerte en una acción: el Penitente protege, la Hoja golpea, la Vidente carga el Rito, el Custodio hace un poco de todo.
+13sothb	Cada clase es más fuerte en una acción: el Penitente protege, la Hoja golpea, la Vidente carga el Rito, el Guardián hace un poco de todo.
 1it4jrc	Tus récords
 1eccqye	Oleada más alta: {n}
 8u0fzd	Recompensas: 60 de ceniza por oleada y 1 reliquia cada 5 oleadas (máximo 3 reliquias al día).
@@ -48,14 +48,14 @@ zunup9	El fuego se ha apagado
 436egl	{n} de daño
 13hlg39	Volver al fuego de casa
 od7psd	Otra Vigilia
-1qdesnp	La Vigilia es una noche fuera del tiempo: hasta 4 portadores, incluso de otros valles, defienden juntos el último fuego de las oleadas de los Sepultados. Se juega en línea o en solitario con los ecos. Cada 3 oleadas se vota un pacto con Krak.
+1qdesnp	La Vigilia es una noche fuera del tiempo: hasta 4 portadores, incluso de otros valles, defienden juntos el último fuego de las oleadas de los Enterrados. Se juega en línea o en solitario con los ecos. Cada 3 oleadas se vota un pacto con Krak.
 13yte3i	Ahogado
 wnkdwo	Sanguijuela
 16bvla5	Heraldo del Coloso
 578gyj	Pacto de Sangre
 15ambrj	Golpes +40%, pero el fuego pierde 20 de máximo.
 c9jvpo	Vigilia Silenciosa
-knrs87	El fuego vuelve a estar lleno, pero cada oleada trae un Sepultado más.
+knrs87	El fuego vuelve a estar lleno, pero cada oleada trae un Enterrado más.
 81ale2	Promesa de Ceniza
 a81efg	El Rito se carga el doble, pero los enemigos golpean +20%.
 rl6eqh	Raíces del Valle
@@ -64,9 +64,9 @@ rl6eqh	Raíces del Valle
 1kfpd7u	Hambre de Krak
 1vd7fi9	Los enemigos golpean −25%, pero el fuego pierde la mitad de su vida.
 1u5t0l	Portador
-6stfxn	Oleada {n}: los Sepultados salen de la niebla.
-ar7mhm	✨ El Rito se cumple: un Eco arrasa a todos los Sepultados (−{d}).
-8bff16	Los Sepultados golpean el fuego: −{n}.
+6stfxn	Oleada {n}: los Enterrados salen de la niebla.
+ar7mhm	✨ El Rito se cumple: un Eco arrasa a todos los Enterrados (−{d}).
+8bff16	Los Enterrados golpean el fuego: −{n}.
 yu20y1	El fuego se apaga. La Vigilia terminó en la oleada {n}.
 1v1oqts	Oleada {n} rechazada.
 v4yxg	Krak susurra un pacto. Votad.

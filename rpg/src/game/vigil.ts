@@ -27,9 +27,9 @@ export const ROUND_MS = 12_000, WHISPER_MS = 12_000;
 export const ENEMY_KINDS: Record<string, { name: () => string; art: string; hp: number; atk: number }> = {
   eco: { name: () => T('Eco Muta'), art: 'eco_muta', hp: 22, atk: 5 },
   scheletro: { name: () => T('Ossa Rancorose'), art: 'scheletro', hp: 30, atk: 6 },
-  annegato: { name: () => T('Annegato'), art: 'annegato', hp: 38, atk: 7 },
+  annegato: { name: () => T('Annegato del Culto'), art: 'annegato', hp: 38, atk: 7 },
   spettro: { name: () => T('Spettro del Rimpianto'), art: 'spettro', hp: 26, atk: 9 },
-  sanguisuga: { name: () => T('Sanguisuga'), art: 'sanguisuga', hp: 46, atk: 6 },
+  sanguisuga: { name: () => T('Sanguisuga Madre'), art: 'sanguisuga', hp: 46, atk: 6 },
   giudice: { name: () => T('Giudice Cieco'), art: 'giudice_cieco', hp: 70, atk: 11 },
   colosso: { name: () => T('Araldo del Colosso'), art: 'colosso', hp: 160, atk: 16 },
 };
