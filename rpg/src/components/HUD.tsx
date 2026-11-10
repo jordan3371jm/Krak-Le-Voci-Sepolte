@@ -114,6 +114,7 @@ const TABS: { id: TabId; icon: string; name: string }[] = [
   { id: 'fazioni', icon: 'fazioni', name: T('Fazioni') },
   { id: 'diario', icon: 'diario', name: T('Diario') },
   { id: 'eredita', icon: 'eredita', name: T('Eredità') },
+  { id: 'veglia', icon: 'compagni', name: T('La Veglia') },
   { id: 'opzioni', icon: 'opzioni', name: T('Opzioni') },
 ];
 

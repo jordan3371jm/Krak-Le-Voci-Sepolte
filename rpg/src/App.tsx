@@ -21,6 +21,7 @@ import { gameReady, interstitial, platformMessage, setBanner, bannerSupported, t
 import { hasTrack, playClip, playTrack } from './game/music';
 import { setRecorded } from './game/audio';
 import { BG } from './components/art';
+import Vigil from './components/Vigil';
 import { Dread, Eyes, Fog, Particles, Whispers } from './components/Atmosphere';
 import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from './components/Screens';
 
@@ -182,6 +183,7 @@ export default function App() {
             {s.tab === 'spedizioni' && <Companions state={s} act={act} />}
             {s.tab === 'diario' && <Journal state={s} act={act} />}
             {s.tab === 'eredita' && <Legacy state={s} act={act} />}
+            {s.tab === 'veglia' && <Vigil state={s} act={act} />}
             {s.tab === 'opzioni' && <Settings state={s} act={act} replace={replace} saveNow={saveNow} onFullscreen={toggleFullscreen} />}
           </>
         )}

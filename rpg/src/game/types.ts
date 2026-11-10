@@ -236,7 +236,7 @@ export interface VillageEvents {
   bardReadyAt: number;
 }
 
-export type TabId = 'villaggio' | 'discesa' | 'eroe' | 'bussola' | 'mercato' | 'fazioni' | 'spedizioni' | 'diario' | 'eredita' | 'opzioni';
+export type TabId = 'villaggio' | 'discesa' | 'eroe' | 'bussola' | 'mercato' | 'fazioni' | 'spedizioni' | 'diario' | 'eredita' | 'veglia' | 'opzioni';
 
 export interface Modal {
   kind: 'event' | 'welcome' | 'trial' | 'info' | 'promise';

@@ -409,3 +409,10 @@ input[type=range], input[type=checkbox] { accent-color: #f59e0b; }
 .ad-btn:hover:not(:disabled) { box-shadow: 0 0 22px rgba(250,204,21,.4); }
 .ad-btn:disabled { opacity: .4; cursor: not-allowed; }
 .ad-badge { font-size: 9px; font-weight: 800; letter-spacing: .05em; color: #1c1404; background: #facc15; border-radius: 3px; padding: 0 4px; line-height: 14px; }
+
+/* ===================== La Veglia ===================== */
+.vigil-hero, .vigil-stage { border: 1px solid rgba(245,158,11,.35); box-shadow: 0 20px 60px rgba(0,0,0,.6); min-height: 220px; }
+.vigil-stage { min-height: 360px; }
+.vigil-act { border-color: rgba(120,100,80,.45); background: linear-gradient(160deg, rgba(30,22,18,.92), rgba(8,7,6,.96)); transition: transform .15s, border-color .2s, box-shadow .2s; }
+.vigil-act:hover:not(:disabled) { border-color: rgba(245,158,11,.7); transform: translateY(-2px); }
+.vigil-act.on { border-color: #f59e0b; box-shadow: 0 0 22px rgba(245,158,11,.35); background: linear-gradient(160deg, rgba(120,53,15,.5), rgba(8,7,6,.96)); }

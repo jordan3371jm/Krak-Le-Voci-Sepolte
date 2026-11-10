@@ -116,6 +116,18 @@
         {
             "id": "krak_daily",
             "isMain": true
+        },
+        {
+            "id": "krak_veglia"
         }
-    ]
+    ],
+    "saas": {
+        "publicToken": "cmw84vgvt1oqwmt0h7pkr65sc",
+        "leaderboards": {
+            "platforms": [
+                "playgama",
+                "qa_tool"
+            ]
+        }
+    }
 }
