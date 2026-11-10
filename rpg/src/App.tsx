@@ -36,6 +36,7 @@ export default function App() {
   const inDelve = !!s.delve;
   const delveBiome = s.delve?.biome;
   const sessionStart = useRef(Date.now());
+  useEffect(() => { const h = () => act(d => toast(d, T('📺 Nessuna pubblicità disponibile in questo momento. Riprova tra poco.'), 'bad')); window.addEventListener('krak-ad-failed', h); return () => window.removeEventListener('krak-ad-failed', h); }, [act]);
   const wasDelve = useRef(inDelve);
   useEffect(() => {
     if (inDelve && !wasDelve.current) platformMessage('level_started', { world: delveBiome || '', level: String(s.delve?.floor || 1) });

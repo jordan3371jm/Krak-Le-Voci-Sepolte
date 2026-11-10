@@ -14,7 +14,8 @@ import { firstBlood } from '../game/engine/delve';
 import { activateElixir, brewElixir, brewPotion, ELIXIRS, potionCost } from '../game/engine/hero';
 import { cureAberration, curePledge, pledgeCureCost, purifyUI, restoreName } from '../game/engine/meta';
 import { heartbeat, sfx } from '../game/audio';
-import { Bar, Btn, Cost, Panel, Tag } from './ui';
+import { AdBtn, Bar, Btn, Cost, Panel, Tag } from './ui';
+import { adBlessReady, adBlessing } from '../game/engine/rewards';
 import { Icon, Sigil } from './icons';
 import { isUnlocked } from '../game/engine/onboarding';
 import { TalkersPanel, Face, Typewriter } from './Talk';
@@ -301,6 +302,8 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
             {isUnlocked(s, 'f_cantastorie') && <Btn className="w-full mt-2" kind="fate" disabled={now < s.events.bardReadyAt} onClick={() => act(d => playBard(d))}>
               {now < s.events.bardReadyAt ? T('Il cantastorie torna tra {now}', { now: fmtTime(s.events.bardReadyAt - now) }) : T('Ascolta il cantastorie (produzione ×2)')}
             </Btn>}
+            {totalBuildings(s) >= 1 && <AdBtn className="w-full mt-2 justify-center" placement="bless" disabled={!adBlessReady(s)} onReward={() => act(d => adBlessing(d))}
+              label={adBlessReady(s) ? T('Benedizione della Valle: produzione ×2 per 10 minuti') : T('Benedizione di nuovo tra {t}', { t: fmtTime((s.totals.adBlessAt || 0) - now) })} />}
           </Panel>
 
           {isUnlocked(s, 'f_produzione') && <Panel title={T('Produzione')} icon="bottega">

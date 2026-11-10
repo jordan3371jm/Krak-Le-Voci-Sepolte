@@ -15,7 +15,8 @@ import { heroStats } from '../game/engine/hero';
 import { sharedWorld } from '../game/engine/meta';
 import { todayKey } from '../game/rng';
 import { sfx } from '../game/audio';
-import { Bar, Btn, ItemCard, Panel, Tag, iconize, rich } from './ui';
+import { AdBtn, Bar, Btn, ItemCard, Panel, Tag, iconize, rich } from './ui';
+import { adBossReady, adBossTry, adSupplies } from '../game/engine/rewards';
 import { Icon, Sigil } from './icons';
 import { Tip } from './Guide';
 import { isUnlocked } from '../game/engine/onboarding';
@@ -171,6 +172,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
                         </select>
                       )}
                       <button disabled={!s.fardello || !!s.delve || s.res.provviste < 1} onClick={() => { sfx.door(); act(d => enterDelve(d, id as BiomeId, sel)); }} className="descend-btn flex-1">{iconize(T('Scendi (🍞1)'))}</button>
+                      {s.fardello && !s.delve && s.res.provviste < 1 && <AdBtn className="basis-full justify-center" placement="supplies" onReward={() => act(d => adSupplies(d))} label={T('+3 Provviste per scendere')} />}
                       {s.fardello && !s.delve && s.res.provviste < 1 && <p className="basis-full text-[11px] text-amber-300/90 mt-1">{T('Ti serve 1 provvista per scendere: premi «Raccogli» al villaggio o costruisci una Capanna dei Raccoglitori.')}</p>}
                       {s.hero.level < B.minLevel && <span className="basis-full text-[11px] text-dissonance">{T('Sei di livello {n}: pericoloso.', { n: s.hero.level })}</span>}
                     </div>
@@ -203,6 +205,7 @@ function BiomeSelect({ state: s, act }: { state: GameState; act: Act }) {
               <div className="flex flex-wrap items-center gap-3 mt-4">
                 <button className="descend-btn blood" disabled={!s.fardello || !!s.delve || s.world.bossTries >= 3 || s.hero.hp < heroStats(s).maxHp * 0.3} onClick={() => act(d => startWorldBoss(d))}>{T('Affronta il Colosso')}</button>
                 <div className="flex items-center gap-1" title={T('Tentativi oggi:')}>{[0, 1, 2].map(i => <span key={i} className={`w-3 h-3 rotate-45 border ${i < 3 - s.world.bossTries ? 'bg-red-500 border-red-300 shadow-[0_0_8px_rgba(239,68,68,.8)]' : 'bg-black border-stone-700'}`} />)}</div>
+                {adBossReady(s) && <AdBtn placement="boss_try" disabled={!!s.delve} onReward={() => act(d => adBossTry(d))} label={T('Un tentativo in più')} />}
                 <span className="text-xs text-red-100/80">{T('I tuoi danni oggi:')}{' '}<b className="text-amber-200">{fmt(s.world.bossDamage)}</b></span>
               </div>
             </div>
@@ -337,6 +340,7 @@ function DelveRun({ state: s, act }: { state: GameState; act: Act }) {
           <Panel title={T('Piano {floor} superato', { floor: d.floor })} icon="✅">
             <div className="flex flex-wrap gap-2">
               {!atBottom && cost.provviste && <Btn kind="ember" disabled={!!room?.bossChoice} onClick={() => { sfx.door(); act(x => descend(x)); }}>{T('⬇️ Scendi al piano')}{' '}{d.floor + 1} (🍞1)</Btn>}
+              {!atBottom && !cost.provviste && <AdBtn placement="supplies" disabled={!!room?.bossChoice} onReward={() => act(x => adSupplies(x))} label={T('+3 Provviste per continuare')} />}
               {!atBottom && !cost.provviste && (
                 <Btn kind="bad" disabled={!!room?.bossChoice} onClick={() => act(x => descend(x, true))} title={T('Soglia di Ritiro')}>{T('⛓️ Pegna il tuo futuro: −')}{cost.pledge}{' '}{T('salute massima per scendere')}</Btn>
               )}

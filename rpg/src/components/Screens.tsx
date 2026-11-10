@@ -24,7 +24,8 @@ import { deleteSave, exportCode, importCode } from '../game/save';
 import { GIFT_LIKES, giftableItems, giveGift, nextGiftScene } from '../game/engine/features';
 import { RARITY_COLORS, SLOT_INFO } from '../game/data/world';
 import { LangGrid } from './LangPicker';
-import { Bar, Btn, Empty, Ico, ItemCard, Panel, Tag, rich } from './ui';
+import { AdBtn, Bar, Btn, Empty, Ico, ItemCard, Panel, Tag, rich } from './ui';
+import { adChestDouble, adChestReady, adMarketReady, adMarketRefresh } from '../game/engine/rewards';
 
 // ============================================================
 // MERCATO DELLE ANIME
@@ -45,7 +46,8 @@ export function Market({ state: s, act }: { state: GameState; act: Act }) {
             <p className="text-xs sm:text-sm text-bone/75 italic mt-1">{T('Qui non si vendono solo oggetti: si commercia destino. Ogni merce porta la storia di chi l\'ha posseduta. I prezzi dipendono dalla tua reputazione con le Ombre del Mercato.')}</p>
           </div>
           <div className="grid grid-cols-2 gap-2 text-center">
-            <div className="market-stat"><div className="text-[9px] uppercase tracking-widest text-mist">{T('Nuove merci tra')}</div><div className="font-display text-lg text-amber-100">{fmtTime(s.market.refreshAt - Date.now())}</div></div>
+            <div className="market-stat"><div className="text-[9px] uppercase tracking-widest text-mist">{T('Nuove merci tra')}</div><div className="font-display text-lg text-amber-100">{fmtTime(s.market.refreshAt - Date.now())}</div>
+              <AdBtn small className="mt-1" placement="market_refresh" disabled={!adMarketReady(s)} onReward={() => act(d => adMarketRefresh(d))} label={adMarketReady(s) ? T('Rinnova ora') : fmtTime((s.totals.adMarketAt || 0) - Date.now())} /></div>
             <div className="market-stat"><div className="text-[9px] uppercase tracking-widest text-mist">{T('Prezzi')}</div><div className={`font-display text-lg ${pm < 1 ? 'text-teal-200' : pm > 1 ? 'text-red-300' : 'text-amber-100'}`}>×{pm.toFixed(2)}</div><div className="text-[9px] text-mist">{T(ombre)}</div></div>
           </div>
         </div>
@@ -259,6 +261,7 @@ function MissionList({ state: s, act, period }: { state: GameState; act: Act; pe
       {period === 'daily' && <button disabled={s.daily.chest} onClick={() => act(d => claimDailyChest(d))} className={`w-full mb-3 flex items-center gap-3 rounded-xl border p-2 text-left ${s.daily.chest ? 'border-stone-800 opacity-50' : 'border-amber-500/70 bg-amber-900/20 hover:bg-amber-900/40 animate-pulseGlow'}`}>
         <Icon name="treasure" size={44} /><span className="flex-1 font-display text-amber-100">{s.daily.chest ? T('🎁 Forziere già aperto oggi') : T('🎁 Apri il forziere giornaliero')}</span>
       </button>}
+      {period === 'daily' && adChestReady(s) && <AdBtn className="w-full mb-3 justify-center" placement="chest_double" onReward={() => act(d => adChestDouble(d))} label={T('Raddoppia il forziere di oggi')} />}
       <div className="space-y-2">
         {box.missions.map(m => {
           const def = DAILY_POOL.find(d => d.id === m.id); if (!def) return null;

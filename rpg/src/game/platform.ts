@@ -61,6 +61,10 @@ export function adMode(): AdMode {
 }
 
 let busy = false;
+/** Avvisa l'interfaccia che la pubblicità non è arrivata (niente premio, ma il giocatore deve saperlo). */
+function adFailed() { try { window.dispatchEvent(new CustomEvent('krak-ad-failed')); } catch { /* */ } }
+/** Le ricompense con pubblicità si mostrano solo dove una pubblicità esiste davvero. */
+export function rewardedAvailable() { return adMode() !== 'none'; }
 export function showRewarded(placement = 'reward'): Promise<boolean> {
   if (busy) return Promise.resolve(false);
   const mode = adMode();
@@ -76,13 +80,13 @@ export function showRewarded(placement = 'reward'): Promise<boolean> {
       const h = (st: string) => {
         if (st === 'rewarded') rewarded = true;
         if (st === 'closed') { try { b.advertisement.off?.(ev, h); } catch { /* */ } finish(rewarded); }
-        if (st === 'failed') { try { b.advertisement.off?.(ev, h); } catch { /* */ } finish(false); }
+        if (st === 'failed') { try { b.advertisement.off?.(ev, h); } catch { /* */ } adFailed(); finish(false); }
       };
       try { b.advertisement.on(ev, h); b.advertisement.showRewarded(placement); } catch { finish(false); }
-      window.setTimeout(() => finish(rewarded), 90_000);
+      window.setTimeout(() => { if (!done && !rewarded) adFailed(); finish(rewarded); }, 60_000);
     } else {
       try {
-        w().CrazyGames.SDK.ad.requestAd('rewarded', { adFinished: () => finish(true), adError: () => finish(false), adStarted: () => {} });
+        w().CrazyGames.SDK.ad.requestAd('rewarded', { adFinished: () => finish(true), adError: () => { adFailed(); finish(false); }, adStarted: () => {} });
       } catch { finish(false); }
       window.setTimeout(() => finish(false), 90_000);
     }

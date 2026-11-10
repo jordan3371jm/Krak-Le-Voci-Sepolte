@@ -24,8 +24,24 @@
                 },
                 {
                     "id": "reward"
+                },
+                {
+                    "id": "bless"
+                },
+                {
+                    "id": "chest_double"
+                },
+                {
+                    "id": "supplies"
+                },
+                {
+                    "id": "market_refresh"
+                },
+                {
+                    "id": "boss_try"
                 }
-            ]
+            ],
+            "preloadOnStart": "reward"
         },
         "minimumDelayBetweenInterstitial": 300,
         "banner": {

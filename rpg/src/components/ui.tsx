@@ -1,6 +1,7 @@
 import { t as T } from '../i18n';
 import { Pic } from './Pic';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import { rewardedAvailable, showRewarded } from '../game/platform';
 import type { Item, Resources } from '../game/types';
 import { RARITY_BORDERS, RARITY_COLORS, RARITY_NAMES, RES_INFO, SLOT_INFO } from '../game/data/world';
 import { fmt } from '../game/engine/state';
@@ -21,6 +22,18 @@ export function iconize(node: ReactNode): ReactNode {
   }
   if (Array.isArray(node)) return node.map((n, i) => <span key={i}>{iconize(n)}</span>);
   return node;
+}
+
+/** Pulsante «guarda una pubblicità per…»: compare solo dove le pubblicità esistono. */
+export function AdBtn({ placement, label, onReward, disabled, small, className = '' }: { placement: string; label: ReactNode; onReward: () => void; disabled?: boolean; small?: boolean; className?: string }) {
+  const [busy, setBusy] = useState(false);
+  if (!rewardedAvailable()) return null;
+  return (
+    <button disabled={disabled || busy} onClick={() => { if (busy) return; sfx.click(); setBusy(true); showRewarded(placement).then(ok => { setBusy(false); if (ok) onReward(); }); }}
+      className={`ad-btn ${small ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-sm'} ${className}`}>
+      <span className="ad-badge">AD</span> {busy ? T('Caricamento…') : iconize(label)}
+    </button>
+  );
 }
 
 export function Ico({ children }: { children: ReactNode }) { return <>{iconize(children)}</>; }
