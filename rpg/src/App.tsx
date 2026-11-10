@@ -43,7 +43,7 @@ export default function App() {
     if (inDelve && !wasDelve.current) platformMessage('level_started', { world: delveBiome || '', level: String(s.delve?.floor || 1) });
     if (!inDelve && wasDelve.current) {
       platformMessage(s.lastReport?.good === false ? 'level_failed' : 'level_completed');
-      if (Date.now() - sessionStart.current > 300_000) interstitial('delve_end'); // mai nei primi 5 minuti
+      if (Date.now() - sessionStart.current > 3_600_000) interstitial('delve_end'); // mai nella prima ora
     }
     wasDelve.current = inDelve;
   }, [inDelve]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -66,7 +66,7 @@ export default function App() {
   });
   // Pubblicità: niente all'apertura; dopo 5 minuti dall'ingresso parte la prima, poi ogni 5 minuti
   // (Bridge rispetta minimumDelayBetweenInterstitial = 300 s) nei momenti tranquilli.
-  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && Date.now() - sessionStart.current > 300_000) interstitial('pause'); }, 15_000); return () => window.clearInterval(id); }, []);
+  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && Date.now() - sessionStart.current > 3_600_000) interstitial('pause'); }, 15_000); return () => window.clearInterval(id); }, []);
   // banner in basso solo quando la scena è tranquilla e fuori dai dungeon
   // Banner ovunque, tranne quando disturberebbe: combattimento, dialoghi, scelte morali,
   // la Notte del Portale, il prologo e i round attivi della Veglia.
