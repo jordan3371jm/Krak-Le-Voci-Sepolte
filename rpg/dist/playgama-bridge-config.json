@@ -43,7 +43,7 @@
             ],
             "preloadOnStart": "reward"
         },
-        "minimumDelayBetweenInterstitial": 300,
+        "minimumDelayBetweenInterstitial": 3600,
         "banner": {
             "placementFallback": "idle",
             "placements": [
