@@ -54,6 +54,8 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
 
   // Fine della Veglia: classifica e piccola ricompensa (al massimo 3 reliquie al giorno)
   const v = vs.current;
+  const busyPhase = !!v && (v.phase === 'choose' || v.phase === 'whisper');
+  useEffect(() => { window.dispatchEvent(new CustomEvent('krak-vigil-busy', { detail: busyPhase })); return () => { window.dispatchEvent(new CustomEvent('krak-vigil-busy', { detail: false })); }; }, [busyPhase]);
   useEffect(() => {
     if (!v || v.phase !== 'over' || rewarded.current) return;
     rewarded.current = true;

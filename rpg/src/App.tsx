@@ -68,7 +68,12 @@ export default function App() {
   // (Bridge rispetta minimumDelayBetweenInterstitial = 300 s) nei momenti tranquilli.
   useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && Date.now() - sessionStart.current > 300_000) interstitial('pause'); }, 15_000); return () => window.clearInterval(id); }, []);
   // banner in basso solo quando la scena è tranquilla e fuori dai dungeon
-  const idle = s.scene !== 'game' || (!s.combat && !s.delve && !s.talk && !s.modal);
+  // Banner ovunque, tranne quando disturberebbe: combattimento, dialoghi, scelte morali,
+  // la Notte del Portale, il prologo e i round attivi della Veglia.
+  const [vigilBusy, setVigilBusy] = useState(false);
+  useEffect(() => { const h = (e: Event) => setVigilBusy(!!(e as CustomEvent).detail); window.addEventListener('krak-vigil-busy', h); return () => window.removeEventListener('krak-vigil-busy', h); }, []);
+  const moralModal = !!s.modal && (s.modal.kind === 'event' || s.modal.kind === 'trial');
+  const idle = s.scene === 'ending' || (s.scene === 'game' && !!s.fardello && !s.combat && !s.talk && !moralModal && !(s.tab === 'veglia' && vigilBusy));
   useEffect(() => { setBanner(idle); }, [idle]);
 
   // ---------------- audio come sistema ----------------
@@ -188,7 +193,7 @@ export default function App() {
           </>
         )}
       </main>
-      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 z-50 w-[min(92vw,360px)] space-y-1 pointer-events-none">
+      <div className={`fixed ${bannerSupported() && idle ? "bottom-[13vh]" : "bottom-3"} left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 z-50 w-[min(92vw,360px)] space-y-1 pointer-events-none`}>
         {s.toasts.slice(-4).map(t => (
           <div key={t.id} className={`animate-rise rounded-lg px-3 py-1.5 text-xs sm:text-sm shadow-lg border bg-black/90 ${t.kind === 'good' ? 'border-resonance/60 text-teal-100' : t.kind === 'bad' ? 'border-dissonance/60 text-red-100' : t.kind === 'fate' ? 'border-fate/60 text-purple-100' : 'border-ember/40 text-bone'}`}>{t.text}</div>
         ))}
