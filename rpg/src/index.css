@@ -416,3 +416,8 @@ input[type=range], input[type=checkbox] { accent-color: #f59e0b; }
 .vigil-act { border-color: rgba(120,100,80,.45); background: linear-gradient(160deg, rgba(30,22,18,.92), rgba(8,7,6,.96)); transition: transform .15s, border-color .2s, box-shadow .2s; }
 .vigil-act:hover:not(:disabled) { border-color: rgba(245,158,11,.7); transform: translateY(-2px); }
 .vigil-act.on { border-color: #f59e0b; box-shadow: 0 0 22px rgba(245,158,11,.35); background: linear-gradient(160deg, rgba(120,53,15,.5), rgba(8,7,6,.96)); }
+
+/* Spazio riservato al banner in basso: il gioco si restringe, il banner non copre mai nulla */
+:root { --ad-h: 10vh; }
+@media (min-width: 1500px) and (orientation: landscape) { :root { --ad-h: 0px; } }
+.ad-shrink { min-height: 0 !important; }

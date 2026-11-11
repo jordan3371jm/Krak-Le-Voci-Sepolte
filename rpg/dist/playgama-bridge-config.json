@@ -43,7 +43,7 @@
             ],
             "preloadOnStart": "reward"
         },
-        "minimumDelayBetweenInterstitial": 3600,
+        "minimumDelayBetweenInterstitial": 300,
         "banner": {
             "placementFallback": "idle",
             "placements": [
@@ -58,7 +58,7 @@
                 "default": [
                     {
                         "width": "60%",
-                        "height": "11%",
+                        "height": "10%",
                         "bottom": "0%",
                         "left": "20%"
                     }
@@ -80,7 +80,7 @@
                 "desktop:landscape": [
                     {
                         "width": "60%",
-                        "height": "11%",
+                        "height": "10%",
                         "bottom": "0%",
                         "left": "20%"
                     }
@@ -88,7 +88,7 @@
                 "mobile:portrait": [
                     {
                         "width": "100%",
-                        "height": "9%",
+                        "height": "10%",
                         "bottom": "0%",
                         "left": "0%"
                     }
@@ -96,7 +96,7 @@
                 "mobile:landscape": [
                     {
                         "width": "50%",
-                        "height": "14%",
+                        "height": "10%",
                         "bottom": "0%",
                         "left": "25%"
                     }
@@ -104,7 +104,7 @@
                 "tablet": [
                     {
                         "width": "80%",
-                        "height": "9%",
+                        "height": "10%",
                         "bottom": "0%",
                         "left": "10%"
                     }

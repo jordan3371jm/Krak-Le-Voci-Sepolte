@@ -43,7 +43,7 @@ export default function App() {
     if (inDelve && !wasDelve.current) platformMessage('level_started', { world: delveBiome || '', level: String(s.delve?.floor || 1) });
     if (!inDelve && wasDelve.current) {
       platformMessage(s.lastReport?.good === false ? 'level_failed' : 'level_completed');
-      if (Date.now() - sessionStart.current > 3_600_000) interstitial('delve_end'); // mai nella prima ora
+      if (Date.now() - sessionStart.current > 300_000) interstitial('delve_end'); // mai nei primi 5 minuti
     }
     wasDelve.current = inDelve;
   }, [inDelve]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -66,12 +66,14 @@ export default function App() {
   });
   // Pubblicità: niente all'apertura; dopo 5 minuti dall'ingresso parte la prima, poi ogni 5 minuti
   // (Bridge rispetta minimumDelayBetweenInterstitial = 300 s) nei momenti tranquilli.
-  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && Date.now() - sessionStart.current > 3_600_000) interstitial('pause'); }, 15_000); return () => window.clearInterval(id); }, []);
+  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && Date.now() - sessionStart.current > 300_000) interstitial('pause'); }, 15_000); return () => window.clearInterval(id); }, []);
   // banner in basso solo quando la scena è tranquilla e fuori dai dungeon
   // Banner ovunque, tranne quando disturberebbe: combattimento, dialoghi, scelte morali,
   // la Notte del Portale, il prologo e i round attivi della Veglia.
   const [vigilBusy, setVigilBusy] = useState(false);
   useEffect(() => { const h = (e: Event) => setVigilBusy(!!(e as CustomEvent).detail); window.addEventListener('krak-vigil-busy', h); return () => window.removeEventListener('krak-vigil-busy', h); }, []);
+  const [bannerOn, setBannerOn] = useState(false);
+  useEffect(() => { const h = (e: Event) => setBannerOn(!!(e as CustomEvent).detail); window.addEventListener('krak-banner', h); return () => window.removeEventListener('krak-banner', h); }, []);
   const moralModal = !!s.modal && (s.modal.kind === 'event' || s.modal.kind === 'trial');
   const idle = s.scene === 'ending' || (s.scene === 'game' && !!s.fardello && !s.combat && !s.talk && !moralModal && !(s.tab === 'veglia' && vigilBusy));
   useEffect(() => { setBanner(idle); }, [idle]);
@@ -158,7 +160,7 @@ export default function App() {
 
   const corrupt = corruptedUI(s) && !s.settings.reduceFx;
   return (
-    <div className={`min-h-screen noise ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
+    <div style={bannerOn && idle ? { height: 'calc(100dvh - var(--ad-h))', overflowY: 'auto' } : undefined} className={`min-h-screen noise ${bannerOn && idle ? 'ad-shrink' : ''} ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
       {(() => { const k = s.delve ? s.delve.biome : s.tab === 'villaggio' ? 'villaggio' : ''; return k && BG[k] ? <div aria-hidden className="fixed inset-0 -z-0 pointer-events-none overflow-hidden"><div className="absolute inset-0 bg-cover bg-center opacity-40 kenburns" style={{ backgroundImage: `url(${BG[k]})` }} /><div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(5,4,6,.55), rgba(5,4,6,.92))' }} /></div> : null; })()}
       {!s.settings.reduceFx && <>
         <Particles mode={s.combat ? 'combat' : s.delve ? 'delve' : 'village'} tint={s.delve?.biome === 'paludi' ? '220,40,40' : s.delve?.biome === 'torre' ? '170,120,255' : s.delve?.biome === 'abisso' ? '120,200,255' : '255,140,60'} intensity={s.combat ? 0.7 : 1} />
@@ -176,7 +178,7 @@ export default function App() {
         <Nav state={s} act={act} />
       </div>
       {!s.combat && <GuideBar state={s} act={act} />}
-      <main className={`${fresh ? "stagger-root" : ""} relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-4 ${bannerSupported() ? "pb-32" : "pb-16"}`}>
+      <main className={`${fresh ? "stagger-root" : ""} relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16`}>
         {s.combat ? <Combat state={s} act={act} /> : (
           <>
             {s.tab === 'villaggio' && <Village state={s} act={act} />}
@@ -193,7 +195,7 @@ export default function App() {
           </>
         )}
       </main>
-      <div className={`fixed ${bannerSupported() && idle ? "bottom-[13vh]" : "bottom-3"} left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 z-50 w-[min(92vw,360px)] space-y-1 pointer-events-none`}>
+      <div className={`fixed ${bannerOn && idle ? "bottom-[calc(var(--ad-h)+12px)]" : "bottom-3"} left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 z-50 w-[min(92vw,360px)] space-y-1 pointer-events-none`}>
         {s.toasts.slice(-4).map(t => (
           <div key={t.id} className={`animate-rise rounded-lg px-3 py-1.5 text-xs sm:text-sm shadow-lg border bg-black/90 ${t.kind === 'good' ? 'border-resonance/60 text-teal-100' : t.kind === 'bad' ? 'border-dissonance/60 text-red-100' : t.kind === 'fate' ? 'border-fate/60 text-purple-100' : 'border-ember/40 text-bone'}`}>{t.text}</div>
         ))}

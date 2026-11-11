@@ -17,6 +17,7 @@ const w = () => (typeof window !== 'undefined' ? (window as any) : {});
 const AD_KEY = 'krak_last_ad';
 let lastAdAt = (() => { try { return Number(localStorage.getItem(AD_KEY)) || 0; } catch { return 0; } })();
 const markAd = () => { lastAdAt = Date.now(); try { localStorage.setItem(AD_KEY, String(lastAdAt)); } catch { /* */ } };
+const bannerEvt = (on: boolean) => { try { window.dispatchEvent(new CustomEvent('krak-banner', { detail: on })); } catch { /* */ } };
 let audioAllowed = true, paused = false, adOpen = false;
 const applyMute = () => setExternalMute(!audioAllowed || paused || adOpen || (typeof document !== 'undefined' && document.hidden));
 
@@ -26,7 +27,7 @@ export async function bootPlatform(keys: string[]) {
     try { await Promise.race([b.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 10_000))]); } catch { /* si gioca comunque */ }
   }
   if (bridgeActive()) {
-    try { b.advertisement?.setMinimumDelayBetweenInterstitial?.(3600); } catch { /* */ }
+    try { b.advertisement?.setMinimumDelayBetweenInterstitial?.(300); } catch { /* */ }
     await kvInit(keys);
     try {
       audioAllowed = b.platform.isAudioEnabled !== false;
@@ -34,6 +35,8 @@ export async function bootPlatform(keys: string[]) {
       b.platform.on?.(E.AUDIO_STATE_CHANGED || 'audio_state_changed', (on: boolean) => { audioAllowed = on !== false; applyMute(); });
       b.platform.on?.(E.PAUSE_STATE_CHANGED || 'pause_state_changed', (p: boolean) => { paused = !!p; applyMute(); });
       b.advertisement?.on?.(E.INTERSTITIAL_STATE_CHANGED || 'interstitial_state_changed', (st: string) => { adOpen = st === 'opened'; if (st === 'opened') markAd(); applyMute(); });
+      b.advertisement?.on?.(E.ADVANCED_BANNERS_STATE_CHANGED || 'advanced_banners_state_changed', (st: string) => bannerEvt(st === 'shown'));
+      b.advertisement?.on?.(E.BANNER_STATE_CHANGED || 'banner_state_changed', (st: string) => bannerEvt(st === 'shown'));
       b.advertisement?.on?.(E.REWARDED_STATE_CHANGED || 'rewarded_state_changed', (st: string) => { adOpen = st === 'opened'; applyMute(); });
     } catch { /* */ }
   }
@@ -53,10 +56,9 @@ export function platformMessage(msg: 'level_started' | 'level_completed' | 'leve
 }
 /** Pausa naturale (ritorno dal dungeon, fine Ciclo): Bridge decide se mostrare davvero un annuncio. */
 // Al massimo una pubblicità a schermo intero all'ora (la prima dopo 5 minuti di gioco)
-const AD_GAP = 60 * 60_000;
+const AD_GAP = 5 * 60_000;
 export function interstitial(placement = 'pause') {
   if (Date.now() - lastAdAt < AD_GAP) return;
-  if (!lastAdAt) { markAd(); return; } // primissima volta: l'ora parte adesso, nessuna pubblicità
   try { const a = w().bridge?.advertisement; if (a?.showInterstitial && bridgeActive()) a.showInterstitial(placement); } catch { /* */ }
 }
 
