@@ -26,6 +26,17 @@ export const BUILDINGS: BuildingDef[] = [
   { id: 'locanda', name: t('Locanda dei Viandanti'), icon: '🍺', desc: t('Ogni livello: +1 compagno in spedizione contemporanea.'), cost: { legno: 90, cenere: 90 }, prod: {}, max: 4, unlock: { building: 'bottega', count: 3 } },
   { id: 'torre', name: t('Torre di Guardia'), icon: '🗼', desc: t('Respinge le incursioni da sola e potenzia i tuoi colpi.'), cost: { pietra: 90, ferro: 25 }, prod: {}, max: 20, unlock: { building: 'fucina', count: 1 } },
 ];
+// Opere della Valle: progetti senza limite che assorbono le risorse in eccesso
+export interface WorkDef { id: string; name: string; icon: string; desc: string; per: string; cost: Partial<Resources>; unlock: { building: string; count: number } }
+export const WORKS: WorkDef[] = [
+  { id: 'palizzata', name: t('Palizzata di Cenere'), icon: 'torre', desc: t('Mura attorno al villaggio: il tuo eroe resiste di più.'), per: t('+3% salute per livello'), cost: { legno: 400, pietra: 250 }, unlock: { building: 'cava', count: 5 } },
+  { id: 'forgia', name: t('Forgia degli Antichi'), icon: 'fucina', desc: t('Il ferro della valle diventa lame migliori.'), per: t('+2% attacco per livello'), cost: { ferro: 200, pietra: 300 }, unlock: { building: 'fucina', count: 3 } },
+  { id: 'bastione', name: t('Bastione dei Guardiani'), icon: 'slot_scudo', desc: t('Pietra e ferro forgiati in armature.'), per: t('+2% difesa per livello'), cost: { pietra: 500, ferro: 150 }, unlock: { building: 'fucina', count: 5 } },
+  { id: 'granaio', name: t('Grande Granaio'), icon: 'capanna', desc: t('Scorte e mercati: tutta la valle produce di più.'), per: t('+3% produzione per livello'), cost: { legno: 600, cenere: 800 }, unlock: { building: 'bottega', count: 5 } },
+  { id: 'santuario_voci', name: t('Santuario delle Voci'), icon: 'altare', desc: t('Un luogo dove ascoltare Krak senza perdersi.'), per: t('+5% Risonanza guadagnata per livello'), cost: { cenere: 1500, intuizione: 20 }, unlock: { building: 'altare', count: 2 } },
+];
+export const WORK_GROWTH = 1.4;
+
 // Ogni soglia raggiunta sblocca un miglioramento che raddoppia la produzione dell'edificio.
 export const UPGRADE_THRESHOLDS = [5, 15, 30, 60, 100];
 export const UPGRADE_NAMES = [t('Attrezzi migliori'), t('Maestranze della valle'), t('Metodi antichi'), t('Benedizione dei Guardiani'), t('Opera leggendaria')];

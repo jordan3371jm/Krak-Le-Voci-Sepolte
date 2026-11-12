@@ -265,7 +265,7 @@ function coherence(s: GameState, c: CombatState, natures: Nature[], loud?: boole
       if (c.chain >= 2) log(c, T('🔗 Catena di Coerenza ×{n}', { n: c.chain }));
     }
     const chainMult = 1 + 0.25 * Math.min(4, Math.max(0, (c.chain || 0) - 1));
-    s.resonance = Math.min(resonanceMax(s), s.resonance + gain * resMult * chainMult);
+    s.resonance = Math.min(resonanceMax(s), s.resonance + gain * resMult * chainMult * (1 + 0.05 * (s.village.works?.santuario_voci || 0)));
     s.influence += 0.3;
     s.totals.coherent = (s.totals.coherent || 0) + 1;
   }

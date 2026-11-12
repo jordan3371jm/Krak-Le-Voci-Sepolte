@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import type { FactionId, FardelloId, GameState, ResKey } from '../game/types';
 import type { Act } from '../game/useGame';
 import { FACTIONS, FARDELLI } from '../game/data/core';
-import { BUILDINGS, FISH, RES_INFO, UPGRADE_NAMES, UPGRADE_THRESHOLDS } from '../game/data/world';
+import { WORKS, BUILDINGS, FISH, RES_INFO, UPGRADE_NAMES, UPGRADE_THRESHOLDS } from '../game/data/world';
 import { canAfford, displayName, fmt, fmtTime, hasFlag, repState } from '../game/engine/state';
 import {
   availableUpgrades, baitMax, build, buildingCost, buildingUnlocked, buyAllUpgrades, buyUpgrade, catchFish, chooseFardello, clickCart, clickDeer,
-  clickValue, completeRequest, gather, hasGoldenRod, hitThreat, nextThreshold, upgradeMult, playBard, productionPerSec, totalBuildings, useBait,
+  clickValue, buildWork, workCost, workLevel, workUnlocked, completeRequest, gather, hasGoldenRod, hitThreat, nextThreshold, upgradeMult, playBard, productionPerSec, totalBuildings, useBait,
 } from '../game/engine/village';
 import { firstBlood } from '../game/engine/delve';
 import { activateElixir, brewElixir, brewPotion, ELIXIRS, potionCost } from '../game/engine/hero';
@@ -366,6 +366,27 @@ export default function Village({ state: s, act }: { state: GameState; act: Act 
               })}
             </div>
           </Panel>}
+          {WORKS.some(w => workUnlocked(s, w.id)) && (
+            <Panel title={T('Opere della Valle')} icon="villaggio" right={<span className="text-[10px] text-mist">{T('senza limite · ogni livello costa +40%')}</span>}>
+              <p className="text-[11px] text-mist mb-2">{T('Grandi progetti per le risorse che avanzano: ogni livello rafforza per sempre il tuo eroe o la valle.')}</p>
+              <div className="grid gap-2">
+                {WORKS.filter(w => workUnlocked(s, w.id)).map(w => {
+                  const c = workCost(s, w.id); const ok = canAfford(s, c); const n = workLevel(s, w.id);
+                  return (
+                    <button key={w.id} disabled={!ok} onClick={() => { sfx.build(); act(d => buildWork(d, w.id)); }}
+                      className={`w-full text-left rounded-xl border p-2 flex items-center gap-3 transition ${ok ? 'border-amber-700/60 bg-amber-950/20 hover:border-amber-400' : 'border-stone-800 opacity-60'}`}>
+                      <div className="relative shrink-0"><Icon name={w.icon} size={40} /><span className="absolute -top-1 -right-1 text-[9px] font-bold rounded bg-amber-700 text-white px-1">{n}</span></div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-bone font-display truncate">{w.name}</div>
+                        <div className="text-[11px] text-mist">{w.desc} <b className="text-amber-200">{w.per}</b></div>
+                        <Cost cost={c} have={s.res} />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </Panel>
+          )}
           {ups.length > 0 && (
             <Panel title={T('Miglioramenti')} icon="potenzia" right={<Btn small onClick={() => act(d => buyAllUpgrades(d))}>{T('Compra tutti')}</Btn>}>
               <div className="grid gap-2">

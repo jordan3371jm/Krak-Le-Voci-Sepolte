@@ -2,7 +2,7 @@ import { MISSION_PERIODS, type MissionPeriod } from '../data/world';
 import { t as T } from '../../i18n';
 import type { ClassId, FactionId, FardelloId, GameState, ResKey, Resources } from '../types';
 import { COMPANIONS, FACTIONS, FACTION_IDS, FARDELLI } from '../data/core';
-import { ACHIEVEMENTS, BUILDINGS, DAILY_POOL, EXPEDITIONS, FISH, UPGRADE_THRESHOLDS, type FishDef, RES_INFO } from '../data/world';
+import { WORKS, WORK_GROWTH, ACHIEVEMENTS, BUILDINGS, DAILY_POOL, EXPEDITIONS, FISH, UPGRADE_THRESHOLDS, type FishDef, RES_INFO } from '../data/world';
 import { pick, todayKey, uid, weighted } from '../rng';
 import { addFlag, addRes, canAfford, cardMod, chronicle, hasFlag, intuitionCap, pay, prodMult, sanct, stat, toast, valleyState } from './state';
 import { addItem, clampHeroHp, companionXp, equip, gainXp, heroStats, makeItem, rollRarity } from './hero';
@@ -54,7 +54,7 @@ export function buildingCost(s: GameState, id: string): Partial<Resources> {
   const disc = 1 - cardMod(s, 'build') - (s.factions.gilde >= 60 ? 0.1 : 0);
   const out: Partial<Resources> = {};
   // Gli edifici con un limite crescono molto più in fretta: pochi esemplari, ognuno conquistato.
-  const growth = b.max ? 1.15 + 3.4 / (b.max + 1) : 1.15;
+  const growth = b.max ? 1.2 + 4 / (b.max + 1) : 1.15;
   for (const [k, v] of Object.entries(b.cost)) out[k as ResKey] = Math.ceil((v || 0) * Math.pow(growth, n) * disc);
   return out;
 }
@@ -72,6 +72,27 @@ export function build(s: GameState, id: string) {
   stat(s, 'built');
   pushValley(s, { prosperity: 0.4 });
   if (n === 0) { toast(s, T('{icon} {name}: costruzione completata!', { icon: b.icon, name: b.name }), 'good'); chronicle(s, T('Hai costruito {bName} a Hondovalle.', { bName: b.name }), 'world'); }
+}
+export function workLevel(s: GameState, id: string) { return s.village.works?.[id] || 0; }
+export function workCost(s: GameState, id: string): Partial<Resources> {
+  const w = WORKS.find(w => w.id === id)!;
+  const n = workLevel(s, id);
+  const out: Partial<Resources> = {};
+  for (const [k, v] of Object.entries(w.cost)) out[k as ResKey] = Math.ceil((v || 0) * Math.pow(WORK_GROWTH, n));
+  return out;
+}
+export function workUnlocked(s: GameState, id: string) {
+  const w = WORKS.find(w => w.id === id)!;
+  return (s.village.buildings[w.unlock.building] || 0) >= w.unlock.count;
+}
+export function buildWork(s: GameState, id: string) {
+  const w = WORKS.find(w => w.id === id);
+  if (!w || !workUnlocked(s, id)) return;
+  if (!pay(s, workCost(s, id))) return;
+  s.village.works = { ...(s.village.works || {}), [id]: workLevel(s, id) + 1 };
+  pushValley(s, { prosperity: 1 });
+  toast(s, T('{name}: livello {n}', { name: w.name, n: workLevel(s, id) }), 'good');
+  if (workLevel(s, id) === 1) chronicle(s, T('Hondovalle ha iniziato una grande opera: {name}.', { name: w.name }), 'world');
 }
 export function totalBuildings(s: GameState) {
   return Object.values(s.village.buildings).reduce((a, b) => a + b, 0);

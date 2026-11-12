@@ -60,6 +60,9 @@ export function heroStats(s: GameState): Stats {
   const legacy = 1 + sanct(s, 'sangue_antico') / 100 + s.cycle.memorieTotal * 0.015;
   st.atk *= legacy; st.maxHp *= legacy; st.def *= legacy;
   st.maxHp *= 1 + cardMod(s, 'hp');
+  // Opere della Valle
+  const wk = s.village.works || {};
+  st.maxHp *= 1 + 0.03 * (wk.palizzata || 0); st.atk *= 1 + 0.02 * (wk.forgia || 0); st.def *= 1 + 0.02 * (wk.bastione || 0);
   // Elisir
   if (s.activeElixir === 'forza') st.atk *= 1.2;
   if (s.activeElixir === 'pietra') st.def *= 1.4;

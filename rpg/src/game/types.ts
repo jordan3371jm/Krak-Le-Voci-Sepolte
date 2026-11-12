@@ -285,7 +285,7 @@ export interface GameState {
   reliquie: number;
   totals: Record<string, number>;
 
-  village: { buildings: Record<string, number>; upgrades: string[] };
+  village: { buildings: Record<string, number>; upgrades: string[]; works?: Record<string, number> };
   companions: Companion[];
 
   resonance: number;

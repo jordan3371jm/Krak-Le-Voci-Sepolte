@@ -164,6 +164,7 @@ export function prodMult(s: GameState, key: keyof Resources | 'all', now = Date.
   m += 0.02 * s.achievements.length;
   m += 0.05 * s.cycle.memorieTotal;
   m += 0.01 * s.fish.length;
+  m += 0.03 * (s.village.works?.granaio || 0);
   m += valleyFx(s).prod;
   m += cardMod(s, 'all');
   m += sanct(s, 'saggi') / 100;
