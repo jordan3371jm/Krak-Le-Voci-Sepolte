@@ -34,7 +34,7 @@ export async function bootPlatform(keys: string[]) {
       const E = b.EVENT_NAME || {};
       b.platform.on?.(E.AUDIO_STATE_CHANGED || 'audio_state_changed', (on: boolean) => { audioAllowed = on !== false; applyMute(); });
       b.platform.on?.(E.PAUSE_STATE_CHANGED || 'pause_state_changed', (p: boolean) => { paused = !!p; applyMute(); });
-      b.advertisement?.on?.(E.INTERSTITIAL_STATE_CHANGED || 'interstitial_state_changed', (st: string) => { adOpen = st === 'opened'; if (st === 'opened') markAd(); applyMute(); });
+      b.advertisement?.on?.(E.INTERSTITIAL_STATE_CHANGED || 'interstitial_state_changed', (st: string) => { adOpen = st === 'opened'; if (st === 'opened') { markAd(); failStreak = 0; } if (st === 'failed') failStreak++; applyMute(); });
       b.advertisement?.on?.(E.ADVANCED_BANNERS_STATE_CHANGED || 'advanced_banners_state_changed', (st: string) => bannerEvt(st === 'shown'));
       b.advertisement?.on?.(E.BANNER_STATE_CHANGED || 'banner_state_changed', (st: string) => bannerEvt(st === 'shown'));
       b.advertisement?.on?.(E.REWARDED_STATE_CHANGED || 'rewarded_state_changed', (st: string) => { adOpen = st === 'opened'; applyMute(); });
@@ -57,8 +57,14 @@ export function platformMessage(msg: 'level_started' | 'level_completed' | 'leve
 /** Pausa naturale (ritorno dal dungeon, fine Ciclo): Bridge decide se mostrare davvero un annuncio. */
 // Al massimo una pubblicità a schermo intero all'ora (la prima dopo 5 minuti di gioco)
 const AD_GAP = 5 * 60_000;
+// Dopo una richiesta (riuscita o fallita) si aspetta: un fallimento non va ritentato ogni 15 secondi.
+let lastTryAt = 0, failStreak = 0;
+const FAIL_GAP = 10 * 60_000;
 export function interstitial(placement = 'pause') {
-  if (Date.now() - lastAdAt < AD_GAP) return;
+  const now = Date.now();
+  if (now - lastAdAt < AD_GAP) return;
+  if (now - lastTryAt < (failStreak ? Math.min(FAIL_GAP * failStreak, 60 * 60_000) : AD_GAP)) return;
+  lastTryAt = now;
   try { const a = w().bridge?.advertisement; if (a?.showInterstitial && bridgeActive()) a.showInterstitial(placement); } catch { /* */ }
 }
 

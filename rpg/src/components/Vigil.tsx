@@ -7,7 +7,7 @@ import { mpCloseRoom as mpClose, mpCreate as mpCreateRoom, mpInvite, mpInviteSup
 import { submitScore, hasLeaderboard } from '../game/platform';
 import { addRes, toast } from '../game/engine/state';
 import { sfx } from '../game/audio';
-import { Btn, Panel } from './ui';
+import { AdBtn, Btn, Panel } from './ui';
 import { Icon } from './icons';
 import { artOr, BG } from './art';
 
@@ -37,6 +37,7 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
   const [busy, setBusy] = useState(false);
   const [tut, setTut] = useState<number | null>(() => s.flags.includes('seen_vigil_tut') ? null : 0);
   const rewarded = useRef(false);
+  const [doubled, setDoubled] = useState(false);
   const rerender = () => force(x => x + 1);
   const cls = (['custode', 'penitente', 'lama', 'veggente'].includes(s.classId) ? s.classId : 'custode') as VClass;
   const online = mode === 'online';
@@ -97,11 +98,11 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
 
   const startSolo = () => {
     const nv = newVigil(); me.current = 'me'; addPlayer(nv, 'me', s.playerName, cls); startVigil(nv, Date.now());
-    vs.current = nv; rewarded.current = false; setMode('solo'); sfx.door();
+    vs.current = nv; rewarded.current = false; setDoubled(false); setMode('solo'); sfx.door();
   };
   const enter = async (how: 'quick' | 'create' | 'join') => {
     setBusy(true); setErr('');
-    const nv = newVigil(); vs.current = nv; rewarded.current = false;
+    const nv = newVigil(); vs.current = nv; rewarded.current = false; setDoubled(false);
     try {
       if (how === 'quick') await mpQuickMatch(handlers, props);
       else if (how === 'create') await mpCreateRoom(handlers, props);
@@ -293,6 +294,7 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
             <div className="font-display text-5xl text-ember">{v.wave}</div>
             <div className="text-xs text-mist uppercase tracking-widest">{T('ondate')}</div>
             <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">{[...v.players].sort((a, b) => b.dmg - a.dmg).map(p => <div key={p.id} className="rounded border border-stone-800 p-2"><b className="text-bone">{p.name}</b><div className="text-mist">{T('{n} danni', { n: p.dmg })}</div></div>)}</div>
+            {v.wave > 0 && !doubled && <div className="mt-4"><AdBtn placement="vigil_double" label={T('📺 Raddoppia la cenere (+{c})', { c: v.wave * 60 })} onReward={() => { setDoubled(true); act(d => { addRes(d, { cenere: v.wave * 60 }); toast(d, T('🔥 Cenere della Veglia raddoppiata!'), 'good'); }); }} /></div>}
             <div className="flex justify-center gap-2 mt-4"><Btn kind="ember" onClick={leave}>{T('Torna al fuoco di casa')}</Btn>{!online && <Btn onClick={startSolo}>{T('Ancora una Veglia')}</Btn>}</div>
           </div>
         </Panel>
