@@ -12,7 +12,7 @@ import { tryAutoplay } from '../game/music';
 import { Btn } from './ui';
 import { Icon } from './icons';
 import { LangPicker } from './LangPicker';
-import { BG } from './art';
+import { BG, VIDEO } from './art';
 import { Particles } from './Atmosphere';
 
 const NAMES = ['Nera', 'Aldo', 'Mirra', 'Teo', 'Sabra', 'Ilde', 'Corvo', 'Lena', 'Bruno', 'Vesna', 'Oren', 'Ada'];
@@ -27,6 +27,9 @@ const VISION = [
 export default function Intro({ state, act }: { state: GameState; act: Act }) {
   const [step, setStep] = useState(0);
   const [awake, setAwake] = useState(false);
+  // filmato d'apertura: prima il video, poi la scritta (un tocco lo salta)
+  const [film, setFilm] = useState(() => !!VIDEO.intro && !state.settings.reduceFx);
+  useEffect(() => { if (!film) return; const t = window.setTimeout(() => setFilm(false), 9000); return () => window.clearTimeout(t); }, [film]);
   useEffect(() => { tryAutoplay(); }, []);
   const [line, setLine] = useState(0);
   const [name, setName] = useState(() => NAMES[Math.floor(Math.random() * NAMES.length)]);
@@ -46,9 +49,18 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
         <div className="absolute top-4 right-4 z-10"><LangPicker /></div>
         <Particles mode="portal" tint="255,120,50" />
-        {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-60 pointer-events-none kenburns" style={{ backgroundImage: `radial-gradient(ellipse at center, rgba(5,4,6,.35), rgba(5,4,6,.92)), url(${BG.copertina})` }} />}
+        {VIDEO.intro ? (
+          <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
+            <video className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000" style={{ opacity: film ? 1 : 0.55 }} poster={BG.copertina} autoPlay muted playsInline preload="auto" onEnded={e => { setFilm(false); const v = e.currentTarget; v.loop = true; void v.play().catch(() => {}); }}>
+              {VIDEO.intro.webm && <source src={VIDEO.intro.webm} type="video/webm" />}{VIDEO.intro.mp4 && <source src={VIDEO.intro.mp4} type="video/mp4" />}
+            </video>
+            <div className="absolute inset-0 transition-opacity duration-1000" style={{ opacity: film ? 0.25 : 1, background: 'radial-gradient(ellipse at center, rgba(5,4,6,.35), rgba(5,4,6,.92))' }} />
+          </div>
+        ) : BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-60 pointer-events-none kenburns" style={{ backgroundImage: `radial-gradient(ellipse at center, rgba(5,4,6,.35), rgba(5,4,6,.92)), url(${BG.copertina})` }} />}
+        {film && <button onClick={() => setFilm(false)} className="absolute inset-0 z-20 cursor-pointer" aria-label={T('Salta')}><span className="absolute bottom-6 right-6 text-xs text-bone/70 tracking-[0.3em] uppercase">{T('Salta')} ›</span></button>}
         <div className="absolute inset-0 bg-gradient-to-t from-red-950/60 via-transparent to-transparent animate-breathe pointer-events-none" />
         <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-orange-900/30 to-transparent animate-flicker pointer-events-none" />
+        <div className={`flex flex-col items-center transition-opacity duration-1000 ${film ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <p className="text-xs tracking-[0.4em] text-ember/80 mb-4 uppercase">{newCycle ? T('Ciclo {n}', { n: state.cycle.n }) : T('Un RPG che ricorda')}</p>
         <h1 className="text-4xl sm:text-6xl font-black text-gradient-ember title-beat mb-2 leading-tight">{T('KRAK')}</h1>
         <h2 className="text-lg sm:text-2xl text-bone/90 mb-10 tracking-widest">{T('Le Voci Sepolte')}</h2>
@@ -81,6 +93,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
         {awake && <div className="mt-10 relative z-10">
           <Btn kind="ember" onClick={() => { initAudio(); sfx.door(); setStep(1); }}>{line < VISION.length - 1 ? T('Salta ›') : T('Entra nella valle')}</Btn>
         </div>}
+        </div>
         <p className="absolute bottom-4 text-[11px] text-mist/60">{T('Suggerimento: cuffie e schermo intero rendono il rito più profondo.')}</p>
       </div>
     );
