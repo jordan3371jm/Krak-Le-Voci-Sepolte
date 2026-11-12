@@ -108,13 +108,13 @@ const TABS: { id: TabId; icon: string; name: string }[] = [
   { id: 'villaggio', icon: 'villaggio', name: T('Villaggio') },
   { id: 'discesa', icon: 'discesa', name: T('Discesa') },
   { id: 'eroe', icon: 'eroe', name: T('Eroe') },
+  { id: 'veglia', icon: 'compagni', name: T('La Veglia') },
   { id: 'bussola', icon: 'bussola', name: T('Bussola') },
   { id: 'spedizioni', icon: 'compagni', name: T('Compagni') },
   { id: 'mercato', icon: 'mercato', name: T('Mercato') },
   { id: 'fazioni', icon: 'fazioni', name: T('Fazioni') },
   { id: 'diario', icon: 'diario', name: T('Diario') },
   { id: 'eredita', icon: 'eredita', name: T('Eredità') },
-  { id: 'veglia', icon: 'compagni', name: T('La Veglia') },
   { id: 'opzioni', icon: 'opzioni', name: T('Opzioni') },
 ];
 

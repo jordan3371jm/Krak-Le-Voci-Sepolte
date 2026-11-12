@@ -18,6 +18,15 @@ const ACTIONS: { id: VAction; icon: string; name: () => string; desc: () => stri
   { id: 'rite', icon: 'risonanza', name: () => T('Rito'), desc: () => T('Carica l\'Eco comune: a 100 travolge tutti.') },
 ];
 
+const TUTORIAL: { icon: string; title: () => string; text: () => string }[] = [
+  { icon: 'compagni', title: () => T('Cos\'è la Veglia'), text: () => T('La Veglia è il multigiocatore di KRAK: da 1 a 4 portatori difendono insieme l\'ultimo fuoco di Hondovalle dalle ondate dei Sepolti. I posti vuoti li prendono le eco, compagni guidati dal gioco.') },
+  { icon: 'portale', title: () => T('Come entrare'), text: () => T('Partita rapida ti unisce a una Veglia aperta. Crea una Veglia privata ti dà un codice da condividere con gli amici, che lo scrivono nel campo Codice e premono Entra. Veglia da solo ti fa giocare subito con le eco, anche senza connessione.') },
+  { icon: 'combat', title: () => T('Il round'), text: () => T('Ogni round avete 12 secondi. Ognuno sceglie un\'azione: Colpisci ferisce il Sepolto più vicino, Proteggi para i colpi diretti al fuoco, Ravviva ridà vita al fuoco, Rito carica l\'Eco comune che a 100 travolge tutti i nemici. Chi non sceglie, colpisce.') },
+  { icon: 'altare', title: () => T('Il fuoco'), text: () => T('Il fuoco è la vita di tutto il gruppo. I Sepolti che arrivano al cerchio lo attaccano: se si spegne, la Veglia finisce. Dividetevi i compiti: qualcuno colpisce, qualcuno protegge, qualcuno ravviva.') },
+  { icon: 'risonanza', title: () => T('I patti di Krak'), text: () => T('Ogni 3 ondate Krak sussurra due patti: votate, e la maggioranza decide. Ogni patto dà un vantaggio e un prezzo, e resta fino alla fine della notte.') },
+  { icon: 'imprese', title: () => T('Ricompense'), text: () => T('Ogni ondata superata vale 60 cenere per il tuo villaggio, e ogni 5 ondate guadagni una reliquia (massimo 3 al giorno). Il tuo record entra nella classifica. Pronto? Prova una Veglia da solo per imparare.') },
+];
+
 export default function Vigil({ state: s, act }: { state: GameState; act: Act }) {
   const [mode, setMode] = useState<'menu' | 'solo' | 'online'>('menu');
   const [, force] = useState(0);
@@ -26,6 +35,7 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const [tut, setTut] = useState<number | null>(() => s.flags.includes('seen_vigil_tut') ? null : 0);
   const rewarded = useRef(false);
   const rerender = () => force(x => x + 1);
   const cls = (['custode', 'penitente', 'lama', 'veggente'].includes(s.classId) ? s.classId : 'custode') as VClass;
@@ -124,8 +134,29 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
   // ---------------- Menu ----------------
   if (mode === 'menu' || !v) {
     const sup = mpSupported();
+    const closeTut = () => { setTut(null); if (!s.flags.includes('seen_vigil_tut')) act(d => { if (!d.flags.includes('seen_vigil_tut')) d.flags.push('seen_vigil_tut'); }); };
+    const step = tut !== null ? TUTORIAL[tut] : null;
     return (
       <div className="space-y-4">
+        {step && tut !== null && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" role="dialog" aria-modal="true">
+            <div className="w-full max-w-md rounded-2xl border border-amber-700/60 bg-stone-950/95 p-5 shadow-[0_0_40px_rgba(251,146,60,.25)] animate-rise">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-amber-200/70">{T('Tutorial della Veglia · {a}/{b}', { a: tut + 1, b: TUTORIAL.length })}</p>
+              <div className="flex items-center gap-3 mt-2"><Icon name={step.icon} size={48} /><h3 className="font-display text-xl text-bone">{step.title()}</h3></div>
+              <p className="text-sm text-bone/85 mt-3 leading-relaxed">{step.text()}</p>
+              <div className="flex gap-1 mt-4 justify-center">{TUTORIAL.map((_, i) => <span key={i} className={`h-1.5 w-6 rounded-full ${i <= tut ? 'bg-amber-400' : 'bg-stone-700'}`} />)}</div>
+              <div className="flex flex-wrap gap-2 mt-4 justify-between">
+                <Btn small kind="ghost" onClick={closeTut}>{T('Salta')}</Btn>
+                <div className="flex gap-2">
+                  {tut > 0 && <Btn small kind="ghost" onClick={() => setTut(tut - 1)}>{T('‹ Indietro')}</Btn>}
+                  {tut < TUTORIAL.length - 1
+                    ? <Btn small kind="ember" onClick={() => { sfx.click(); setTut(tut + 1); }}>{T('Avanti ›')}</Btn>
+                    : <><Btn small onClick={closeTut}>{T('Ho capito')}</Btn><Btn small kind="ember" onClick={() => { closeTut(); startSolo(); }}>{T('Prova da solo')}</Btn></>}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <section className="vigil-hero relative rounded-2xl overflow-hidden p-5 sm:p-8">
           {BG.villaggio_1 && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-50 kenburns" style={{ backgroundImage: `url(${BG.villaggio_1})` }} />}
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30" />
@@ -149,7 +180,7 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
           </div>
         </section>
         <div className="grid md:grid-cols-2 gap-4">
-          <Panel title={T('Come si gioca')} icon="diario">
+          <Panel title={T('Come si gioca')} icon="diario" right={<Btn small kind="ghost" onClick={() => setTut(0)}>{T('Tutorial')}</Btn>}>
             <ul className="text-xs text-bone/80 space-y-2">
               {ACTIONS.map(a => <li key={a.id} className="flex gap-2 items-center"><Icon name={a.icon} size={30} /><span><b className="text-bone">{a.name()}</b>: {a.desc()}</span></li>)}
               <li className="text-mist">{T('Ogni round avete 12 secondi per scegliere. Chi non sceglie, colpisce. Se il fuoco si spegne, la Veglia finisce.')}</li>

@@ -50,7 +50,7 @@ export const UNLOCKS: UnlockDef[] = [
     codex: t('Puoi lasciare che il tuo eroe combatta da solo: usa le abilità coerenti col Fardello, l\'Eco quando è pronta e una pozione sotto la soglia scelta in Opzioni. Non usa mai azioni di Dissonanza.') },
   { id: 'f_worldboss', kind: 'feature', name: t('Boss Mondiale'), icon: 'boss', cond: s => s.hero.level >= 6,
     codex: t('Ogni giorno tutti i portatori colpiscono il Colosso di Cenere. Hai 3 tentativi da 10 round: più danni infliggi, migliori le ricompense.') },
-  { id: 'veglia', kind: 'tab', name: t('La Veglia'), icon: 'compagni', cond: s => (s.totals.delves || 0) >= 1,
+  { id: 'veglia', kind: 'tab', name: t('La Veglia'), icon: 'compagni', cond: s => !!s.fardello,
     codex: t('La Veglia è una notte fuori dal tempo: fino a 4 portatori, anche di altre valli, difendono insieme l\'ultimo fuoco dalle ondate dei Sepolti. Si può giocare online o da soli con le eco. Ogni 3 ondate si vota un patto di Krak.') },
   { id: 'eredita', kind: 'tab', name: t('Eredità'), icon: 'eredita', cond: s => s.hero.level >= 8 || s.cycle.n > 1 || s.reliquie >= 3,
     codex: t('Le reliquie comprano potenziamenti permanenti nel Santuario. Quando chiudi un Ciclo ottieni un finale, Memorie permanenti, e il tuo portatore diventa un\'eco che i successivi incontreranno.') },
