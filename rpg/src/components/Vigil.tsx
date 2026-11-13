@@ -4,7 +4,7 @@ import type { GameState } from '../game/types';
 import type { Act } from '../game/useGame';
 import { CLASS_V, ENEMY_KINDS, PACTS, ROUND_MS, WHISPER_MS, addPlayer, choose, hostTick, newVigil, removePlayer, startVigil, vote, type VAction, type VClass, type VigilState } from '../game/vigil';
 import { mpCloseRoom as mpClose, mpCreate as mpCreateRoom, mpInvite, mpInviteSupported, mpIsHost, mpJoin as mpJoinRoom, mpLaunchRoom, mpLeave as mpLeaveRoom, mpPlayerId, mpPlayers, mpQuick as mpQuickMatch, mpRoomId, mpSend as mpSendHost, mpSetState, mpSupported } from '../game/mp';
-import { submitScore, hasLeaderboard } from '../game/platform';
+import { submitScore, hasLeaderboard, trackOnce } from '../game/platform';
 import { addRes, toast } from '../game/engine/state';
 import { sfx } from '../game/audio';
 import { AdBtn, Btn, Panel } from './ui';
@@ -70,6 +70,7 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
   useEffect(() => {
     if (!v || v.phase !== 'over' || rewarded.current) return;
     rewarded.current = true;
+    trackOnce('fun_vigil_played');
     submitScore('krak_veglia', v.wave);
     act(d => {
       const day = Number(new Date().toISOString().slice(0, 10).replace(/-/g, ''));

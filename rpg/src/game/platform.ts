@@ -142,7 +142,10 @@ export function setBanner(show: boolean) {
 // ------------------------------------------------------------
 // Telemetria del percorso del giocatore (Bridge analytics): ogni tappa una volta sola.
 // ------------------------------------------------------------
-const TM_KEY = 'krak_tm';
+const TM_KEY = 'krak_tm2';
+// Ordine delle tappe del percorso del giocatore (step_index)
+export const FUNNEL = ['fun_title_tap', 'fun_intro_done', 'fun_portal_voice', 'fun_fardello', 'fun_first_combat', 'fun_first_kill', 'fun_village', 'fun_first_build', 'fun_first_delve',
+  'fun_build_15', 'fun_level_5', 'fun_first_boss', 'fun_level_10', 'fun_cimitero_done', 'fun_paludi_done', 'fun_torre_done', 'fun_cycle_closed', 'fun_cycle_3', 'fun_cycle_5', 'fun_vigil_played'];
 let tmSent: Set<string> | null = null;
 export function trackOnce(id: string) {
   try {
@@ -150,6 +153,9 @@ export function trackOnce(id: string) {
     if (tmSent.has(id)) return;
     tmSent.add(id);
     try { localStorage.setItem(TM_KEY, JSON.stringify([...tmSent])); } catch { /* */ }
-    w().bridge?.platform?.sendCustomMessage?.(id);
+    const b = w().bridge;
+    // Bridge analytics: nome fisso, tappa nei dati (così Playgama la mostra leggibile)
+    if (b?.analytics?.send) b.analytics.send('progression_completed', { step_id: id, step_index: FUNNEL.indexOf(id) });
+    else b?.platform?.sendCustomMessage?.(id);
   } catch { /* */ }
 }

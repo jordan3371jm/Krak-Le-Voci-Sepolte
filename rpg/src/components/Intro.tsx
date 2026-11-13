@@ -9,6 +9,7 @@ import type { Act } from '../game/useGame';
 import { beginGame } from '../game/engine/village';
 import { initAudio, sfx } from '../game/audio';
 import { tryAutoplay } from '../game/music';
+import { trackOnce } from '../game/platform';
 import { Btn } from './ui';
 import { Icon } from './icons';
 import { LangPicker } from './LangPicker';
@@ -53,7 +54,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
         <h1 className="text-4xl sm:text-6xl font-black text-gradient-ember title-beat mb-2 leading-tight">{T('KRAK')}</h1>
         <h2 className="text-lg sm:text-2xl text-bone/90 mb-10 tracking-widest">{T('Le Voci Sepolte')}</h2>
         {!awake ? (
-          <button onClick={() => { initAudio(); sfx.door(); if (newCycle) setAwake(true); else setStep(1); }} className="relative z-10 mt-2 px-8 py-4 rounded-full border-2 border-ember/80 bg-black/60 text-ember text-lg sm:text-xl font-display tracking-[0.2em] uppercase animate-breathe hover:bg-ember/15 shadow-[0_0_40px_rgba(251,146,60,.35)]">▶ {T('Ascolta la valle')}</button>
+          <button onClick={() => { trackOnce('fun_title_tap'); initAudio(); sfx.door(); if (newCycle) setAwake(true); else setStep(1); }} className="relative z-10 mt-2 px-8 py-4 rounded-full border-2 border-ember/80 bg-black/60 text-ember text-lg sm:text-xl font-display tracking-[0.2em] uppercase animate-breathe hover:bg-ember/15 shadow-[0_0_40px_rgba(251,146,60,.35)]">▶ {T('Ascolta la valle')}</button>
         ) : (
         <div className="min-h-[140px] max-w-2xl relative z-10 space-y-2">
           {VISION.slice(0, line + 1).map((l, i) => (

@@ -26,7 +26,7 @@ import { VillageScene } from './VillageScene';
 import { OmensPanel } from './Delve';
 import { TALKERS } from '../game/data/dialogues';
 import { recoverSatchel } from '../game/engine/features';
-import { adMode, showRewarded } from '../game/platform';
+import { adMode, showRewarded, trackOnce } from '../game/platform';
 
 // ------------------------------------------------------------
 // La Notte del Portale: la prima scelta morale (crea il Fardello)
@@ -113,7 +113,7 @@ export function PortalScreen({ act }: { act: Act }) {
           <p className="text-center text-[15px] sm:text-base text-bone/85 italic max-w-2xl mx-auto leading-relaxed mb-6">{n.text}</p>
           <div className="voice-grid grid grid-cols-1 sm:grid-cols-3 gap-4">
             {NIGHT.map((N, i) => (
-              <button key={N.f} onClick={() => go(`c${i}`)} className="voice-card group text-center" style={{ ['--vc' as any]: VOICE_UI[i].rgb }}>
+              <button key={N.f} onClick={() => { trackOnce('fun_portal_voice'); go(`c${i}`); }} className="voice-card group text-center" style={{ ['--vc' as any]: VOICE_UI[i].rgb }}>
                 <div className="relative mx-auto w-fit"><span aria-hidden className="voice-halo" /><Face id={N.npc.toLowerCase()} emoji={N.icon} size={132} tone={N.f === 'silenzio' ? 'violet' : 'blood'} /></div>
                 <div className="mt-3 font-display text-lg text-bone">{N.who}</div>
                 <div className="text-[10px] uppercase tracking-[0.3em] text-mist mt-0.5">{VOICE_UI[i].place}</div>
