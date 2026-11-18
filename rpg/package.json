@@ -6,9 +6,12 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build && node -e \"require('fs').copyFileSync('dist/index.html','../GIOCA.html')\"",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pack": "vite build && node scripts/pack-playgama.mjs"
   },
   "dependencies": {
+    "@fontsource/cinzel": "^5.1.0",
+    "@fontsource/crimson-text": "^5.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

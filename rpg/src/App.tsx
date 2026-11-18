@@ -1,28 +1,126 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { t as T } from './i18n';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGame } from './game/useGame';
+import { heroStats } from './game/engine/hero';
 import { BIOMES } from './game/data/enemies';
 import { corruptedUI, toast } from './game/engine/state';
-import { initAudio, setMood, setMusic, setSfx, sfx } from './game/audio';
+import { initAudio, setMood, setMusic, setMusicVolume, setMuted, setSfx, sfx } from './game/audio';
 import Intro from './components/Intro';
-import HUD, { Nav } from './components/HUD';
-import Village from './components/Village';
+import { Icon, ICON_NAMES } from './components/icons';
+import HUD, { MuteButton, Nav } from './components/HUD';
+import Village, { PortalScreen } from './components/Village';
+import { Codex, GuideBar, UnlockCard } from './components/Guide';
 import Delve from './components/Delve';
 import Combat from './components/Combat';
 import Hero from './components/Hero';
 import Compass from './components/Compass';
 import Modals from './components/Modals';
+import { TalkOverlay } from './components/Talk';
+import { KrakWake } from './components/KrakWake';
+import { gameReady, interstitial, platformMessage, setBanner, bannerSupported, trackOnce } from './game/platform';
+import { hasTrack, playClip, playTrack } from './game/music';
+import { setRecorded } from './game/audio';
+import { BG } from './components/art';
+import Vigil from './components/Vigil';
+import { Dread, Eyes, Fog, Particles, Whispers } from './components/Atmosphere';
 import { Companions, Ending, Factions, Journal, Legacy, Market, Settings } from './components/Screens';
 
 export default function App() {
   const { state: s, act, replace, saveNow } = useGame();
+  const [codex, setCodex] = useState(false);
+  const screenKey = s.combat ? 'c' : s.delve ? 'd' + (s.delve.room ? 'r' : '') : s.tab;
+  const [fresh, setFresh] = useState(true);
+  useEffect(() => { setFresh(true); const tm = window.setTimeout(() => setFresh(false), 750); return () => window.clearTimeout(tm); }, [screenKey]);
+
+  // ---------------- piattaforma (Playgama Bridge) ----------------
+  useEffect(() => { const id = window.setTimeout(gameReady, 300); return () => window.clearTimeout(id); }, []);
+  const inDelve = !!s.delve;
+  const delveBiome = s.delve?.biome;
+  const sessionStart = useRef(Date.now());
+  useEffect(() => { const h = () => act(d => toast(d, T('📺 Nessuna pubblicità disponibile in questo momento. Riprova tra poco.'), 'bad')); window.addEventListener('krak-ad-failed', h); return () => window.removeEventListener('krak-ad-failed', h); }, [act]);
+  const wasDelve = useRef(inDelve);
+  useEffect(() => {
+    if (inDelve && !wasDelve.current) platformMessage('level_started', { world: delveBiome || '', level: String(s.delve?.floor || 1) });
+    if (!inDelve && wasDelve.current) {
+      platformMessage(s.lastReport?.good === false ? 'level_failed' : 'level_completed');
+      if (Date.now() - sessionStart.current > 300_000) interstitial('delve_end'); // mai nei primi 5 minuti
+    }
+    wasDelve.current = inDelve;
+  }, [inDelve]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (s.scene === 'ending') interstitial('cycle_end'); }, [s.scene]);
+  // pause naturali: il gioco offre un annuncio solo se il giocatore non sta combattendo, parlando o scegliendo;
+  // è il Bridge a decidere se mostrarlo davvero (al massimo uno ogni 5 minuti, vedi la configurazione)
+  const calm = s.scene === 'game' && !s.combat && !s.talk && !s.modal && (!s.delve || (s.delve.floorCleared && !s.delve.room?.bossChoice));
+  const calmRef = useRef(calm); calmRef.current = calm;
+  // Tappe del percorso, inviate una volta sola per misurare dove si fermano i giocatori
+  useEffect(() => {
+    const tb = Object.values(s.village.buildings).reduce((a, b) => a + (b || 0), 0);
+    const steps: [string, boolean][] = [
+      ['fun_intro_done', s.scene !== 'intro'], ['fun_fardello', !!s.fardello], ['fun_first_combat', !!s.combat || (s.totals.kills || 0) > 0],
+      ['fun_first_kill', (s.totals.kills || 0) >= 1], ['fun_village', !!s.fardello && !s.combat && s.tab === 'villaggio' && (s.totals.kills || 0) >= 1], ['fun_first_delve', (s.totals.delves || 0) >= 1], ['fun_first_build', tb >= 1],
+      ['fun_build_15', tb >= 15], ['fun_level_5', s.hero.level >= 5], ['fun_level_10', s.hero.level >= 10], ['fun_first_boss', (s.totals.bosses || 0) >= 1],
+      ['fun_cimitero_done', s.biomes.cimitero.conquered], ['fun_paludi_done', s.biomes.paludi.conquered], ['fun_torre_done', s.biomes.torre.conquered],
+      ['fun_cycle_closed', (s.totals.cycles || 0) >= 1 || s.cycle.n > 1], ['fun_cycle_3', s.cycle.n >= 3], ['fun_cycle_5', s.cycle.n >= 5],
+    ];
+    for (const [id, ok] of steps) if (ok) trackOnce(id);
+  });
+  // Pubblicità: niente all'apertura; dopo 5 minuti dall'ingresso parte la prima, poi ogni 5 minuti
+  // (Bridge rispetta minimumDelayBetweenInterstitial = 300 s) nei momenti tranquilli.
+  useEffect(() => { const id = window.setInterval(() => { if (calmRef.current && !document.hidden && Date.now() - sessionStart.current > 300_000) interstitial('pause'); }, 15_000); return () => window.clearInterval(id); }, []);
+  // banner in basso solo quando la scena è tranquilla e fuori dai dungeon
+  // Banner ovunque, tranne quando disturberebbe: combattimento, dialoghi, scelte morali,
+  // la Notte del Portale, il prologo e i round attivi della Veglia.
+  const [vigilBusy, setVigilBusy] = useState(false);
+  useEffect(() => { const h = (e: Event) => setVigilBusy(!!(e as CustomEvent).detail); window.addEventListener('krak-vigil-busy', h); return () => window.removeEventListener('krak-vigil-busy', h); }, []);
+  const [bannerOn, setBannerOn] = useState(false);
+  useEffect(() => { const h = (e: Event) => setBannerOn(!!(e as CustomEvent).detail); window.addEventListener('krak-banner', h); return () => window.removeEventListener('krak-banner', h); }, []);
+  const moralModal = !!s.modal && (s.modal.kind === 'event' || s.modal.kind === 'trial');
+  const idle = s.scene === 'ending' || (s.scene === 'game' && !!s.fardello && !s.combat && !s.talk && !moralModal && !(s.tab === 'veglia' && vigilBusy));
+  useEffect(() => { setBanner(idle); }, [idle]);
+
+  // Combattimento a schermo fisso: la pagina del browser non scorre (requisito Playgama)
+  useEffect(() => {
+    const el = document.documentElement;
+    el.classList.toggle('in-combat', !!s.combat);
+    if (s.combat) window.scrollTo(0, 0);
+    return () => el.classList.remove('in-combat');
+  }, [!!s.combat]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---------------- audio come sistema ----------------
   useEffect(() => { setMusic(s.settings.music); }, [s.settings.music]);
+  useEffect(() => { setMusicVolume(s.settings.musicVolume ?? 0.55); }, [s.settings.musicVolume]);
   useEffect(() => { setSfx(s.settings.sfx); }, [s.settings.sfx]);
+  useEffect(() => { setMuted(!!s.settings.muted); }, [s.settings.muted]);
   useEffect(() => {
     const root = s.combat ? (s.combat.kind === 'boss' ? 41 : 49) : s.delve ? BIOMES[s.delve.biome].drone : 55;
-    setMood({ root, corruption: s.corruption, fullscreen: s.fullscreen, intensity: s.combat ? 1 : s.delve ? 0.5 : 0.1, silent: s.dissonance >= 15 });
-  }, [s.combat?.kind, !!s.combat, s.delve?.biome, Math.round(s.corruption / 10), s.fullscreen, s.dissonance >= 15]); // eslint-disable-line react-hooks/exhaustive-deps
+    setMood({ scene: s.scene !== 'game' ? 'menu' : s.combat ? (s.combat.kind === 'boss' || s.combat.kind === 'shadow' || s.combat.kind === 'trial' ? 'boss' : 'combat') : s.delve ? 'delve' : 'village', root, corruption: s.corruption, fullscreen: s.fullscreen, intensity: s.combat ? 1 : s.delve ? 0.5 : 0.1, silent: s.dissonance >= 15 });
+  }, [s.scene, s.combat?.kind, !!s.combat, s.delve?.biome, Math.round(s.corruption / 10), s.fullscreen, s.dissonance >= 15]); // eslint-disable-line react-hooks/exhaustive-deps
+  // effetti registrati nei momenti chiave
+  const phase = s.combat?.phase;
+  useEffect(() => { if (phase === 'won') playClip('vittoria'); if (phase === 'lost') playClip('sconfitta'); }, [phase]);
+  const lvl = useRef(s.hero.level);
+  useEffect(() => { if (s.hero.level > lvl.current) playClip('livello'); lvl.current = s.hero.level; }, [s.hero.level]);
+  const fard = useRef(s.fardello);
+  useEffect(() => { if (s.fardello && !fard.current) playClip('fardello', 1); fard.current = s.fardello; }, [s.fardello]);
+  const om = useRef(s.omens.length);
+  useEffect(() => { if (s.omens.length > om.current) playClip('presagio'); om.current = s.omens.length; }, [s.omens.length]);
+  const moods = s.companions.map(c => c.mood || '').join(',');
+  const prevMoods = useRef(moods);
+  useEffect(() => {
+    const a = prevMoods.current.split(','), b = moods.split(',');
+    b.forEach((m, i) => { if (m !== a[i]) { if (m === 'virtue') playClip('virtu'); if (m === 'broken') playClip('spezzato'); } });
+    prevMoods.current = moods;
+  }, [moods]);
+  // colonna sonora registrata (se presente per la scena)
+  const dark = s.corruption >= 60 || s.valley.eclipseUntil > Date.now();
+  const track = s.flags.includes('krak_wake_pending') ? 'krak'
+    : s.scene === 'intro' ? 'menu' : s.scene === 'ending' ? 'finale' : !s.fardello ? 'portale'
+    : s.combat ? (s.combat.kind === 'worldboss' ? 'colosso' : ['boss', 'shadow', 'trial', 'hunter'].includes(s.combat.kind) ? 'boss' : 'combattimento')
+    : s.delve ? s.delve.biome : s.tab === 'mercato' ? 'mercato' : dark ? 'villaggio_notte' : 'villaggio';
+  useEffect(() => {
+    const t = hasTrack(track) ? track : track === 'villaggio_notte' && hasTrack('villaggio') ? 'villaggio' : track === 'colosso' && hasTrack('boss') ? 'boss' : null;
+    setRecorded(!!t); playTrack(t);
+  }, [track]);
   useEffect(() => {
     const unlock = () => initAudio();
     window.addEventListener('pointerdown', unlock, { once: true });
@@ -39,7 +137,7 @@ export default function App() {
   // ---------------- fullscreen come rito ----------------
   const toggleFullscreen = useCallback(() => {
     initAudio();
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => act(d => { d.fullscreen = !d.fullscreen; toast(d, d.fullscreen ? '👁️ Il Rito ha inizio (modalità immersiva)' : 'Distogli lo sguardo dalla valle.', 'fate'); }));
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => act(d => { d.fullscreen = !d.fullscreen; toast(d, d.fullscreen ? T('👁️ Il Rito ha inizio (modalità immersiva)') : T('Distogli lo sguardo dalla valle.'), 'fate'); }));
     else document.exitFullscreen?.().catch(() => {});
   }, [act]);
   useEffect(() => {
@@ -47,7 +145,7 @@ export default function App() {
       const fs = !!document.fullscreenElement;
       act(d => {
         d.fullscreen = fs;
-        toast(d, fs ? '👁️ Il Rito ha inizio. La valle respira. Ascolta i sussurri.' : 'Distogli lo sguardo dalla valle. Alcune verità svaniscono.', 'fate');
+        toast(d, fs ? T('👁️ Il Rito ha inizio. La valle respira. Ascolta i sussurri.') : T('Distogli lo sguardo dalla valle. Alcune verità svaniscono.'), 'fate');
       });
     };
     document.addEventListener('fullscreenchange', on);
@@ -62,19 +160,34 @@ export default function App() {
     return () => window.clearTimeout(t);
   }, [firstToast, act]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  if (typeof location !== 'undefined' && location.hash === '#icone') return (
+    <div className="p-6 grid grid-cols-6 sm:grid-cols-10 gap-4">{ICON_NAMES.map(n => <div key={n} className="text-center text-[10px] text-mist"><Icon name={n} size={64} /><div>{n}</div></div>)}</div>
+  );
   if (s.scene === 'intro') return <Intro state={s} act={act} />;
   if (s.scene === 'ending') return <Ending state={s} act={act} replace={replace} />;
+  if (!s.fardello) return <><PortalScreen act={act} /><div className="fixed top-3 left-3 z-[80]"><MuteButton muted={!!s.settings.muted} onToggle={() => act(d => { d.settings.muted = !d.settings.muted; })} /></div></>;
 
   const corrupt = corruptedUI(s) && !s.settings.reduceFx;
   return (
-    <div className={`min-h-screen noise ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
+    <div style={bannerOn && idle ? { height: 'calc(100dvh - var(--ad-h))', overflowY: 'auto' } : undefined} className={`${s.combat ? 'h-[100dvh] overflow-hidden flex flex-col' : 'min-h-screen'} noise ${bannerOn && idle ? 'ad-shrink' : ''} ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
+      {(() => { const k = s.delve ? s.delve.biome : s.tab === 'villaggio' ? 'villaggio' : ''; return k && BG[k] ? <div aria-hidden className="fixed inset-0 -z-0 pointer-events-none overflow-hidden"><div className="absolute inset-0 bg-cover bg-center opacity-40 kenburns" style={{ backgroundImage: `url(${BG[k]})` }} /><div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(5,4,6,.55), rgba(5,4,6,.92))' }} /></div> : null; })()}
+      {!s.settings.reduceFx && <>
+        <Particles mode={s.combat ? 'combat' : s.delve ? 'delve' : 'village'} tint={s.delve?.biome === 'paludi' ? '220,40,40' : s.delve?.biome === 'torre' ? '170,120,255' : s.delve?.biome === 'abisso' ? '120,200,255' : '255,140,60'} intensity={s.combat ? 0.7 : 1} />
+        <Fog />
+        {(s.delve || s.corruption > 20) && <Whispers every={s.delve ? 45 : 90} corruption={s.corruption} />}
+        {s.delve && !s.combat && <Eyes every={35} />}
+        {!s.combat && <Dread every={s.delve ? 55 : 110} corruption={s.corruption} deep={!!s.delve} />}
+        <div aria-hidden className="edge-dread" />
+      </>}
+      {(s.delve || s.combat) && s.hero.hp < heroStats(s).maxHp * 0.3 && !s.settings.reduceFx && <div className="vignette vignette-low" />}
       {corrupt && <div className="vignette vignette-corrupt" />}
       {s.fullscreen && !s.settings.reduceFx && <div className="vignette vignette-rite" />}
-      <div className="sticky top-0 z-30">
-        <HUD state={s} act={act} onFullscreen={toggleFullscreen} />
-        <Nav state={s} act={act} />
+      <div className="sticky top-0 z-30 shrink-0">
+        <HUD state={s} act={act} onFullscreen={toggleFullscreen} onCodex={() => setCodex(true)} onSave={saveNow} compact={!!s.combat} />
+        {!s.combat && <Nav state={s} act={act} />}
       </div>
-      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16">
+      {!s.combat && <GuideBar state={s} act={act} />}
+      <main className={`${fresh ? "stagger-root" : ""} relative z-10 max-w-6xl mx-auto px-3 sm:px-4 ${s.combat ? "w-full flex-1 min-h-0 py-2" : "py-4 pb-16"}`}>
         {s.combat ? <Combat state={s} act={act} /> : (
           <>
             {s.tab === 'villaggio' && <Village state={s} act={act} />}
@@ -82,20 +195,25 @@ export default function App() {
             {s.tab === 'eroe' && <Hero state={s} act={act} />}
             {s.tab === 'bussola' && <Compass state={s} act={act} />}
             {s.tab === 'mercato' && <Market state={s} act={act} />}
-            {s.tab === 'fazioni' && <Factions state={s} />}
+            {s.tab === 'fazioni' && <Factions state={s} act={act} />}
             {s.tab === 'spedizioni' && <Companions state={s} act={act} />}
             {s.tab === 'diario' && <Journal state={s} act={act} />}
             {s.tab === 'eredita' && <Legacy state={s} act={act} />}
+            {s.tab === 'veglia' && <Vigil state={s} act={act} />}
             {s.tab === 'opzioni' && <Settings state={s} act={act} replace={replace} saveNow={saveNow} onFullscreen={toggleFullscreen} />}
           </>
         )}
       </main>
-      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 z-50 w-[min(92vw,360px)] space-y-1 pointer-events-none">
+      <div className={`fixed ${s.combat ? "top-16 sm:top-auto sm:bottom-3" : bannerOn && idle ? "bottom-[calc(var(--ad-h)+12px)]" : "bottom-3"} left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 z-50 w-[min(92vw,360px)] space-y-1 pointer-events-none`}>
         {s.toasts.slice(-4).map(t => (
           <div key={t.id} className={`animate-rise rounded-lg px-3 py-1.5 text-xs sm:text-sm shadow-lg border bg-black/90 ${t.kind === 'good' ? 'border-resonance/60 text-teal-100' : t.kind === 'bad' ? 'border-dissonance/60 text-red-100' : t.kind === 'fate' ? 'border-fate/60 text-purple-100' : 'border-ember/40 text-bone'}`}>{t.text}</div>
         ))}
       </div>
       <Modals state={s} act={act} />
+      <TalkOverlay state={s} act={act} />
+      <KrakWake state={s} act={act} />
+      {!s.modal && !s.combat && s.codexQueue.length > 0 && <UnlockCard state={s} act={act} />}
+      {codex && <Codex state={s} onClose={() => setCodex(false)} />}
     </div>
   );
 }

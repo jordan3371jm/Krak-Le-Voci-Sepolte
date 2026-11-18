@@ -1,0 +1,440 @@
+1gxdn8s	👁️ Le Rite commence (mode immersif)
+1iqyhym	Tu détournes le regard de la vallée.
+1bp7xlr	👁️ Le Rite commence. La vallée respire. Écoute les murmures.
+wi73xp	Tu détournes le regard de la vallée. Certaines vérités s'estompent.
+1sv9axa	protection
+1lvjhdb	sacrifice
+1fncv44	cruauté
+1pat47y	trahison
+bvvuty	silence
+1izphcf	foi
+1h668yc	sang
+1wvhnl0	neutre
+6y3blm	· arrière-garde
+a32x1y	 · 🎭 menteur
+oikker	S'éveille
+1ux3ecg	Touche pour combattre
+hn1wtn	Ton premier combat
+1v3se4x	1. Touche une **compétence**, puis l'**ennemi** à frapper. L'attaque de base génère de la Concentration (◆) ; les compétences fortes la dépensent.
+13k72th	2. Bordure **verte** = l'action est en accord avec ton Fardeau et charge la Résonance. Bordure **rouge** = elle va contre lui et génère de la Dissonance. Aucune n'est mauvaise.
+1cc7m5z	3. Sous chaque ennemi (⚠) tu vois son prochain coup. Les potions ne consomment pas ton tour.
+1vx0wyj	Manche
+gatzpc	🔗 Chaîne ×{n}
+3yv227	Champ de bataille du boss
+540b06	Auto
+1poom5h	Rapide
+13x6kr3	Choisis la cible de {pendingName}{fila} ·
+h1zog9	⚔️ Ton tour
+wymdpy	…les ennemis agissent…
+85ae02	annuler
+mmta42	◈ Résonance
+knq9pz	〰 Dissonance
+mfjk0t	◆ Concentration
+17hs1kg	{desc} · nature : {n}
+136l8r7	〰 Actions de Dissonance (puissantes, déstabilisantes)
+wp95lt	🧪 Potion (
+w3psps	Reculer
+13pzfdk	Avancer
+1q20fse	Mot de passe…
+faigt0	Prononcer
+1bcxxk5	Se retirer
+o1ncs	🏃 Fuir (tu perds la moitié de ta besace)
+177rirx	🗻 Fin du combat
+nfbavz	🏆 Victoire
+c72ogt	☠️ Défaite
+f8rwb7	Dégâts infligés : {damageDealt}
+if9j4l	La vallée te ramène à la surface, plus pauvre.
+1aerg2g	Continuer
+1cmcw27	Boussole du Destin
+djk6x3	Intuition
+rdal7n	La vallée n'est pas un menu de niveaux : c'est une constellation vivante. Tes choix allument des étoiles ; avec l'Intuition tu peux en lire d'autres et révéler secrets, personnes, menaces et souvenirs du monde.
+mnowd7	lire
+1bzbwtv	Elle ne s'allume que par un choix.
+1q6zguo	Elle peut être lue avec l'Intuition.
+1njxbd1	Étoiles allumées : {lit}/{total}. Constellations complètes : {list}.
+1czi4iw	aucune
+1ear6jv	Promesses
+1884tk7	Aucune promesse. Les promesses naissent des choix importants.
+13m001f	Expéditions restantes : {deadlineDelves}
+p12uxe	Tenue
+1954eqe	Rompue : un Chasseur te traque
+zlm9f	Température narrative
+1n2n5x2	Ta vallée :
+1c7bxm2	Floraison
+19aap5j	Corruption de la vallée
+dhxed4	Tension
+hxc37r	🌐 Monde des Graines — aujourd'hui {n} porteurs :
+d9v8dw	La vallée partagée aujourd'hui :
+1gb3xwf	Éclats de Destin
+10oaoeb	Aucun éclat. On les obtient par des choix difficiles, des boss, des promesses et au Marché.
+5qczb1	 · sombre
+1s1xvvq	Activer
+ncjn3x	Anti-abus : les éclats sombres ont 1 heure de recharge ; leurs effets restent dans ta vallée.
+12ewewi	Contrats du Destin
+cr57mt	Parie un éclat sur l'état de demain de la vallée partagée. Si tu as raison tu gagnes de l'influence (+2 reliques et un éclat bonus) ; si tu as tort l'éclat se corrompt. Économie du jeu uniquement, pas d'argent réel.
+1b9hxbw	— éclat —
+1wpm9z7	Demain :
+1rkvahc	Signer
+r98217	✔ réalisé
+19wlk9s	✖ échoué
+18vit5w	en attente
+11xsg5s	Aujourd'hui la vallée partagée est en « {state} ». Dégâts totaux au Colosse aujourd'hui : {dmg}.
+p6ud5o	Avant de descendre tu dois choisir ton Fardeau, au village. Les donjons naissent de tes choix.
+hqrrj5	Les autres l'appellent « 
+12wlmal	 ». Tu le vois autrement.
+jassxi	Niveau recommandé :
+qlnxxo	· 🏆 Conquis
+4dutwe	Il se souvient : « 
+1udzdmz	Depuis l'étage
+18zt3ln	Descendre (🍞1)
+1u9kgoc	Tu es niveau
+39yh2n	🔒 Conquiers
+6ad1g2	pour le débloquer.
+tmmc7j	Boss mondial : le Colosse de Cendre
+1yn9q4t	Tentatives aujourd'hui :
+f9uj9m	Chaque jour, tous les porteurs de la vallée frappent le même Colosse.
+ggp0fo	porteurs aujourd'hui. Plus tu infliges de dégâts en 10 manches, meilleures sont les récompenses.
+17l05fb	Santé partagée
+1hgjf1f	Affronter le Colosse
+19k44k5	Tes dégâts aujourd'hui :
+1ft71i	L'Ombre du Fardeau : {shadowName}
+ouqi3b	Influence du Fardeau
+11mpof2	Chaque action cohérente nourrit ton Fardeau. Au-delà de 40, son Ombre (la version extrême de ton choix) commence à apparaître dans les donjons comme boss optionnel. La vaincre laisse un Éclat et réduit l'influence.
+alxfi	Étage
+hopaw9	Miroir :
+id8ywu	👻 Écho allié
+1m5q3ez	Comment fonctionne la descente
+15r0x28	Chaque étage t'offre des portes : choisis-en une. **Épées** = combat, **?** = événement narratif, **bougie** = sanctuaire pour te soigner, **coffre** = trésor.
+tfytat	Le butin va dans la **Besace** (à droite) : il n'est en sécurité que lorsque tu remontes à la surface. Chaque étage coûte 1 Provision. Tous les 5 étages, il y a un boss.
+arqgys	Choisis une porte
+bc1grt	La corruption brouille les signes. Purifie l'interface à l'Autel pour les lire à nouveau.
+seq1gs	… quelque chose murmure aux bords. (Seulement dans le Rite : plein écran)
+z0dak0	🛠️ Désamorcer (
+xn7rzk	🩹 Forcer le passage (−10%)
+1823grd	🩸 Offrir du sang (sacrifice)
+1015mfx	🛏️ Se reposer (🍞1, +45%)
+mxplwh	🙏 Prier (+Résonance)
+1tj0ya7	Continuer
+vi6uxa	🕯️ Te purifier
+1h7lx23	Le boss a laissé un choix : prends-en un.
+s3pjax	Étage {floor} nettoyé
+gk7xmt	⬇️ Descendre à l'étage
+1simt8i	Seuil de Retraite
+1wrji78	⛓️ Engager ton avenir : −
+6fos1e	santé max pour descendre
+158sn88	⬆️ Remonter à la surface et sécuriser la besace
+1s6vzwp	Plus de provisions. Tu peux engager de la santé max future : si tu reviens vivant tu en récupères la moitié ; si tu meurs l'engagement devient permanent jusqu'à ce qu'Elara le lève.
+drp0f1	Tu as atteint le fond de cette strate.
+8osbyp	Descendre plus bas est plus riche et plus dangereux. Si tu tombes tu perds les trois quarts de la besace.
+13svo92	Besace (non sécurisée)
+1dqqpgk	⛓️ Engagé pendant cette descente :
+1pgr25j	Provisions au village : {p} · Potions : {n}
+4jrxnd	🧪 Boire une potion
+1ou4smc	Groupe
+1g6fez5	Guide du Porteur ·
+4r8eqv	réduire
+nzfqer	afficher
+1vm7iw3	Aller
+n5yktc	Nouvelle possibilité
+pfe80m	Compris
+mrzgn	Nouvelle section
+rqgd1l	Ouvrir maintenant
+1rhvqfz	Codex du Porteur
+iqcsg0	De nouvelles entrées apparaissent à mesure que tu découvres la vallée.
+1nf6dpr	Fermer
+a706bw	Compris ✕
+vpx9a8	Niveau
+3whroo	 · Cycle {n}
+1a6hlkh	Santé
+5z319y	engagement −
+1gyr5zi	Résonance / Dissonance / Corruption
+154cneq	Résonance
+70iv7a	Diss.
+1orz41v	Reliques
+15wq9ff	Potions
+11deu9i	Codex : comment ça marche
+1f5kmjy	Musique activée
+1dwnd4e	Musique coupée
+1ddeffj	Le Rite (plein écran)
+5s2kql	Village
+i06ydn	Descente
+1j2ot22	Héros
+prvaes	Boussole
+i4ct2v	Compagnons
+zg4dtm	Marché
+uipjer	Factions
+w1xs95	Journal
+1qdt732	Héritage
+13g5sfh	Options
+14bw3me	nouveau
+1ntmul	Forge
+m68mi8	Construis une Forge au village pour fabriquer de l'équipement.
+14k8kl8	Allumer la forge ·
+1v9ir10	Coup
+2mwqno	/3 — frappe quand la chaleur est dans la zone lumineuse.
+22wcy7	🔨 Frapper !
+zg0zbl	La qualité des coups augmente la rareté. Les Guildes (De confiance) améliorent chaque forge.
+19d8nv8	Inventaire ({inventory}/80)
+1bze9hi	Auto-équiper
+clu15w	Recycler les communs
+1jucrvb	Tous
+1tof9q7	Comparaison :
+fbqfrf	▲ meilleur que {name}
+16kjalp	▼ moins bon que {name}
+b66p82	Retirer
+jfvxq2	Équiper
+1ain5i8	Améliorer +
+mbn4rs	🔓 Déverrouiller
+81uy9e	🔒 Verrouiller
+1uc2qm9	Recycler (⛓️
+5zlbs3	Vendre au Marché
+78fqct	Aucun objet. Descends dans les donjons ou forge.
+ri3jb4	Voies de Talent · {talentPoints} points
+18wpbpu	Réinitialiser (
+1twu1vg	Tu ne montes pas de niveau pour devenir plus fort : tu montes pour devenir quelqu'un. Chaque Voie te rapproche d'une faction et t'éloigne d'une autre.
+389r2d	Ascension du Fardeau
+wnho1w	Il te faut un Fardeau.
+1oiaez5	Ascension Parallèle (hybride)
+v54bzj	Ascension
+7ydgea	Hybride : chaque voie compte à 60 %, mais tu portes les coûts des deux.
+1dynlcz	Au-delà du niveau : le Fardeau évolue en formes plus puissantes et plus contraignantes. Choisis une voie, ou deux pour une **Ascension Parallèle** (hybride : requiert l'Éclat du Pacte Brisé ou 5 reliques).
+18y2bz7	Requiert le niveau 15 et le Cimetière conquis (ou 4 boss vaincus).
+k5hjn6	Ascension Parallèle : {name}
+pr7cru	Puissance
+1557tkw	Niveau {n}
+1aqkykf	 · Au-delà de la limite ✴{paragon}
+1kfjtsr	 · 🦷 Aberration
+1atcjhd	léger : tu agis en premier
+iqxlys	lourd : +10 % de dégâts
+ti3c5b	Équipement
+bi2zxi	{slot} : vide
+11c881i	Compétences
+1tb960	Écho :
+3xrivr	Inventaire et Forge
+1fuo3uu	Talents
+c3zmbh	Rareté :
+1s9x6zu	La nuit où le portail s'ouvrit, Hondovalle brûlait.
+19nv7eb	Sous la vallée, quelque chose d'enfoui se mit à parler.
+l9cifi	On l'appelle Krak. Il n'a pas de bouche. Il n'a que tes choix.
+1dvhq6f	Le monde ne sauvegarde pas ta progression.
+1qzwyaw	Il s'en souvient.
+192g22r	Un RPG qui se souvient
+1669srk	KRAK
+coeiip	Les Voix Enfouies
+1crviq1	L'écho de {name} ({ending}) erre encore dans la vallée. Tes Souvenirs : +{prod} % de production, +{stats} % de statistiques.
+kyj54b	Carte du Destin :
+1i77gfi	Passer ›
+11i67iz	Entrer dans la vallée
+qorwjs	Conseil : un casque et le plein écran rendent le rite plus profond.
+1dedf4o	Qui porte le Fardeau ?
+kbbtol	Ton nom deviendra un sortilège. Certains le prononceront avec amour, d'autres le maudiront.
+6jxkdh	Ton nom
+xsv5mk	Santé {hp} · Attaque {atk} · Défense {def} · Critique {crit} %
+c4xtne	Descendre à Bas-Hondovalle
+136qwmg	Le jeu se recharge pour changer de langue.
+12rsbse	Le monde se souvient. Une conséquence t'attendait au village.
+1ore8vt	Le Procès de Tes Propres Choix
+19h8z84	Tu te réveilles dans une salle de pierre. Les juges portent ton visage.
+96vw38	Le témoin principal est {FName}.
+dfdn00	Tes Échos sont assis dans le public.
+zfxi8t	Accusations
+1u6tmvt	Aucune accusation grave.
+x0xyvv	Défenses
+1ln1jy0	Aucune défense.
+17dg2mo	🙇 Tout avouer
+1694kvx	🛡️ Te défendre (tu risques un combat)
+4a59k7	💔 Renoncer au Fardeau (rupture)
+gnwwfa	⛓️ Accepter la sentence
+j5egys	Marché des Âmes
+1reeby5	Nouvelles marchandises dans
+1rruu5y	Ici on ne vend pas que des objets : on échange du destin. Chaque marchandise porte l'histoire de celui qui l'a possédée. Les prix dépendent de ta réputation auprès des Ombres du Marché.
+og4p5i	de
+9xrdrc	Vendre des Éclats
+c34yro	Aucun éclat à vendre.
+iw22ik	Vendre des éclats sombres assombrit la vallée. Pour vendre de l'équipement, utilise l'Inventaire du Héros.
+wr3hne	Registre des Âmes
+10ke7iy	Aucun échange pour l'instant.
+7f7lb	De confiance : le Culte t'offre la Source. Banni : fanatiques dans les raids.
+1xzrrh7	De confiance : primes plus riches. Banni : taxes et pillards.
+l2ucbq	Production globale ; De confiance : meilleure forge ; Adoré : bâtiments −10 %.
+q6pl0k	Production de provisions et de bois ; ils te protègent des raids.
+l7fthx	Soins d'Elara, rites pour lever engagements et aberrations.
+vlc65q	Vérités cachées ; le Mot de passe en fait tes alliés.
+onst89	Prix du Marché des Âmes et Contrats du Destin.
+1uh1jwo	Sceaux de Krak : la vallée respire mieux.
+yu9nu7	Réputation dans la Vallée
+17wj1cm	Pas de karma unique. Gagner de la réputation auprès d'une faction nuit souvent à sa rivale. L'état (Ignoré, Toléré, De confiance, Craint, Adoré, Banni, Marqué) change dialogues, prix, événements et fins.
+1ntsjb5	Rivale : {name}.
+15z2xwb	Dans le groupe :
+zp0j8m	Confiance
+l336w7	Santé {hp} · Attaque {atk} · Défense {def}
+1wxzz0m	première ligne
+gvryc5	arrière-garde
+14zxv7c	T'a abandonné
+1qa3604	Recruter · ⚱️
+6lxw4h	✔ Dans le groupe
+18t3204	Emmener
+1t3j8na	🧭 Envoyer en expédition
+1pge8ol	Récupérer le butin (
+1grhekg	À {place} · retour dans {time}
+14e8qtt	Utiliser un compagnon comme bouclier réduit sa confiance. Sous 25 il hésite au combat ; à 0 il part pour toujours.
+1tlsa23	Expéditions ({busy}/{s} places)
+1udw49o	Les expéditions durent des heures réelles et continuent même jeu fermé. Choisis la destination, puis envoie un compagnon.
+1c7rq73	 · objet {itemChance} %
+14xmiw	 · éclat {fragmentChance} %
+cc919u	Carte du Destin : expéditions plus rapides.
+bb0qwn	📅 Aujourd'hui
+1yqzwur	📜 Chronique
+15py8c0	🏆 Exploits
+t25r2p	👹 Bestiaire
+11ngfj0	Quotidiennes
+1fmoqnt	🎁 Coffre déjà ouvert aujourd'hui
+qkr95g	🎁 Ouvrir le coffre quotidien
+pbf75g	Réclamé
+bfrx05	Réclamer
+19lyzhs	Termine les trois pour une relique. Elles se renouvellent chaque jour.
+1m9tlra	Journal des Rêves
+wxrnr2	Ta sauvegarde rêve pendant ton absence. Tu reviens et trouves des traces de ce qui s'est passé.
+t4dmp9	Aucun rêve. Reviens après au moins une heure d'absence.
+53l24d	Se réveiller
+iz3bvi	La Vallée Se Souvient
+1f4b421	Rien à se rappeler pour l'instant.
+74b0kx	Exploits {achievements}/{ACHIEVEMENTS}
+1kb33xz	% production
+yf6klp	Bestiaire
+u11h8a	Quand ton porteur atteint le Cœur de Krak (ou que la vallée devient légende), tu peux clore le Cycle. Le personnage devient un Héritage : un écho que les futurs porteurs rencontreront. Tu gagnes des **Souvenirs** permanents (+5 % de production et +1,5 % de statistiques chacun). Tu conserves reliques, Sanctuaire, exploits, souvenirs de l'étang et bestiaire.
+1i58zg9	Souvenirs recueillis :
+1b08bix	(+{n} % de production)
+qrvci3	Cendre ce Cycle :
+14m7jof	Souvenirs si tu clos maintenant :
+1a5q7ll	Clore le Cycle et découvrir ta fin
+1dnjtcq	Vaincs le Cœur de Krak (ou amasse 150K de cendre au niveau 12)
+waqfyh	Échos des Porteurs Passés
+1mj832c	Aucun héritage encore. Le tien sera le premier nom dont la vallée se souviendra.
+1qvaune	· Cycle
+4b5lud	· dans les donjons apparaît comme
+12x79bj	cadavre avec butin
+1x7poc7	Sanctuaire des Reliques
+x7pen0	Offre des reliques contre des améliorations permanentes qui survivent à chaque Cycle.
+1ak1nbb	→ coût 🏺
+ldkuob	Sauvegarde
+147za0m	Le jeu se sauvegarde tout seul toutes les 10 secondes et à la fermeture de l'onglet, avec 3 copies tournantes et un contrôle d'intégrité. Pour le transférer sur un autre appareil, copie le code et colle-le là-bas.
+1bka08	Partie sauvegardée.
+10qk5t9	Échec de la sauvegarde (stockage plein ?)
+1mrwv5b	💾 Sauvegarder maintenant
+17re9jn	Code copié dans le presse-papiers.
+13glwah	Code prêt : sélectionne-le et copie-le.
+1t3tsx2	📋 Copier le code
+13faw57	Partie chargée. Bon retour à Hondovalle.
+1n2vt9w	Ce code ne fonctionne pas : vérifie qu'il est complet.
+1wp6e5l	📥 Charger un code
+1h87o7s	Colle un code ici et appuie sur « Charger un code »
+3kqw9u	Touche encore pour TOUT effacer
+wd6zce	🗑️ Effacer la sauvegarde
+1n4kmx7	Langue
+q1adgd	Choisis la langue du jeu.
+uykjsc	Rite et Son
+jec2l3	Musique et ambiance
+1mjp33b	Volume de la musique
+1fwcvny	Effets sonores
+11y8h1k	L'audio est une mécanique : avec le son activé tu entends (et vois) les intentions des ennemis invisibles. Le silence total arrive quand la Dissonance est à son comble.
+1qs2cqw	Quitter le Rite
+4eitvp	⛶ Entrer dans le Rite (plein écran)
+17a404	Dans le Rite : +25 % de Résonance, murmures, choix cachés dans les événements.
+1ci6c7b	Réduire les animations et les effets de corruption
+d87goe	Combat automatique
+cx364v	Combattre automatiquement (rotation cohérente avec ton Fardeau)
+1v8jkwl	Combat rapide
+15kkg11	Boire une potion sous {n} % de santé
+146wri9	Le combat automatique n'utilise jamais les actions de Dissonance : elles restent ton choix.
+lu3bfy	Comment jouer
+jetwjc	**Village** : récolte, construis, la production continue même hors ligne.
+1y6pqlo	**Descente** : choisis des portes, combats, puis décide de descendre plus bas ou de sécuriser la besace.
+15eb36x	**Fardeau** : les actions cohérentes chargent la Résonance (→ Écho), les incohérentes la Dissonance (→ actions sombres).
+4asdgt	**Promesses** : les tenir donne des éclats ; les rompre invoque le Chasseur de Promesses.
+1gji0ae	**Cycle** : clos-le pour obtenir une fin, un Héritage et des Souvenirs permanents.
+ba2zuf	Fin du Cycle
+s8h57w	+{gain} Souvenirs. {name} devient un Héritage : les futurs porteurs rencontreront son écho.
+zcyhfz	Choisis la Carte du Destin pour le prochain Cycle
+advfsk	Un objet à transmettre (facultatif)
+wiuja8	Pas encore : retour à la vallée
+1mdbh3s	Commencer le Cycle
+4ev0jd	Kael, épéiste
+1jirgna	« Le portail s'élargit ! Tomas, mon frère, est le plus proche du sceau. Si quelqu'un le pousse dedans, le portail se referme avec lui. »
+frt4hp	Sceller le portail en sacrifiant Tomas
+1r49d83	Fardeau lourd : coups puissants, Résonance en protégeant les autres
+1jcine4	Vesper, envoyé du Culte
+1ixbk8n	« L'enfant d'Elara meurt empoisonné. Le Culte a l'antidote. Le prix ? Ce réfugié, Ilyas. Livre-le. »
+1cb9b6	Livrer Ilyas au Culte pour sauver l'enfant
+1wmh11c	Fardeau très lourd : vol de vie et attaque, le Culte t'appelle frère
+1j267rc	Marcus, capitaine de la Capitale
+lzf8us	« Reculez, civil. Ici c'est nous qui décidons. » Autour de toi la vallée brûle. Tu ne peux que regarder, et te souvenir de chaque visage.
+x46wdn	Ne pas intervenir. Regarder. Se souvenir.
+1xnroq5	Fardeau léger : tu agis en premier, tu esquives, tu vois ce qui est caché
+46eoe7	Prologue
+c80wvw	La Nuit du Portail
+cilmyi	Hondovalle brûle. Un portail de chair et de métal s'ouvre au-dessus du puits. Trois voix t'appellent au même instant. Tu ne peux répondre qu'à une seule. Aucune n'a raison. Toutes seront retenues.
+s5cado	Tu ne pourras pas revenir en arrière.
+11gwnh3	{description}\n\nLes actions cohérentes avec ton Fardeau chargent la Résonance ; les contraires génèrent de la Dissonance. Le monde se souviendra des deux.\n\nMaintenant, reconstruis Hondovalle. Le Guide en haut te dira ce que tu peux faire, jamais ce que tu dois choisir.
+jqku85	Choisis. Et porte le poids.
+bbabk7	« Qu'est-ce… qu'est-ce que tu t'es fait ? Je peux encore te soigner, si tu me laisses. »
+uqxo7c	« Éloigne-toi de la place, monstre. Les gens ont peur. »
+1rlqzlo	« …Comment t'appelais-tu déjà ? Je l'ai sur le bout de la langue. »
+hg0b5e	« {n}, l'enfant t'a réclamé aujourd'hui. Il a dit ton nom pour la première fois. »
+mjadk8	« {n}, ma maison est la tienne. »
+16q1z4d	« Assieds-toi, {n}. Je vais changer tes bandages. »
+1653g9u	« {n}. Tu as besoin de soins, ou de pardon ? »
+1s64eru	« Encore un porteur. J'espère que tu es différent des autres. »
+9nrc0w	« Ne… ne me fais pas de mal, {n}. »
+11nie03	« Sors de mon infirmerie. »
+1stsbf5	« Tu portes la marque du Culte. Va-t'en. »
+17017oo	« Tu as brûlé l'édit de la Capitale. Je m'en souviendrai, porteur. »
+rfcbnv	« Porteur {n} ! La Capitale a besoin de gens comme toi. »
+1nizn86	« {n}. Un rapport, je te prie. »
+gvs3gn	« Circule. J'ai une garnison à nourrir. »
+1ysv4al	« Qui es-tu ? Peu m'importe. Passe ton chemin. »
+1wvpp76	« …Je t'en prie, passe. »
+la39eg	« Encore un pas et je te fais arrêter. »
+vljjb1	« Recherché. Mort ou vif. »
+1u7qron	« Frère {n}. Le Culte n'oublie pas qui lui a donné un fils. »
+ar0850	« {n}, la Source t'attend. »
+sg3bhc	« Le Culte te regarde avec faveur. »
+1sbiyj5	« Tout pouvoir a un prix. Toujours. »
+21q01c	« La vallée se meurt. Seul le Culte peut la sauver… ou la détruire. »
+1wk6mdd	« Même le Culte reconnaît un prédateur quand il en voit un. »
+1m9hkfw	« Ton sang sera nôtre. »
+s93oxn	Trop tôt ! L'appât est perdu.
+1eg5rqq	Prise parfaite ! Un souvenir remonte de l'eau.
+kzluk1	Un souvenir remonte de l'eau.
+1y5417j	Plus d'appât. Il reviendra avec le temps.
+n8soxy	…la ligne s'enfonce dans l'eau noire…
+1jwfnr2	ÇA MORD ! Touche maintenant !
+xqx87q	Il s'est échappé…
+k4xg09	L'Étang des Voix
+njvo6d	Appât
+18d4et4	Chaque espèce est un souvenir de la vallée : +1 % de production pour toujours. Souvenirs :
+1z055ws	 · 🏆 Canne dorée
+2w4mzr	Bas-Hondovalle
+17gw81p	Seulement de la cendre et un feu mourant. Reconstruis.
+hlnpil	Le village renaît, une poutre à la fois.
+1h5saoe	Hondovalle revit. Les enfants courent entre les maisons.
+14l1bih	Hondovalle est devenue la capitale de la vallée.
+1p982c1	Le feu de Hondovalle
+14doiu2	Maisons brûlées
+19rjuzr	🛒 Un marchand est arrivé ! (
+9vpwtf	Le Cerf de Cendre !
+eevbzz	Raid : {name}
+1kq1q81	⚔️ Frapper !
+10t1a52	(les {torre} tours aident)
+18hn9w2	Récolte
+1ydqvw7	Couper
+4gifw3	Creuser
+1i1em9r	Cueillir
+1yhpthu	Le conteur revient dans {now}
+xvi7tl	Écouter le conteur (production ×2)
+14q7bvs	Visages de Hondovalle
+i6en5e	Bâtiments
+1vywl9u	chaque bâtiment coûte +15 %
+scluf7	??? · construire
+wh3oww	Améliorations
+7pna5x	Tout acheter

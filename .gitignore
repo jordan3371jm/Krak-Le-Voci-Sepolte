@@ -1,3 +1,4 @@
 node_modules/
 *.log
 .DS_Store
+BACKUP_KRAK_*.zip

@@ -1,15 +1,49 @@
-import type { ReactNode } from 'react';
+import { t as T } from '../i18n';
+import { Pic } from './Pic';
+import { useState, type ReactNode } from 'react';
+import { rewardedAvailable, showRewarded } from '../game/platform';
 import type { Item, Resources } from '../game/types';
 import { RARITY_BORDERS, RARITY_COLORS, RARITY_NAMES, RES_INFO, SLOT_INFO } from '../game/data/world';
 import { fmt } from '../game/engine/state';
 import { sfx } from '../game/audio';
+import { Icon, Sigil } from './icons';
+import { artFor } from './art';
+
+// I simboli delle risorse dentro i testi diventano le icone dipinte.
+const RES_GLYPH: Record<string, string> = { '🍞': 'provviste', '⚱️': 'cenere', '🏺': 'reliquie', '🔮': 'intuizione', '🪵': 'legno', '🪨': 'pietra' };
+const GLYPH_RE = /(🍞|⚱️|🏺|🔮|🪵|🪨)/u;
+export function iconize(node: ReactNode): ReactNode {
+  if (typeof node === 'string') {
+    if (!GLYPH_RE.test(node)) return node;
+    return node.split(/(🍞|⚱️|🏺|🔮|🪵|🪨)/u).map((part, i) => {
+      const id = RES_GLYPH[part]; const src = id && artFor(id);
+      return src ? <img key={i} src={src} alt="" className="inline-block w-[1.35em] h-[1.35em] rounded-full ring-1 ring-ember/40 align-[-0.35em] mx-[1px]" /> : part;
+    });
+  }
+  if (Array.isArray(node)) return node.map((n, i) => <span key={i}>{iconize(n)}</span>);
+  return node;
+}
+
+/** Pulsante «guarda una pubblicità per…»: compare solo dove le pubblicità esistono. */
+export function AdBtn({ placement, label, onReward, disabled, small, className = '' }: { placement: string; label: ReactNode; onReward: () => void; disabled?: boolean; small?: boolean; className?: string }) {
+  const [busy, setBusy] = useState(false);
+  if (!rewardedAvailable()) return null;
+  return (
+    <button disabled={disabled || busy} onClick={() => { if (busy) return; sfx.click(); setBusy(true); showRewarded(placement).then(ok => { setBusy(false); if (ok) onReward(); }); }}
+      className={`ad-btn ${small ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-sm'} ${className}`}>
+      <span className="ad-badge">AD</span> {busy ? T('Caricamento…') : iconize(label)}
+    </button>
+  );
+}
+
+export function Ico({ children }: { children: ReactNode }) { return <>{iconize(children)}</>; }
 
 export function Panel({ title, icon, children, className = '', right }: { title?: ReactNode; icon?: string; children: ReactNode; className?: string; right?: ReactNode }) {
   return (
     <section className={`panel rounded-xl p-3 sm:p-4 ${className}`}>
       {title && (
         <div className="flex items-center justify-between gap-2 mb-3">
-          <h3 className="font-display text-sm sm:text-base text-bone tracking-wide flex items-center gap-2">{icon && <span>{icon}</span>}{title}</h3>
+          <h3 className="font-display text-sm sm:text-base text-bone tracking-wide flex items-center gap-2">{icon && <Icon name={icon} size={30} />}{title}</h3>
           {right}
         </div>
       )}
@@ -34,7 +68,7 @@ export function Btn({ children, onClick, disabled, kind = 'default', className =
       onClick={() => { if (!disabled) { sfx.click(); onClick?.(); } }}
       className={`rounded-lg border transition-colors ${small ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-sm'} disabled:opacity-35 disabled:cursor-not-allowed ${k} ${className}`}
     >
-      {children}
+      {iconize(children)}
     </button>
   );
 }
@@ -56,7 +90,7 @@ export function Cost({ cost, have, extra }: { cost: Partial<Resources>; have?: R
     <span className="inline-flex flex-wrap gap-x-2 gap-y-0.5 text-[11px]">
       {Object.entries(cost).map(([k, v]) => {
         const ok = !have || have[k as keyof Resources] >= (v || 0);
-        return <span key={k} className={ok ? 'text-bone/80' : 'text-dissonance'}>{RES_INFO[k as keyof Resources].icon}{fmt(v || 0)}</span>;
+        return <span key={k} className={ok ? 'text-bone/80' : 'text-dissonance'}><Pic id={k} emoji={RES_INFO[k as keyof Resources].icon} size={14} />{fmt(v || 0)}</span>;
       })}
       {extra}
     </span>
@@ -67,16 +101,16 @@ export function Tag({ children, className = '' }: { children: ReactNode; classNa
   return <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded border border-stone-700 text-mist ${className}`}>{children}</span>;
 }
 
-export const STAT_LABELS: Record<string, string> = { maxHp: 'Salute', atk: 'Attacco', def: 'Difesa', crit: 'Critico %', critDmg: 'Danno critico %', dodge: 'Schivata %', lifesteal: 'Rubavita %', thorns: 'Rivalsa %', speed: 'Velocità' };
+export const STAT_LABELS: Record<string, string> = { maxHp: 'Salute', atk: 'Attacco', def: 'Difesa', crit: T('Critico %'), critDmg: T('Danno critico %'), dodge: T('Schivata %'), lifesteal: T('Rubavita %'), thorns: T('Rivalsa %'), speed: T('Velocità') };
 
 export function ItemCard({ it, onClick, selected, equipped, compact }: { it: Item; onClick?: () => void; selected?: boolean; equipped?: boolean; compact?: boolean }) {
   return (
     <button onClick={onClick} className={`text-left rounded-lg border ${RARITY_BORDERS[it.rarity]} bg-black/40 p-2 w-full transition ${selected ? 'ring-2 ring-ember' : ''} hover:bg-white/5`}>
       <div className="flex items-start gap-2">
-        <span className="text-lg">{SLOT_INFO[it.slot].icon}</span>
+        {artFor('slot_' + it.slot) ? <Icon name={'slot_' + it.slot} size={38} /> : <Sigil emoji={SLOT_INFO[it.slot].icon} size={34} tone={(['bone', 'teal', 'violet', 'gold', 'blood', 'teal'] as const)[it.rarity]} />}
         <div className="min-w-0 flex-1">
           <div className={`text-xs font-semibold truncate ${RARITY_COLORS[it.rarity]}`}>{it.name}{it.plus ? ` +${it.plus}` : ''}{it.locked ? ' 🔒' : ''}</div>
-          <div className="text-[10px] text-mist">{RARITY_NAMES[it.rarity]} · Lv {it.ilvl}{equipped ? ' · equipaggiato' : ''}</div>
+          <div className="text-[10px] text-mist">{RARITY_NAMES[it.rarity]} · Lv {it.ilvl}{equipped ? T(' · equipaggiato') : ''}</div>
           {!compact && (
             <div className="text-[10px] text-bone/70 mt-0.5 flex flex-wrap gap-x-2">
               {Object.entries(it.stats).map(([k, v]) => <span key={k}>{STAT_LABELS[k] || k} +{Math.round((v || 0) * (1 + it.plus * 0.08) * 10) / 10}</span>)}
@@ -100,4 +134,10 @@ export function Modal({ children, onClose, wide }: { children: ReactNode; onClos
 
 export function Empty({ children }: { children: ReactNode }) {
   return <p className="text-xs text-mist italic py-2">{children}</p>;
+}
+
+// Testo tradotto con **grassetto**: i traduttori ricevono la frase intera.
+export function rich(text: string): ReactNode {
+  const parts = text.split('**');
+  return parts.map((p, i) => (i % 2 ? <b key={i}>{p}</b> : <span key={i}>{p}</span>));
 }

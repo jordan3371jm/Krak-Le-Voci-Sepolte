@@ -1,12 +1,16 @@
+import { t as T } from '../i18n';
+import { glitchLabel } from './KrakWake';
+import { useEffect, useRef, useState } from 'react';
 import type { GameState, ResKey, TabId } from '../game/types';
-import { FARDELLI } from '../game/data/core';
 import { RES_INFO, VALLEY_EFFECTS } from '../game/data/world';
 import { corruptedUI, displayName, fmt, intuitionCap, valleyState } from '../game/engine/state';
 import { heroStats, resonanceMax, xpForLevel } from '../game/engine/hero';
-import { productionPerSec } from '../game/engine/village';
+import { missionProgress, productionPerSec } from '../game/engine/village';
+import { isUnlocked } from '../game/engine/onboarding';
 import type { Act } from '../game/useGame';
-import { missionProgress } from '../game/engine/village';
 import { Bar } from './ui';
+import { Icon } from './icons';
+import { LangGrid } from './LangPicker';
 
 // numeri che mentono quando la corruzione è alta (UI diegetica)
 function lie(n: number, on: boolean) {
@@ -15,87 +19,142 @@ function lie(n: number, on: boolean) {
   return fmt(n * f);
 }
 
-export default function HUD({ state: s, act, onFullscreen }: { state: GameState; act: Act; onFullscreen: () => void }) {
+const iconBtn = 'w-9 h-9 flex items-center justify-center rounded-full border border-stone-700 hover:border-amber-500/70 transition';
+
+export default function HUD({ state: s, act, onFullscreen, onCodex, onSave, compact = false }: { state: GameState; act: Act; onFullscreen: () => void; onCodex: () => void; onSave?: () => void; compact?: boolean }) {
   const st = heroStats(s);
   const corrupt = corruptedUI(s);
   const prod = productionPerSec(s);
   const vs = valleyState(s);
   const VE = VALLEY_EFFECTS[vs];
-  const F = s.fardello ? FARDELLI[s.fardello] : null;
   const rmax = resonanceMax(s);
-  const keys: ResKey[] = ['cenere', 'provviste', 'legno', 'pietra', 'ferro', 'intuizione'];
+  // le risorse compaiono solo quando entrano nella tua vita
+  const keys = (['cenere', 'provviste', 'legno', 'pietra', 'ferro', 'intuizione'] as ResKey[]).filter(k => s.res[k] >= 1 || prod[k] > 0 || k === 'cenere' || (k === 'provviste' && isUnlocked(s, 'discesa')));
+  const heroIcon = s.aberration ? 'corruzione' : s.fardello || 'portale';
   return (
-    <header className="bg-black/85 backdrop-blur border-b border-ember/20">
-      <div className="max-w-6xl mx-auto px-3 py-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xl">{s.aberration ? '🦷' : F?.icon || '🕯️'}</span>
+    <header className="relative z-50 bg-black/85 backdrop-blur border-b border-amber-900/40">
+      <div className="max-w-6xl mx-auto px-3 pt-2 flex items-center gap-3">
+        <div className="flex items-center gap-2 min-w-0 shrink-0">
+          <Icon name={heroIcon} size={42} />
           <div className="min-w-0">
-            <div className={`font-display text-sm text-bone truncate max-w-[140px] ${s.nameCorrupted ? 'animate-glitch text-fate' : ''}`}>{displayName(s)}</div>
-            <div className="text-[10px] text-mist">Lv {s.hero.level}{s.hero.paragon ? ` ✴${s.hero.paragon}` : ''} · Ciclo {s.cycle.n}</div>
+            <div className={`font-display text-sm text-bone truncate max-w-[120px] sm:max-w-[160px] ${s.nameCorrupted ? 'animate-glitch text-fate' : ''}`}>{displayName(s)}</div>
+            <div className="text-[10px] text-mist whitespace-nowrap">{T('Livello')}{' '}{s.hero.level}{s.hero.paragon ? ` ✴${s.hero.paragon}` : ''}{s.cycle.n > 1 ? T(' · Ciclo {n}', { n: s.cycle.n }) : ''}</div>
           </div>
         </div>
-        <div className="w-28 sm:w-36 space-y-1">
-          <Bar value={s.hero.hp} max={st.maxHp} color="bg-gradient-to-r from-red-800 to-red-500" label={<><span>❤️ {lie(s.hero.hp, corrupt)}/{st.maxHp}</span>{s.hero.pledgedMaxHp > 0 && <span className="text-dissonance">⛓️-{s.hero.pledgedMaxHp}</span>}</>} />
-          <Bar value={s.hero.xp} max={xpForLevel(s.hero.level)} color="bg-fate/70" height="h-1" />
-        </div>
-        {F && (
-          <div className="w-28 sm:w-36 space-y-1" title="Risonanza / Dissonanza / Corruzione">
-            <Bar value={s.resonance} max={rmax} color={`bg-resonance ${s.resonance >= rmax ? 'res-glow' : ''}`} height="h-1.5" label={<><span className="text-resonance">◈ {Math.floor(s.resonance)}/{rmax}</span><span className="text-dissonance">〰 {Math.floor(s.dissonance)}</span></>} />
-            <Bar value={s.corruption} max={100} color="bg-gradient-to-r from-purple-900 to-fuchsia-600" height="h-1" />
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 min-w-0 max-w-md">
+          <div className="space-y-1">
+            <Bar value={s.hero.hp} max={st.maxHp} color="bg-gradient-to-r from-red-800 to-red-500" label={<><span>{T('Salute')}{' '}{lie(s.hero.hp, corrupt)}/{st.maxHp}</span>{s.hero.pledgedMaxHp > 0 && <span className="text-dissonance">{T('pegno −')}{s.hero.pledgedMaxHp}</span>}</>} />
+            <Bar value={s.hero.xp} max={xpForLevel(s.hero.level)} color="bg-fate/70" height="h-1" />
           </div>
-        )}
-        <div className={`flex flex-wrap gap-x-3 gap-y-0.5 text-xs ${corrupt ? 'corruptible' : ''}`}>
-          {keys.map(k => (
-            <span key={k} className={`${RES_INFO[k].color} ${corrupt ? 'corrupt-num' : ''}`} title={`${RES_INFO[k].name}${prod[k] ? ` · +${fmt(prod[k])}/s` : ''}`}>
-              {RES_INFO[k].icon}{lie(s.res[k], corrupt)}{k === 'intuizione' ? `/${intuitionCap(s)}` : ''}
-              {prod[k] > 0 && k !== 'intuizione' && <span className="text-[9px] text-mist">+{fmt(prod[k])}/s</span>}
-            </span>
-          ))}
-          <span className="text-yellow-200" title="Reliquie">🏺{s.reliquie}</span>
-          <span className="text-red-300" title="Pozioni">🧪{s.potions}</span>
+          {s.fardello && (
+            <div className="space-y-1 hidden sm:block" title={T('Risonanza / Dissonanza / Corruzione')}>
+              <Bar value={s.resonance} max={rmax} color={`bg-resonance ${s.resonance >= rmax ? 'res-glow' : ''}`} height="h-1.5" label={<><span className="text-resonance">{T('Risonanza')}{' '}{Math.floor(s.resonance)}/{rmax}</span>{s.dissonance >= 1 && <span className="text-dissonance">{T('Diss.')}{' '}{Math.floor(s.dissonance)}</span>}</>} />
+              <Bar value={s.corruption} max={100} color="bg-gradient-to-r from-purple-900 to-fuchsia-600" height="h-1" />
+            </div>
+          )}
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <span className={`text-xs ${VE.color}`} title={VE.desc}>{VE.icon} {vs}</span>
-          <button className="text-sm px-2 py-1 rounded border border-stone-700 hover:border-ember" title="Musica" onClick={() => act(d => { d.settings.music = !d.settings.music; })}>{s.settings.music ? '🎵' : '🔇'}</button>
-          <button className="text-sm px-2 py-1 rounded border border-stone-700 hover:border-ember" title="Effetti sonori" onClick={() => act(d => { d.settings.sfx = !d.settings.sfx; })}>{s.settings.sfx ? '🔊' : '🔈'}</button>
-          <button className={`text-sm px-2 py-1 rounded border ${s.fullscreen ? 'border-blood bg-blood/30' : 'border-stone-700 hover:border-ember'}`} title="Rito (schermo intero)" onClick={onFullscreen}>{s.fullscreen ? '👁️' : '⛶'}</button>
+        <div className="ml-auto flex items-center gap-2 shrink-0">
+          {s.fardello && <span className={`text-xs ${VE.color} hidden md:inline whitespace-nowrap`} title={VE.desc}>{VE.icon} {T(vs)}</span>}
+          <MuteButton muted={!!s.settings.muted} onToggle={() => act(d => { d.settings.muted = !d.settings.muted; })} />
+          <GameMenu state={s} act={act} onFullscreen={onFullscreen} onCodex={onCodex} onSave={onSave} />
         </div>
+      </div>
+      <div className={`max-w-6xl mx-auto px-3 py-1.5 flex gap-1.5 overflow-x-auto no-scrollbar ${compact ? 'hidden' : ''} ${corrupt ? 'corruptible' : ''}`}>
+        {keys.map(k => (
+          <div key={k} className={`shrink-0 flex items-center gap-1.5 rounded-full bg-white/[.03] border border-stone-800 pl-0.5 pr-2.5 py-0.5 ${RES_INFO[k].color} ${corrupt ? 'corrupt-num' : ''}`} title={`${RES_INFO[k].name}${prod[k] ? ` · +${fmt(prod[k])}/s` : ''}`}>
+            <Icon name={k} size={30} />
+            <div className="leading-none">
+              <div className="text-sm tabular-nums min-w-[2.6em]">{lie(s.res[k], corrupt)}{k === 'intuizione' ? `/${intuitionCap(s)}` : ''}</div>
+              {prod[k] > 0 && k !== 'intuizione' && <div className="text-[9px] text-mist tabular-nums">+{fmt(prod[k])}/s</div>}
+            </div>
+          </div>
+        ))}
+        {s.reliquie > 0 && <div className="shrink-0 flex items-center gap-1.5 rounded-full bg-white/[.03] border border-stone-800 pl-0.5 pr-2.5 py-0.5 text-yellow-200" title={T('Reliquie')}><Icon name="reliquie" size={30} /><span className="text-sm tabular-nums">{s.reliquie}</span></div>}
+        {isUnlocked(s, 'discesa') && <div className="shrink-0 flex items-center gap-1.5 rounded-full bg-white/[.03] border border-stone-800 pl-1 pr-2.5 py-0.5 text-red-300" title={T('Pozioni')}><Icon name="pozione" size={26} /><span className="text-sm tabular-nums">{s.potions}</span></div>}
       </div>
     </header>
   );
 }
 
+/** Pulsante muto sempre visibile: spegne tutto l'audio del gioco (musica, effetti, voci). */
+export function MuteButton({ muted, onToggle, className = '' }: { muted: boolean; onToggle: () => void; className?: string }) {
+  return (
+    <button onClick={onToggle} aria-pressed={muted} aria-label={muted ? T('Attiva l\'audio') : T('Disattiva l\'audio')} title={muted ? T('Attiva l\'audio') : T('Disattiva l\'audio')}
+      className={`w-11 h-11 flex items-center justify-center rounded-full border text-xl transition ${muted ? 'border-red-800/80 bg-red-950/40' : 'border-stone-700 hover:border-amber-500/70'} ${className}`}>
+      <span aria-hidden>{muted ? '🔇' : '🔊'}</span>
+    </button>
+  );
+}
+
+// Menu di gioco: un solo pulsante che apre tutte le impostazioni rapide (spazio per aggiungerne altre in futuro)
+function GameMenu({ state: s, act, onFullscreen, onCodex, onSave }: { state: GameState; act: Act; onFullscreen: () => void; onCodex: () => void; onSave?: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: PointerEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    window.addEventListener('pointerdown', close);
+    return () => window.removeEventListener('pointerdown', close);
+  }, [open]);
+  const row = 'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-bone hover:bg-white/5 text-left';
+  return (
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen(!open)} title={T('Menu')} className={`w-11 h-11 flex flex-col items-center justify-center gap-[5px] rounded-full border transition ${open ? 'border-amber-500 bg-amber-900/30' : 'border-stone-700 hover:border-amber-500/70'}`}>
+        <span className="block w-5 h-[2px] bg-bone/80 rounded" /><span className="block w-5 h-[2px] bg-bone/80 rounded" /><span className="block w-5 h-[2px] bg-bone/80 rounded" />
+      </button>
+      {open && (
+        <div className="absolute right-0 z-[70] mt-2 w-72 max-w-[92vw] rounded-xl border border-amber-800/60 bg-black/95 p-1.5 shadow-2xl animate-rise">
+          <div className="px-2 py-2"><LangGrid onBeforeChange={onSave} /></div>
+          <button className={row} onClick={() => { setOpen(false); onCodex(); }}><Icon name="diario" size={30} />{T('Codex: come funziona')}</button>
+          <button className={row} onClick={() => act(d => { d.settings.muted = !d.settings.muted; })}><span className="w-[30px] text-center text-xl">{s.settings.muted ? '🔇' : '🔊'}</span>{s.settings.muted ? T('Audio disattivato') : T('Audio attivo')}</button>
+          <button className={row} onClick={() => act(d => { d.settings.music = !d.settings.music; })}><span className={s.settings.music ? '' : 'opacity-40'}><Icon name="musica" size={30} /></span>{s.settings.music ? T('Musica attiva') : T('Musica spenta')}</button>
+          <button className={row} onClick={() => { setOpen(false); onFullscreen(); }}><Icon name="rito" size={30} />{T('Il Rito (schermo intero)')}</button>
+          {onSave && <button className={row} onClick={() => { onSave(); setOpen(false); }}><Icon name="opzioni" size={30} />{T('💾 Salva ora')}</button>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const TABS: { id: TabId; icon: string; name: string }[] = [
-  { id: 'villaggio', icon: '🏘️', name: 'Villaggio' },
-  { id: 'discesa', icon: '🕳️', name: 'Discesa' },
-  { id: 'eroe', icon: '⚔️', name: 'Eroe' },
-  { id: 'bussola', icon: '✨', name: 'Bussola' },
-  { id: 'spedizioni', icon: '🧭', name: 'Compagni' },
-  { id: 'mercato', icon: '🎭', name: 'Mercato' },
-  { id: 'fazioni', icon: '⚖️', name: 'Fazioni' },
-  { id: 'diario', icon: '📖', name: 'Diario' },
-  { id: 'eredita', icon: '🏺', name: 'Eredità' },
-  { id: 'opzioni', icon: '⚙️', name: 'Opzioni' },
+  { id: 'villaggio', icon: 'villaggio', name: T('Villaggio') },
+  { id: 'discesa', icon: 'discesa', name: T('Discesa') },
+  { id: 'eroe', icon: 'eroe', name: T('Eroe') },
+  { id: 'veglia', icon: 'compagni', name: T('La Veglia') },
+  { id: 'bussola', icon: 'bussola', name: T('Bussola') },
+  { id: 'spedizioni', icon: 'compagni', name: T('Compagni') },
+  { id: 'mercato', icon: 'mercato', name: T('Mercato') },
+  { id: 'fazioni', icon: 'fazioni', name: T('Fazioni') },
+  { id: 'diario', icon: 'diario', name: T('Diario') },
+  { id: 'eredita', icon: 'eredita', name: T('Eredità') },
+  { id: 'opzioni', icon: 'opzioni', name: T('Opzioni') },
 ];
 
 export function Nav({ state: s, act }: { state: GameState; act: Act }) {
   const now = Date.now();
   const badge: Partial<Record<TabId, number | string>> = {
-    diario: (s.dreams.length + (s.daily.chest ? 0 : 1) + s.daily.missions.filter(m => !m.claimed && missionProgress(s, m.id) >= m.target).length) || 0,
+    diario: (s.dreams.length + (s.daily.chest ? 0 : 1) + (['daily', 'weekly', 'monthly'] as const).reduce((n, p) => n + (s[p]?.missions || []).filter(m => !m.claimed && missionProgress(s, m.id, p) >= m.target).length, 0)) || 0,
     spedizioni: s.companions.filter(c => c.mission && c.mission.end <= now).length || 0,
     eroe: s.hero.talentPoints || 0,
     discesa: s.delve ? '●' : 0,
     villaggio: (s.events.cart || s.events.deer || s.events.threat) ? '!' : 0,
   };
+  const tabs = TABS.filter(t => isUnlocked(s, t.id));
   return (
     <nav className="bg-black/70 backdrop-blur border-b border-stone-800">
       <div className="max-w-6xl mx-auto flex overflow-x-auto no-scrollbar">
-        {TABS.map(t => (
-          <button key={t.id} onClick={() => act(d => { d.tab = t.id; })} className={`relative shrink-0 px-3 py-2 text-xs sm:text-sm flex items-center gap-1 border-b-2 transition ${s.tab === t.id ? 'border-ember text-bone' : 'border-transparent text-mist hover:text-bone'}`}>
-            <span>{t.icon}</span><span className="hidden sm:inline">{t.name}</span>
-            {!!badge[t.id] && <span className="absolute top-0.5 right-0.5 text-[9px] bg-ember text-white rounded-full px-1 leading-4">{badge[t.id]}</span>}
-          </button>
-        ))}
+        {tabs.map(t => {
+          const isNew = s.newTabs.includes(t.id) && s.tab !== t.id;
+          return (
+            <button key={t.id} onClick={() => act(d => { d.tab = t.id; d.newTabs = d.newTabs.filter(x => x !== t.id); if (t.id === 'bussola' && !d.flags.includes('seen_bussola')) d.flags.push('seen_bussola'); })}
+              className={`relative shrink-0 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm flex items-center gap-1.5 border-b-2 transition ${s.tab === t.id ? 'border-amber-500 text-bone' : 'border-transparent text-mist hover:text-bone'}`}>
+              <span className={isNew ? 'tab-new' : ''}><Icon name={t.icon} size={30} /></span>
+              <span className={`hidden sm:inline ${s.glitchUntil > now ? 'text-red-400 italic' : ''}`}>{glitchLabel(s, tabs.indexOf(t), t.name)}</span>
+              {isNew && <span title={T('nuovo')} className="absolute top-1 left-1.5 w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,.9)]" />}
+              {!!badge[t.id] && <span className="absolute top-0.5 right-0.5 text-[9px] bg-ember text-white rounded-full px-1 leading-4">{badge[t.id]}</span>}
+            </button>
+          );
+        })}
       </div>
     </nav>
   );

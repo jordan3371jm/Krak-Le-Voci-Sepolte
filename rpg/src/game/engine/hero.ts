@@ -1,3 +1,4 @@
+import { t as T } from '../../i18n';
 import type { GameState, Item, Rarity, Slot, Stats, StatKey } from '../types';
 import { ASCENSIONS, CLASSES, COMPANIONS, FARDELLI, TALENTS } from '../data/core';
 import { AFFIXES, ORIGINS, RARITY_MULT, RARITY_NAMES, SLOTS, SLOT_INFO } from '../data/world';
@@ -59,6 +60,9 @@ export function heroStats(s: GameState): Stats {
   const legacy = 1 + sanct(s, 'sangue_antico') / 100 + s.cycle.memorieTotal * 0.015;
   st.atk *= legacy; st.maxHp *= legacy; st.def *= legacy;
   st.maxHp *= 1 + cardMod(s, 'hp');
+  // Opere della Valle
+  const wk = s.village.works || {};
+  st.maxHp *= 1 + 0.03 * (wk.palizzata || 0); st.atk *= 1 + 0.02 * (wk.forgia || 0); st.def *= 1 + 0.02 * (wk.bastione || 0);
   // Elisir
   if (s.activeElixir === 'forza') st.atk *= 1.2;
   if (s.activeElixir === 'pietra') st.def *= 1.4;
@@ -90,7 +94,7 @@ export function companionStats(s: GameState, id: string) {
   const def = COMPANIONS.find(c => c.id === id)!;
   const c = s.companions.find(c => c.id === id)!;
   const L = c.level - 1;
-  const legacy = 1 + s.cycle.memorieTotal * 0.015;
+  const legacy = (1 + s.cycle.memorieTotal * 0.015) * (s.flags.includes('gift3_' + id) ? 1.1 : 1);
   return {
     maxHp: Math.round((def.base.maxHp + L * 9) * legacy),
     atk: Math.round((def.base.atk + L * 1.8) * legacy),
@@ -102,7 +106,7 @@ export function companionStats(s: GameState, id: string) {
 // ---------------- Esperienza ----------------
 export function gainXp(s: GameState, amount: number) {
   if (amount <= 0) return;
-  const mult = 1 + (s.valley.rebirthUntil > Date.now() ? 0.25 : 0);
+  const mult = 1 + (s.valley.rebirthUntil > Date.now() ? 0.25 : 0) + (hasTalent(s, 'xp_plus') ? 0.2 : 0);
   s.hero.xp += Math.round(amount * mult);
   while (s.hero.xp >= xpForLevel(s.hero.level)) {
     s.hero.xp -= xpForLevel(s.hero.level);
@@ -110,13 +114,13 @@ export function gainXp(s: GameState, amount: number) {
       s.hero.level++;
       s.hero.talentPoints++;
       s.hero.hp = heroStats(s).maxHp;
-      toast(s, `⬆️ Livello ${s.hero.level}! +1 Punto Talento`, 'good');
-      chronicle(s, `Hai raggiunto il livello ${s.hero.level}.`, 'world');
+      toast(s, T('⬆️ Livello {level}! +1 Punto Talento', { level: s.hero.level }), 'good');
+      chronicle(s, T('Hai raggiunto il livello {level}.', { level: s.hero.level }), 'world');
       if (s.hero.level % 5 === 0) s.potions += 1;
     } else {
       s.hero.paragon++;
       if (s.hero.paragon % 3 === 0) s.hero.talentPoints++;
-      toast(s, `✴️ Oltre il limite: Ascesa ${s.hero.paragon}`, 'fate');
+      toast(s, T('✴️ Oltre il limite: Ascesa {paragon}', { paragon: s.hero.paragon }), 'fate');
     }
   }
 }
@@ -128,7 +132,7 @@ export function companionXp(s: GameState, id: string, amount: number) {
   while (c.xp >= xpForLevel(c.level) * 0.8) {
     c.xp -= Math.round(xpForLevel(c.level) * 0.8);
     c.level++;
-    toast(s, `${c.icon} ${c.name} raggiunge il livello ${c.level}`, 'good');
+    toast(s, T('{c} {cName} raggiunge il livello {level}', { c: c.icon, cName: c.name, level: c.level }), 'good');
   }
 }
 
@@ -137,6 +141,7 @@ export function canUnlockTalent(s: GameState, id: string) {
   const t = TALENTS.find(t => t.id === id);
   if (!t || s.hero.talents.includes(id) || s.hero.talentPoints < 1) return false;
   if (t.requires && !s.hero.talents.includes(t.requires)) return false;
+  if (t.requiresAny && !t.requiresAny.some(r => s.hero.talents.includes(r))) return false;
   return true;
 }
 export function unlockTalent(s: GameState, id: string) {
@@ -150,17 +155,17 @@ export function unlockTalent(s: GameState, id: string) {
   };
   const [up, down] = facMap[t.via];
   s.factions[up] += 2; s.factions[down] -= 1;
-  toast(s, `🎓 Talento: ${t.name}`, 'good');
+  toast(s, T('🎓 Talento: {tName}', { tName: t.name }), 'good');
 }
 export function hasTalent(s: GameState, special: string) {
   return s.hero.talents.some(id => TALENTS.find(t => t.id === id)?.special === special);
 }
 export function respecTalents(s: GameState) {
   const cost = 100 * s.hero.level;
-  if (!pay(s, { cenere: cost })) { toast(s, `Servono ${cost} Cenere`, 'bad'); return; }
+  if (!pay(s, { cenere: cost })) { toast(s, T('Servono {cost} Cenere', { cost: cost }), 'bad'); return; }
   s.hero.talentPoints += s.hero.talents.length;
   s.hero.talents = [];
-  toast(s, 'Talenti azzerati', 'info');
+  toast(s, T('Talenti azzerati'), 'info');
 }
 
 // ---------------- Oggetti ----------------
@@ -196,7 +201,7 @@ export function makeItem(ilvl: number, rarity?: Rarity, slot?: Slot, r: () => nu
     stats[k] = round1((stats[k] || 0) + AFFIX_SCALE[k] * (6 + ilvl) * (0.7 + r() * 0.6));
   }
   const base = pick(SLOT_INFO[sl].bases, r);
-  const name = rar === 0 ? base : `${base} ${affixes[0] || ''}`.trim() + (rar >= 3 ? ` di ${pick(['Krak', 'Vhalzareth', 'Hondovalle', 'Tomas', 'Elara', 'Cenere', 'Silenzio'], r)}` : '');
+  const name = rar === 0 ? base : `${base} ${affixes[0] || ''}`.trim() + (rar >= 3 ? ' ' + T('di {x}', { x: pick(['Krak', 'Vhalzareth', 'Hondovalle', 'Tomas', 'Elara', T('Cenere'), T('Silenzio')], r) }) : '');
   return { uid: uid('it'), name, slot: sl, rarity: rar, ilvl, plus: 0, stats, origin: pick(ORIGINS, r) };
 }
 const round1 = (n: number) => Math.round(n * 10) / 10;
@@ -208,7 +213,7 @@ export function itemScore(it: Item) {
 
 export function addItem(s: GameState, it: Item) {
   s.inventory.push(it);
-  if (it.rarity >= 3) { addFlag(s, 'legendary'); chronicle(s, `Hai trovato ${it.name} (${RARITY_NAMES[it.rarity]}).`, 'loot'); }
+  if (it.rarity >= 3) { addFlag(s, 'legendary'); chronicle(s, T('Hai trovato {itName} ({rarity}).', { itName: it.name, rarity: RARITY_NAMES[it.rarity] }), 'loot'); }
   if (s.inventory.length > 80) {
     // scarta automaticamente il peggiore non equipaggiato e non bloccato
     const equipped = new Set(Object.values(s.hero.equipped));
@@ -236,7 +241,7 @@ export function autoEquip(s: GameState) {
     if (best) s.hero.equipped[slot] = best.uid;
   }
   clampHeroHp(s);
-  toast(s, 'Equipaggiato il meglio in ogni slot', 'good');
+  toast(s, T('Equipaggiato il meglio in ogni slot'), 'good');
 }
 export function salvageValue(it: Item) {
   return { ferro: Math.round((3 + it.ilvl) * (1 + it.rarity) * 0.8), cenere: Math.round((5 + it.ilvl * 2) * (1 + it.rarity)) };
@@ -249,13 +254,13 @@ export function salvage(s: GameState, itemUid: string, silent = false) {
   const v = salvageValue(it);
   s.res.ferro += v.ferro; s.res.cenere += v.cenere;
   s.inventory.splice(idx, 1);
-  if (!silent) toast(s, `Smontato: +${v.ferro} ferro, +${v.cenere} cenere`);
+  if (!silent) toast(s, T('Smontato: +{ferro} ferro, +{cenere} cenere', { ferro: v.ferro, cenere: v.cenere }));
 }
 export function salvageJunk(s: GameState) {
   const equipped = new Set(Object.values(s.hero.equipped));
   const junk = s.inventory.filter(i => !equipped.has(i.uid) && !i.locked && i.rarity <= 1);
   junk.forEach(i => salvage(s, i.uid, true));
-  toast(s, `Smontati ${junk.length} oggetti comuni e rari`);
+  toast(s, T('Smontati {junk} oggetti comuni e rari', { junk: junk.length }));
 }
 export function upgradeCost(it: Item) {
   return { ferro: Math.round((10 + it.ilvl * 2) * Math.pow(1.35, it.plus) * (1 + it.rarity * 0.3)), cenere: Math.round((20 + it.ilvl * 4) * Math.pow(1.4, it.plus)) };
@@ -264,7 +269,7 @@ export function upgradeItem(s: GameState, itemUid: string) {
   const it = s.inventory.find(i => i.uid === itemUid);
   if (!it || it.plus >= 15) return;
   const cost = upgradeCost(it);
-  if (!pay(s, cost)) { toast(s, 'Risorse insufficienti', 'bad'); return; }
+  if (!pay(s, cost)) { toast(s, T('Risorse insufficienti'), 'bad'); return; }
   it.plus++;
   toast(s, `${it.name} +${it.plus}`, 'good');
 }
@@ -275,44 +280,44 @@ export function forgeCost(s: GameState) {
   return { ferro: 25 + L * 6, legno: 20 + L * 4, cenere: 30 + L * 10 };
 }
 export function forgeItem(s: GameState, slot: Slot, quality: number) {
-  if ((s.village.buildings.fucina || 0) < 1) { toast(s, 'Serve una Fucina nel villaggio', 'bad'); return; }
-  if (!pay(s, forgeCost(s))) { toast(s, 'Risorse insufficienti per forgiare', 'bad'); return; }
+  if ((s.village.buildings.fucina || 0) < 1) { toast(s, T('Serve una Fucina nel villaggio'), 'bad'); return; }
+  if (!pay(s, forgeCost(s))) { toast(s, T('Risorse insufficienti per forgiare'), 'bad'); return; }
   const bonus = quality * 2.5 + (s.factions.gilde >= 30 ? 0.6 : 0);
   const it = makeItem(s.hero.level + Math.round(quality * 3), rollRarity(bonus), slot);
-  it.origin = quality > 0.85 ? 'Forgiato a regola d\'arte nella Fucina di Hondovalle.' : 'Forgiato nella Fucina di Hondovalle.';
+  it.origin = quality > 0.85 ? T('Forgiato a regola d\'arte nella Fucina di Hondovalle.') : T('Forgiato nella Fucina di Hondovalle.');
   addItem(s, it);
   stat(s, 'forged');
-  toast(s, `🔨 Forgiato: ${it.name} (${RARITY_NAMES[it.rarity]})`, it.rarity >= 2 ? 'fate' : 'good');
+  toast(s, T('🔨 Forgiato: {itName} ({rarity})', { itName: it.name, rarity: RARITY_NAMES[it.rarity] }), it.rarity >= 2 ? 'fate' : 'good');
 }
 
 // Pozioni ed elisir (Infermeria / alchimia)
 export function potionCost() { return { provviste: 2, cenere: 25 }; }
 export function brewPotion(s: GameState) {
-  if ((s.village.buildings.infermeria || 0) < 1) { toast(s, 'Serve l\'Infermeria di Elara', 'bad'); return; }
-  if (s.potions >= 10 + (s.village.buildings.infermeria || 0)) { toast(s, 'Borsa delle pozioni piena', 'bad'); return; }
-  if (!pay(s, potionCost())) { toast(s, 'Servono 2 provviste e 25 cenere', 'bad'); return; }
+  if ((s.village.buildings.infermeria || 0) < 1) { toast(s, T('Serve l\'Infermeria di Elara'), 'bad'); return; }
+  if (s.potions >= 10 + (s.village.buildings.infermeria || 0)) { toast(s, T('Borsa delle pozioni piena'), 'bad'); return; }
+  if (!pay(s, potionCost())) { toast(s, T('Servono 2 provviste e 25 cenere'), 'bad'); return; }
   s.potions++;
-  toast(s, '🧪 Pozione preparata', 'good');
+  toast(s, T('🧪 Pozione preparata'), 'good');
 }
 export const ELIXIRS: Record<string, { name: string; icon: string; desc: string; cost: Partial<GameState['res']> }> = {
-  forza: { name: 'Elisir di Forza', icon: '💪', desc: '+20% attacco per la prossima spedizione', cost: { provviste: 3, intuizione: 1, cenere: 60 } },
-  pietra: { name: 'Pelle di Pietra', icon: '🪨', desc: '+40% difesa per la prossima spedizione', cost: { provviste: 3, pietra: 80, cenere: 60 } },
-  vita: { name: 'Elisir di Vita', icon: '❤️', desc: '+25% salute per la prossima spedizione', cost: { provviste: 4, cenere: 80 } },
-  lucidita: { name: 'Lucidità', icon: '🔮', desc: 'Risonanza +50% per la prossima spedizione', cost: { intuizione: 2, cenere: 80 } },
+  forza: { name: T('Elisir di Forza'), icon: '💪', desc: T('+20% attacco per la prossima spedizione'), cost: { provviste: 3, intuizione: 1, cenere: 60 } },
+  pietra: { name: T('Pelle di Pietra'), icon: '🪨', desc: T('+40% difesa per la prossima spedizione'), cost: { provviste: 3, pietra: 80, cenere: 60 } },
+  vita: { name: T('Elisir di Vita'), icon: '❤️', desc: T('+25% salute per la prossima spedizione'), cost: { provviste: 4, cenere: 80 } },
+  lucidita: { name: T('Lucidità'), icon: '🔮', desc: T('Risonanza +50% per la prossima spedizione'), cost: { intuizione: 2, cenere: 80 } },
 };
 export function brewElixir(s: GameState, id: string) {
   const e = ELIXIRS[id];
   if (!e) return;
-  if ((s.village.buildings.infermeria || 0) < 2) { toast(s, 'Serve l\'Infermeria livello 2', 'bad'); return; }
-  if (!pay(s, e.cost)) { toast(s, 'Risorse insufficienti', 'bad'); return; }
+  if ((s.village.buildings.infermeria || 0) < 2) { toast(s, T('Serve l\'Infermeria livello 2'), 'bad'); return; }
+  if (!pay(s, e.cost)) { toast(s, T('Risorse insufficienti'), 'bad'); return; }
   s.elixirs[id] = (s.elixirs[id] || 0) + 1;
-  toast(s, `${e.icon} ${e.name} preparato`, 'good');
+  toast(s, T('{icon} {name} preparato', { icon: e.icon, name: e.name }), 'good');
 }
 export function activateElixir(s: GameState, id: string) {
   if (!s.elixirs[id] || s.activeElixir) return;
   s.elixirs[id]--;
   s.activeElixir = id;
-  toast(s, `${ELIXIRS[id].icon} ${ELIXIRS[id].name} attivo fino alla fine della prossima spedizione`, 'good');
+  toast(s, T('{id} {idName} attivo fino alla fine della prossima spedizione', { id: ELIXIRS[id].icon, idName: ELIXIRS[id].name }), 'good');
 }
 
 // Ascensione del Fardello
@@ -322,7 +327,7 @@ export function canAscend(s: GameState) {
 export function ascend(s: GameState, paths: string[]) {
   if (!canAscend(s) || paths.length < 1 || paths.length > 2) return;
   const hybrid = paths.length === 2;
-  if (hybrid && s.fragments.findIndex(f => f.defId === 'spezzato') < 0 && s.reliquie < 5) { toast(s, 'L\'Ascensione Parallela richiede un Frammento del Patto Spezzato o 5 reliquie', 'bad'); return; }
+  if (hybrid && s.fragments.findIndex(f => f.defId === 'spezzato') < 0 && s.reliquie < 5) { toast(s, T('L\'Ascensione Parallela richiede un Frammento del Patto Spezzato o 5 reliquie'), 'bad'); return; }
   if (hybrid) {
     const fi = s.fragments.findIndex(f => f.defId === 'spezzato');
     if (fi >= 0) s.fragments.splice(fi, 1); else s.reliquie -= 5;
@@ -330,8 +335,8 @@ export function ascend(s: GameState, paths: string[]) {
   s.ascension = { paths, hybrid };
   addFlag(s, 'ascended');
   const names = paths.map(p => ASCENSIONS[p].name).join(' + ');
-  chronicle(s, `Ascensione del Fardello: ${hybrid ? 'ibrido ' : ''}${names}.`, 'fate');
-  toast(s, `⬆️ Ascensione: ${names}`, 'fate');
+  chronicle(s, T('Ascensione del Fardello: {ibrido}{names}.', { ibrido: hybrid ? T('(ibrido) ') : '', names: names }), 'fate');
+  toast(s, T('⬆️ Ascensione: {names}', { names: names }), 'fate');
   s.influence += 20;
   clampHeroHp(s);
 }

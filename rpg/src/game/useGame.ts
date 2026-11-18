@@ -1,3 +1,4 @@
+import { kvUsesBridge } from './kv';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { GameState } from './types';
 import { newGame } from './engine/state';
@@ -43,7 +44,7 @@ export function useGame() {
   // autosalvataggio ogni 10 secondi + alla chiusura della scheda
   useEffect(() => {
     const save = () => saveGame(ref.current);
-    const id = window.setInterval(save, 10_000);
+    const id = window.setInterval(save, kvUsesBridge() ? 30_000 : 10_000);
     const onHide = () => { if (document.visibilityState === 'hidden') save(); };
     window.addEventListener('beforeunload', save);
     document.addEventListener('visibilitychange', onHide);

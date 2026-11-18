@@ -1,0 +1,133 @@
+{
+    "advertisement": {
+        "interstitial": {
+            "placements": [
+                {
+                    "id": "delve_end"
+                },
+                {
+                    "id": "cycle_end"
+                },
+                {
+                    "id": "pause"
+                }
+            ]
+        },
+        "rewarded": {
+            "placementFallback": "reward",
+            "placements": [
+                {
+                    "id": "double_offline"
+                },
+                {
+                    "id": "recover_satchel"
+                },
+                {
+                    "id": "reward"
+                },
+                {
+                    "id": "bless"
+                },
+                {
+                    "id": "chest_double"
+                },
+                {
+                    "id": "supplies"
+                },
+                {
+                    "id": "market_refresh"
+                },
+                {
+                    "id": "boss_try"
+                }
+            ],
+            "preloadOnStart": "reward"
+        },
+        "minimumDelayBetweenInterstitial": 300,
+        "banner": {
+            "placementFallback": "idle",
+            "placements": [
+                {
+                    "id": "idle"
+                }
+            ]
+        },
+        "advancedBanners": {
+            "placementFallback": "idle",
+            "idle": {
+                "default": [
+                    {
+                        "width": "60%",
+                        "height": "10%",
+                        "bottom": "0%",
+                        "left": "20%"
+                    }
+                ],
+                "desktop:landscape:w>1500": [
+                    {
+                        "width": "9%",
+                        "height": "62%",
+                        "top": "20%",
+                        "left": "0.5%"
+                    },
+                    {
+                        "width": "9%",
+                        "height": "62%",
+                        "top": "20%",
+                        "right": "0.5%"
+                    }
+                ],
+                "desktop:landscape": [
+                    {
+                        "width": "60%",
+                        "height": "10%",
+                        "bottom": "0%",
+                        "left": "20%"
+                    }
+                ],
+                "mobile:portrait": [
+                    {
+                        "width": "100%",
+                        "height": "10%",
+                        "bottom": "0%",
+                        "left": "0%"
+                    }
+                ],
+                "mobile:landscape": [
+                    {
+                        "width": "50%",
+                        "height": "10%",
+                        "bottom": "0%",
+                        "left": "25%"
+                    }
+                ],
+                "tablet": [
+                    {
+                        "width": "80%",
+                        "height": "10%",
+                        "bottom": "0%",
+                        "left": "10%"
+                    }
+                ]
+            }
+        }
+    },
+    "leaderboards": [
+        {
+            "id": "krak_daily",
+            "isMain": true
+        },
+        {
+            "id": "krak_veglia"
+        }
+    ],
+    "saas": {
+        "publicToken": "cmw84vgvt1oqwmt0h7pkr65sc",
+        "leaderboards": {
+            "platforms": [
+                "playgama",
+                "qa_tool"
+            ]
+        }
+    }
+}

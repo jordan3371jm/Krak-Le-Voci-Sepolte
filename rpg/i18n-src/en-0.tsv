@@ -1,0 +1,440 @@
+1gxdn8s	👁️ The Rite begins (immersive mode)
+1iqyhym	You look away from the valley.
+1bp7xlr	👁️ The Rite begins. The valley breathes. Listen to the whispers.
+wi73xp	You look away from the valley. Some truths fade.
+1sv9axa	protection
+1lvjhdb	sacrifice
+1fncv44	cruelty
+1pat47y	betrayal
+bvvuty	silence
+1izphcf	faith
+1h668yc	blood
+1wvhnl0	neutral
+6y3blm	· back row
+a32x1y	 · 🎭 liar
+oikker	Awakens
+1ux3ecg	Tap to fight
+hn1wtn	Your first fight
+1v3se4x	1. Tap an **ability**, then the **enemy** to strike. The basic attack builds Focus (◆); strong abilities spend it.
+13k72th	2. **Green** border = the action fits your Burden and charges Resonance. **Red** border = it goes against it and builds Dissonance. Neither is wrong.
+1cc7m5z	3. Under each enemy (⚠) you see their next move. Potions don't use up your turn.
+1vx0wyj	Round
+gatzpc	🔗 Chain ×{n}
+3yv227	Boss battlefield
+540b06	Auto
+1poom5h	Fast
+13x6kr3	Choose the target for {pendingName}{fila} ·
+h1zog9	⚔️ Your turn
+wymdpy	…the enemies act…
+85ae02	cancel
+mmta42	◈ Resonance
+knq9pz	〰 Dissonance
+mfjk0t	◆ Focus
+17hs1kg	{desc} · nature: {n}
+136l8r7	〰 Dissonance actions (powerful, destabilizing)
+wp95lt	🧪 Potion (
+w3psps	Fall back
+13pzfdk	Advance
+1q20fse	Password…
+faigt0	Speak
+1bcxxk5	Withdraw
+o1ncs	🏃 Flee (lose half your satchel)
+177rirx	🗻 End of the fight
+nfbavz	🏆 Victory
+c72ogt	☠️ Defeat
+f8rwb7	Damage dealt: {damageDealt}
+if9j4l	The valley carries you back to the surface, poorer.
+1aerg2g	Continue
+1cmcw27	Compass of Fate
+djk6x3	Insight
+rdal7n	The valley is not a level menu: it is a living constellation. Your choices light stars; with Insight you can read others and reveal secrets, people, threats and memories of the world.
+mnowd7	read
+1bzbwtv	It lights up only through a choice.
+1q6zguo	It can be read with Insight.
+1njxbd1	Stars lit: {lit}/{total}. Completed constellations: {list}.
+1czi4iw	none
+1ear6jv	Promises
+1884tk7	No promises. Promises are born from important choices.
+13m001f	Expeditions left: {deadlineDelves}
+p12uxe	Kept
+1954eqe	Broken: a Hunter is looking for you
+zlm9f	Narrative temperature
+1n2n5x2	Your valley:
+1c7bxm2	Bloom
+19aap5j	Valley corruption
+dhxed4	Tension
+hxc37r	🌐 World of Seeds — today {n} bearers:
+d9v8dw	The shared valley today:
+1gb3xwf	Fate Shards
+10oaoeb	No shards. You get them from hard choices, bosses, promises and the Market.
+5qczb1	 · dark
+1s1xvvq	Activate
+ncjn3x	Anti-griefing: dark shards have a 1-hour cooldown; their effects stay in your valley.
+12ewewi	Fate Contracts
+cr57mt	Bet a shard on tomorrow's state of the shared valley. If you're right you gain influence (+2 relics and an extra shard); if you're wrong the shard becomes corrupted. In-game economy only, no real money.
+1b9hxbw	— shard —
+1wpm9z7	Tomorrow:
+1rkvahc	Sign
+r98217	✔ came true
+19wlk9s	✖ failed
+18vit5w	pending
+11xsg5s	Today the shared valley is in «{state}». Total damage to the Colossus today: {dmg}.
+p6ud5o	Before descending you must choose your Burden, in the village. Dungeons are born from your choices.
+hqrrj5	Others call it «
+12wlmal	». You see it differently.
+jassxi	Recommended level:
+qlnxxo	· 🏆 Conquered
+4dutwe	It remembers: «
+1udzdmz	From floor
+18zt3ln	Descend (🍞1)
+1u9kgoc	You are level
+39yh2n	🔒 Conquer
+6ad1g2	to unlock it.
+tmmc7j	World Boss: the Ash Colossus
+1yn9q4t	Attempts today:
+f9uj9m	Every day all the bearers of the valley strike the same Colossus.
+ggp0fo	bearers today. The more damage you deal in 10 rounds, the better the rewards.
+17l05fb	Shared health
+1hgjf1f	Face the Colossus
+19k44k5	Your damage today:
+1ft71i	The Shadow of the Burden: {shadowName}
+ouqi3b	Burden's influence
+11mpof2	Every coherent action feeds your Burden. Above 40, its Shadow (the extreme version of your choice) starts appearing in dungeons as an optional boss. Defeating it leaves a Shard and lowers the influence.
+alxfi	Floor
+hopaw9	Mirror:
+id8ywu	👻 Allied echo
+1m5q3ez	How descending works
+15r0x28	Each floor offers you doors: pick one. **Swords** = fight, **?** = story event, **candle** = shrine to heal, **chest** = treasure.
+tfytat	Loot goes into the **Satchel** (on the right): it is safe only when you return to the surface. Each floor costs 1 Supply. Every 5 floors there is a boss.
+arqgys	Choose a door
+bc1grt	Corruption blurs the signs. Purify the interface at the Altar to read them again.
+seq1gs	… something whispers at the edges. (Only in the Rite: fullscreen)
+z0dak0	🛠️ Disarm (
+xn7rzk	🩹 Push through (−10%)
+1823grd	🩸 Offer blood (sacrifice)
+1015mfx	🛏️ Rest (🍞1, +45%)
+mxplwh	🙏 Pray (+Resonance)
+1tj0ya7	Move on
+vi6uxa	🕯️ Purify yourself
+1h7lx23	The boss left a choice: take one.
+s3pjax	Floor {floor} cleared
+gk7xmt	⬇️ Descend to floor
+1simt8i	Threshold of Retreat
+1wrji78	⛓️ Pledge your future: −
+6fos1e	max health to descend
+158sn88	⬆️ Return to the surface and secure the satchel
+1s6vzwp	Out of supplies. You can pledge future max health: if you return alive you get half back; if you die the pledge becomes permanent until Elara lifts it.
+drp0f1	You have reached the bottom of this layer.
+8osbyp	Going deeper is richer and more dangerous. If you fall you lose three quarters of the satchel.
+13svo92	Satchel (not secured)
+1dqqpgk	⛓️ Pledged on this descent:
+1pgr25j	Supplies in the village: {p} · Potions: {n}
+4jrxnd	🧪 Drink a potion
+1ou4smc	Party
+1g6fez5	Bearer's Guide ·
+4r8eqv	collapse
+nzfqer	show
+1vm7iw3	Go
+n5yktc	New possibility
+pfe80m	Got it
+mrzgn	New section
+rqgd1l	Open now
+1rhvqfz	Bearer's Codex
+iqcsg0	New entries appear as you discover the valley.
+1nf6dpr	Close
+a706bw	Got it ✕
+vpx9a8	Level
+3whroo	 · Cycle {n}
+1a6hlkh	Health
+5z319y	pledge −
+1gyr5zi	Resonance / Dissonance / Corruption
+154cneq	Resonance
+70iv7a	Diss.
+1orz41v	Relics
+15wq9ff	Potions
+11deu9i	Codex: how it works
+1f5kmjy	Music on
+1dwnd4e	Music off
+1ddeffj	The Rite (fullscreen)
+5s2kql	Village
+i06ydn	Descent
+1j2ot22	Hero
+prvaes	Compass
+i4ct2v	Companions
+zg4dtm	Market
+uipjer	Factions
+w1xs95	Journal
+1qdt732	Legacy
+13g5sfh	Options
+14bw3me	new
+1ntmul	Forge
+m68mi8	Build a Forge in the village to craft equipment.
+14k8kl8	Light the forge ·
+1v9ir10	Strike
+2mwqno	/3 — strike when the heat is in the bright zone.
+22wcy7	🔨 Strike!
+zg0zbl	The quality of your strikes raises the rarity. The Guilds (Trusted) improve every forging.
+19d8nv8	Inventory ({inventory}/80)
+1bze9hi	Auto-equip
+clu15w	Salvage commons
+1jucrvb	All
+1tof9q7	Comparison:
+fbqfrf	▲ better than {name}
+16kjalp	▼ worse than {name}
+b66p82	Remove
+jfvxq2	Equip
+1ain5i8	Upgrade +
+mbn4rs	🔓 Unlock
+81uy9e	🔒 Lock
+1uc2qm9	Salvage (⛓️
+5zlbs3	Sell at the Market
+78fqct	No items. Go down into the dungeons or forge.
+ri3jb4	Talent Paths · {talentPoints} points
+18wpbpu	Reset (
+1twu1vg	You don't level up to become stronger: you level up to become someone. Each Path brings you closer to one faction and pushes another away.
+389r2d	Burden Ascension
+wnho1w	You need a Burden.
+1oiaez5	Parallel Ascension (hybrid)
+v54bzj	Ascension
+7ydgea	Hybrid: each path counts at 60%, but you carry the costs of both.
+1dynlcz	Beyond level: the Burden evolves into more powerful and binding forms. Choose one path, or two for a **Parallel Ascension** (hybrid: requires the Broken Pact Shard or 5 relics).
+18y2bz7	Requires level 15 and the Cemetery conquered (or 4 bosses defeated).
+k5hjn6	Parallel Ascension: {name}
+pr7cru	Power
+1557tkw	Level {n}
+1aqkykf	 · Beyond the limit ✴{paragon}
+1kfjtsr	 · 🦷 Aberration
+1atcjhd	light: you act first
+iqxlys	heavy: +10% damage
+ti3c5b	Equipment
+bi2zxi	{slot}: empty
+11c881i	Abilities
+1tb960	Echo:
+3xrivr	Inventory and Forge
+1fuo3uu	Talents
+c3zmbh	Rarity:
+1s9x6zu	The night the portal opened, Hondovalle was burning.
+19nv7eb	Beneath the valley, something buried began to speak.
+l9cifi	They call it Krak. It has no mouth. It only has your choices.
+1dvhq6f	The world does not save your progress.
+1qzwyaw	It remembers it.
+192g22r	An RPG that remembers
+1669srk	KRAK
+coeiip	The Buried Voices
+1crviq1	The echo of {name} ({ending}) still wanders the valley. Your Memories: +{prod}% production, +{stats}% stats.
+kyj54b	Card of Fate:
+1i77gfi	Skip ›
+11i67iz	Enter the valley
+qorwjs	Tip: headphones and fullscreen make the rite deeper.
+1dedf4o	Who carries the Burden?
+kbbtol	Your name will become a spell. Some will speak it with love, others will curse it.
+6jxkdh	Your name
+xsv5mk	Health {hp} · Attack {atk} · Defense {def} · Crit {crit}%
+c4xtne	Descend to Lower Hondovalle
+136qwmg	The game reloads to change language.
+12rsbse	The world remembers. A consequence was waiting for you in the village.
+1ore8vt	The Trial of Your Own Choices
+19h8z84	You wake in a stone hall. The judges wear your face.
+96vw38	The main witness is {FName}.
+dfdn00	Your Echoes sit among the audience.
+zfxi8t	Accusations
+1u6tmvt	No serious accusations.
+x0xyvv	Defenses
+1ln1jy0	No defenses.
+17dg2mo	🙇 Confess everything
+1694kvx	🛡️ Defend yourself (you risk a fight)
+4a59k7	💔 Renounce the Burden (rupture)
+gnwwfa	⛓️ Accept the sentence
+j5egys	Soul Market
+1reeby5	New goods in
+1rruu5y	Here they don't just sell items: they trade destiny. Every good carries the story of whoever owned it. Prices depend on your reputation with the Market Shadows.
+og4p5i	from
+9xrdrc	Sell Shards
+c34yro	No shards to sell.
+iw22ik	Selling dark shards darkens the valley. To sell equipment, use the Hero's Inventory.
+wr3hne	Ledger of Souls
+10ke7iy	No trades yet.
+7f7lb	Trusted: the Cult offers you the Font. Banished: fanatics in the raids.
+1xzrrh7	Trusted: richer bounties. Banished: taxes and raiders.
+l2ucbq	Global production; Trusted: better forging; Adored: buildings −10%.
+q6pl0k	Supply and wood production; they protect you from raids.
+l7fthx	Elara's care, rites to lift pledges and aberrations.
+vlc65q	Hidden truths; the Password makes them your allies.
+onst89	Soul Market prices and Fate Contracts.
+1uh1jwo	Seals of Krak: the valley breathes better.
+yu9nu7	Reputation in the Valley
+17wj1cm	No single karma. Gaining reputation with one faction often harms its rival. The state (Ignored, Tolerated, Trusted, Feared, Adored, Banished, Branded) changes dialogue, prices, events and endings.
+1ntsjb5	Rival: {name}.
+15z2xwb	In party:
+zp0j8m	Trust
+l336w7	Health {hp} · Attack {atk} · Defense {def}
+1wxzz0m	front row
+gvryc5	back row
+14zxv7c	Has abandoned you
+1qa3604	Recruit · ⚱️
+6lxw4h	✔ In party
+18t3204	Take along
+1t3j8na	🧭 Send on expedition
+1pge8ol	Collect the loot (
+1grhekg	In {place} · back in {time}
+14e8qtt	Using a companion as a shield lowers their trust. Below 25 they hesitate in battle; at 0 they leave forever.
+1tlsa23	Expeditions ({busy}/{s} slots)
+1udw49o	Expeditions last real hours and continue even with the game closed. Choose the destination, then send a companion.
+1c7rq73	 · item {itemChance}%
+14xmiw	 · shard {fragmentChance}%
+cc919u	Card of Fate: faster expeditions.
+bb0qwn	📅 Today
+1yqzwur	📜 Chronicle
+15py8c0	🏆 Feats
+t25r2p	👹 Bestiary
+11ngfj0	Dailies
+1fmoqnt	🎁 Chest already opened today
+qkr95g	🎁 Open the daily chest
+pbf75g	Claimed
+bfrx05	Claim
+19lyzhs	Complete all three for a relic. They renew every day.
+1m9tlra	Dream Journal
+wxrnr2	Your save dreams while you're away. You return and find traces of what happened.
+t4dmp9	No dreams. Come back after at least an hour away.
+53l24d	Wake up
+iz3bvi	The Valley Remembers
+1f4b421	Nothing to remember yet.
+74b0kx	Feats {achievements}/{ACHIEVEMENTS}
+1kb33xz	% production
+yf6klp	Bestiary
+u11h8a	When your bearer reaches the Heart of Krak (or the valley becomes legend), you can close the Cycle. The character becomes a Legacy: an echo that future bearers will meet. You gain permanent **Memories** (+5% production and +1.5% stats each). You keep relics, Sanctuary, feats, pond memories and bestiary.
+1i58zg9	Memories gathered:
+1b08bix	(+{n}% production)
+qrvci3	Ash this Cycle:
+14m7jof	Memories if you close now:
+1a5q7ll	Close the Cycle and discover your ending
+1dnjtcq	Defeat the Heart of Krak (or gather 150K ash at level 12)
+waqfyh	Echoes of Past Bearers
+1mj832c	No legacy yet. Yours will be the first name the valley remembers.
+1qvaune	· Cycle
+4b5lud	· in dungeons appears as
+12x79bj	corpse with loot
+1x7poc7	Sanctuary of Relics
+x7pen0	Offer relics for permanent upgrades that survive every Cycle.
+1ak1nbb	→ cost 🏺
+ldkuob	Save
+147za0m	The game saves itself every 10 seconds and when the tab closes, with 3 rotating backups and an integrity check. To move it to another device, copy the code and paste it there.
+1bka08	Game saved.
+10qk5t9	Save failed (storage full?)
+1mrwv5b	💾 Save now
+17re9jn	Code copied to the clipboard.
+13glwah	Code ready: select it and copy it.
+1t3tsx2	📋 Copy code
+13faw57	Game loaded. Welcome back to Hondovalle.
+1n2vt9w	This code doesn't work: check that it's complete.
+1wp6e5l	📥 Load code
+1h87o7s	Paste a code here and press «Load code»
+3kqw9u	Tap again to delete EVERYTHING
+wd6zce	🗑️ Delete the save
+1n4kmx7	Language
+q1adgd	Choose the game's language.
+uykjsc	Rite and Sound
+jec2l3	Music and ambience
+1mjp33b	Music volume
+1fwcvny	Sound effects
+11y8h1k	Audio is a mechanic: with sound on you hear (and see) the intents of invisible enemies. Total silence comes when Dissonance is at its peak.
+1qs2cqw	Leave the Rite
+4eitvp	⛶ Enter the Rite (fullscreen)
+17a404	In the Rite: +25% Resonance, whispers, hidden choices in events.
+1ci6c7b	Reduce animations and corruption effects
+d87goe	Auto-battle
+cx364v	Fight automatically (rotation coherent with your Burden)
+1v8jkwl	Fast combat
+15kkg11	Drink a potion below {n}% health
+146wri9	Auto-battle never uses Dissonance actions: those remain your choice.
+lu3bfy	How to play
+jetwjc	**Village**: gather, build, production continues even offline.
+1y6pqlo	**Descent**: choose doors, fight, then decide whether to go deeper or secure the satchel.
+15eb36x	**Burden**: coherent actions charge Resonance (→ Echo), incoherent ones Dissonance (→ dark actions).
+4asdgt	**Promises**: keeping them grants shards; breaking them summons the Promise Hunter.
+1gji0ae	**Cycle**: close it for an ending, a Legacy and permanent Memories.
+ba2zuf	End of Cycle
+s8h57w	+{gain} Memories. {name} becomes a Legacy: future bearers will meet their echo.
+zcyhfz	Choose the Card of Fate for the next Cycle
+advfsk	An item to pass down (optional)
+wiuja8	Not yet: back to the valley
+1mdbh3s	Begin Cycle
+4ev0jd	Kael, swordsman
+1jirgna	«The portal is widening! Tomas, my brother, is closest to the seal. If someone pushes him in, the portal closes with him.»
+frt4hp	Seal the portal by sacrificing Tomas
+1r49d83	Heavy Burden: powerful blows, Resonance by protecting others
+1jcine4	Vesper, envoy of the Cult
+1ixbk8n	«Elara's child is dying of poison. The Cult has the antidote. The price? That refugee, Ilyas. Hand him over.»
+1cb9b6	Hand Ilyas over to the Cult to save the child
+1wmh11c	Very heavy Burden: lifesteal and attack, the Cult calls you brother
+1j267rc	Marcus, captain of the Capital
+lzf8us	«Stay back, civilian. We decide here.» Around you the valley burns. You can only watch, and remember every face.
+x46wdn	Do not intervene. Watch. Remember.
+1xnroq5	Light Burden: you act first, you dodge, you see what is hidden
+46eoe7	Prologue
+c80wvw	The Night of the Portal
+cilmyi	Hondovalle is burning. A portal of flesh and metal opens above the well. Three voices call you at the same moment. You can answer only one. None is right. All will be remembered.
+s5cado	You will not be able to go back.
+11gwnh3	{description}\n\nActions coherent with your Burden charge Resonance; contrary ones build Dissonance. The world will remember both.\n\nNow rebuild Hondovalle. The Guide at the top will tell you what you can do, never what to choose.
+jqku85	Choose. And carry the weight.
+bbabk7	"What… what have you done to yourself? I can still heal you, if you let me."
+uqxo7c	"Keep away from the square, monster. People are afraid."
+1rlqzlo	"…What was your name? It's on the tip of my tongue."
+hg0b5e	"{n}, the child asked for you today. Said your name for the first time."
+mjadk8	"{n}, my home is yours."
+16q1z4d	"Sit down, {n}. I'll change your bandages."
+1653g9u	"{n}. Do you need healing, or forgiveness?"
+1s64eru	"Another bearer. I hope you're different from the others."
+9nrc0w	"Don't… don't hurt me, {n}."
+11nie03	"Get out of my infirmary."
+1stsbf5	"You bear the mark of the Cult. Go away."
+17017oo	"You burned the Capital's edict. I'll remember that, bearer."
+rfcbnv	"Bearer {n}! The Capital needs people like you."
+1nizn86	"{n}. A report, please."
+gvs3gn	"Move along. I have a garrison to feed."
+1ysv4al	"Who are you? I don't care. Move on."
+1wvpp76	"…Please, go ahead."
+la39eg	"One more step and I'll have you arrested."
+vljjb1	"Wanted. Dead or alive."
+1u7qron	"Brother {n}. The Cult does not forget who gave it a son."
+ar0850	"{n}, the Font awaits you."
+sg3bhc	"The Cult watches you with favor."
+1sbiyj5	"Every power has a price. Always."
+21q01c	"The valley is dying. Only the Cult can save it… or destroy it."
+1wk6mdd	"Even the Cult knows a predator when it sees one."
+1m9hkfw	"Your blood will be ours."
+s93oxn	Too soon! The bait is lost.
+1eg5rqq	Perfect catch! A memory rises from the water.
+kzluk1	A memory rises from the water.
+1y5417j	No bait. It will come back with time.
+n8soxy	…the line sinks into the dark water…
+1jwfnr2	IT BITES! Tap now!
+xqx87q	It got away…
+k4xg09	The Pond of Voices
+njvo6d	Bait
+18d4et4	Each species is a memory of the valley: +1% production forever. Memories:
+1z055ws	 · 🏆 Golden rod
+2w4mzr	Lower Hondovalle
+17gw81p	Only ash and a dying fire. Rebuild.
+hlnpil	The village is reborn, one beam at a time.
+1h5saoe	Hondovalle lives again. Children run between the houses.
+14l1bih	Hondovalle has become the capital of the valley.
+1p982c1	The fire of Hondovalle
+14doiu2	Burned houses
+19rjuzr	🛒 A merchant has arrived! (
+9vpwtf	The Ash Stag!
+eevbzz	Raid: {name}
+1kq1q81	⚔️ Strike!
+10t1a52	(the {torre} towers help)
+18hn9w2	Gathering
+1ydqvw7	Chop
+4gifw3	Dig
+1i1em9r	Gather
+1yhpthu	The storyteller returns in {now}
+xvi7tl	Listen to the storyteller (production ×2)
+14q7bvs	Faces of Hondovalle
+i6en5e	Buildings
+1vywl9u	each building costs +15%
+scluf7	??? · build
+wh3oww	Upgrades
+7pna5x	Buy all

@@ -1,9 +1,10 @@
+import { t as T } from '../../i18n';
 import type { BiomeId, Chronicle, FactionId, GameState, Loot, Resources, Toast, ValleyState } from '../types';
 import { COMPANIONS, FACTION_IDS, FARDELLI } from '../data/core';
 import { CONSTELLATIONS, FATE_CARDS, SANCTUARY, STARS, VALLEY_EFFECTS } from '../data/world';
 import { clamp, todayKey } from '../rng';
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const MAX_LEVEL = 40;
 
 export function emptyRes(): Resources {
@@ -28,7 +29,7 @@ export function newGame(): GameState {
     reliquie: 0,
     totals: {},
     village: { buildings: {}, upgrades: [] },
-    companions: COMPANIONS.map(c => ({ id: c.id, name: c.name, icon: c.icon, role: c.role, level: 1, xp: 0, trust: 60, hp: 1, recruited: !c.recruitCost, inParty: !c.recruitCost, mission: null })),
+    companions: COMPANIONS.map(c => ({ id: c.id, name: c.name, icon: c.icon, role: c.role, level: 1, xp: 0, trust: 60, hp: 1, recruited: !c.recruitCost && !c.joinsByStory, inParty: !c.recruitCost && !c.joinsByStory, mission: null })),
     resonance: 0, dissonance: 0, corruption: 10,
     factions, flags: [], chronicle: [], promises: [], fragments: [],
     delve: null,
@@ -40,14 +41,19 @@ export function newGame(): GameState {
     valley: { prosperity: 30, tension: 20, blight: 25, eclipseUntil: 0, rebirthUntil: 0 },
     world: { day: todayKey(), bossDamage: 0, bossTries: 0 },
     daily: { day: '', chest: false, missions: [], bonus: false },
+    weekly: { key: '', missions: [], bonus: false },
+    monthly: { key: '', missions: [], bonus: false },
     achievements: [], bestiary: {}, fish: [], bait: 5, baitAt: now,
     requests: [], requestsAt: 0,
     events: { cart: 0, deer: 0, threat: null, nextAt: now + 90_000, buffs: [], bardReadyAt: 0 },
     cycle: { n: 1, memorie: 0, memorieTotal: 0, sanctuary: {}, card: null, cardOffer: [], heirloom: null },
     legacies: [], dreams: [],
     trial: 'none', trialOutcome: null, ending: null,
-    settings: { music: true, sfx: true, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
+    settings: { music: true, musicVolume: 0.55, sfx: true, muted: false, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
     fullscreen: false,
+    unlocked: [], newTabs: [], codexQueue: [], tutorial: 0, tipsSeen: [], lastReport: null,
+    krak: { level: 0, max: 0 }, omens: [], dailyRun: { day: '', best: 0, tries: 0, allBest: 0 }, glitchUntil: 0, lostSatchel: null,
+    talk: null, quests: {},
     modal: null, toasts: [],
   };
 }
@@ -76,7 +82,7 @@ export function fmt(n: number): string {
   const a = Math.abs(n);
   if (a >= 1e9) return (n / 1e9).toFixed(2) + 'G';
   if (a >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-  if (a >= 1e4) return (n / 1e3).toFixed(1) + 'K';
+  if (a >= 1e3) return (n / 1e3).toFixed(a >= 1e5 ? 0 : 1).replace(/\.0$/, '') + 'K';
   if (a >= 100) return Math.floor(n).toString();
   if (a >= 10) return n.toFixed(1).replace(/\.0$/, '');
   return n.toFixed(a < 1 && a > 0 ? 2 : 1).replace(/\.0+$/, '');
@@ -93,7 +99,8 @@ export function displayName(s: GameState): string {
   return s.playerName.split('').map((c, i) => (i % 2 ? '̷' + c : c)).join('');
 }
 export function fillText(s: GameState, t: string): string {
-  return t.replace(/\{name\}/g, displayName(s)).replace(/\{fardello\}/g, s.fardello ? FARDELLI[s.fardello].name : 'nessun Fardello');
+  return t.replace(/\{name\}/g, displayName(s)).replace(/\{fardello\}/g, s.fardello ? FARDELLI[s.fardello].name : T('nessun Fardello'))
+    .replace(/\{legacy\}/g, s.legacies[0]?.name || T('il portatore di prima')).replace(/\{cycle\}/g, String(s.cycle.n));
 }
 
 // ---------------- Risorse ----------------
@@ -157,6 +164,7 @@ export function prodMult(s: GameState, key: keyof Resources | 'all', now = Date.
   m += 0.02 * s.achievements.length;
   m += 0.05 * s.cycle.memorieTotal;
   m += 0.01 * s.fish.length;
+  m += 0.03 * (s.village.works?.granaio || 0);
   m += valleyFx(s).prod;
   m += cardMod(s, 'all');
   m += sanct(s, 'saggi') / 100;
@@ -176,7 +184,8 @@ export function prodMult(s: GameState, key: keyof Resources | 'all', now = Date.
 }
 
 export function lootMult(s: GameState): number {
-  return 1 + valleyFx(s).loot + cardMod(s, 'loot') + sanct(s, 'bottino') / 100 + consMod(s, 'loot') + s.corruption / 250;
+  const talent = s.hero.talents.includes('ca4b') ? 0.2 : 0;
+  return 1 + valleyFx(s).loot + cardMod(s, 'loot') + sanct(s, 'bottino') / 100 + consMod(s, 'loot') + s.corruption / 250 + talent;
 }
 
 export function repState(s: GameState, f: FactionId): string {

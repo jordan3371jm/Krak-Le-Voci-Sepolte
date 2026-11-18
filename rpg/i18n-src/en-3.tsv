@@ -1,0 +1,422 @@
+1nvqijd	2 Supplies
+2rj5eh	🚫 Target in the back row: the melee attack hits the front row.
+1oafd3f	🗡️ You use {allyName} as a shield! Extra turn. (Trust -12)
+uv4ddc	👂 {eName} hears the noise and flies into a rage!
+1yksdlg	💫 {partyName} is stunned and loses the turn.
+1pm4lib	🧪 Potion: {heroName} heals.
+dan8p0	↔️ {heroName} moves to the {retrovia}.
+fxa4t	❔ "{word}" does not resonate.
+2ip9cq	🗝️ The word resonates, but no one here is lying.
+8b96t8	🗝️ "{secretWord}"! The lies shatter: weak points revealed. (The Market Shadows heard you.)
+1c9vswx	⏩ Extra turn!
+xminzo	😶 {pName} hesitates: they don't trust you.
+sj4uqp	{sk} {pName} heals {hurtName}.
+1xq1og9	💫 {eName} is stunned.
+14ykf0	🕯️ You rise!
+nueugu	🕯️ {heroName} rises from their own ashes!
+9t9oxm	☠️ {heroName} falls.
+jy42ji	🦠 The corrupted ground wounds whoever stands in the front row.
+jywh92	🩸 The dungeon closes in: the enemies grow more furious every round!
+wu59ro	🗻 The Colossus withdraws into the clouds of ash.
+1rsoq1m	🏆 Victory!
+1wvznww	🏃 You flee toward the surface!
+1gafye5	{comp} {compName} no longer trusts you and abandons you.
+f7mp3	Seed
+13ces9	Never visited. Born from your choice.
+1ry2ubm	Echo
+sl2ykx	You conquered it. Now it remembers your visits.
+yd5bxq	Decay
+os7571	Ignored for too long: it has become corrupted. Enemies +20%, loot +30%.
+1fqp4qr	Full of enemies, resources and secrets.
+mrrspn	First you must choose your Burden
+1cpq7iz	Conquer the previous dungeon first
+12ycko3	You need at least 1 Supply to descend
+1gmsykv	You are too wounded. Rest in the village or drink a potion.
+11v705l	You descended into {BName} (floor {startFloor}). Theme of the Mirror: {emotion}.
+vlk2gt	You hear footsteps and breathing
+hcz1fc	Smell of fresh blood
+ko9wuu	Creaking bones
+ckrs83	A heavy presence
+1rdgg16	Someone is waiting for you
+7yamsu	The dark here has a face
+1q2uasq	A voice calls you by name
+1yc9zbv	A strange light
+1rl693w	Something to decide
+zom3im	The floor seems to breathe
+19qrzlb	Thin threads in the dark
+1p9pfdf	Suspicious silence
+hc61dx	A lit candle
+2y85ou	Clean air, for once
+6v0aak	An intact altar
+a8iael	A glint
+1kz6tvq	A lonely chest
+oc800l	Scattered coins
+kubo2f	An echo of footsteps not your own
+16qbbhx	Another bearer passed through here
+8n1jmz	A freshly carved name
+1l6pjlp	Your Burden has a shadow
+1wxlu9i	Someone with your face
+18gx6tg	A shape you know
+z51loj	Clinking chains
+todggv	Someone repeats your promises
+1phcnxu	A hunter is following you
+1h0tsx6	The heart of the dungeon beats here
+cc2bpx	There is no other way
+12t4r9b	The end of this layer
+1qcub6a	A swinging lantern
+15a5irg	Someone bargains with the dark
+pl0kyy	A Market Shadow
+jnhy8x	Fight
+1r6wqy8	Elite
+15zmr4	Event
+4xlmws	Trap
+6prs9h	Shrine
+7rhglj	Treasure
+17kdgc3	Bearer's Echo
+1gae8bc	Shadow of the Burden
+10658d5	Hunter
+fnhp9o	Boss
+cbf47b	Shadow Merchant
+kqjuh7	{shadowName} emerges from your Burden. "I am what you will become."
+1uhg2he	The Promise Hunter carries your broken words hanging from its belt.
+14glr4q	The floor gives way beneath your feet.
+lyzr4b	Bone blades snap out of the walls.
+10bymul	A greenish gas rises from the cracks.
+1y0urqj	A small shrine, intact. Here the dungeon holds its breath.
+o719sb	A Market Shadow offers you goods torn from the fallen. It accepts Ash from the satchel or from the village.
+19a5ff3	The chest opens its jaws: it's a mimic!
+ab6j6u	Floor {floor} · Mimic
+gzrjc6	In the chest: {c} Ash and a little iron.
+1sbkqv9	 A Fate Shard glimmers at the bottom!
+gamgo3	{ownName} (your Cycle {cycle})
+10iathk	The Echo of {name} has found no peace. It mistakes you for the one who betrayed it.
+10uf052	Echo of {name}
+42qs75	The Echo of {name} walks with you for the rest of the descent.
+1p04piw	{name} has become a shadow merchant. "I kept something aside for whoever came after."
+140iugf	The body of {name}. They had opened this door by sacrificing their health, then fell. You finish what they began: the dungeon will remember you both.
+tj5gb0	Once belonged to {name}, fallen on floor {floor}.
+4tdtma	You disarm the mechanism. Among the gears, a little iron.
+gofhvh	The mechanism snaps! -{dmg} health.
+1gjrca3	You push through, teeth clenched. -{dmg} health.
+100h2q3	You offer your blood: the trap is appeased. -{dmg} health, corruption drops.
+k7sbej	You pass the shrine without stopping.
+qz7pm1	You need 1 Supply to rest
+1pyqbbn	The Reliquary demands 30 Ash
+hs0fxr	You consume a supply and rest. Your wounds close.
+1e8zjcv	You pray. The Burden vibrates, coherent.
+2adr6y	You purify yourself. The corruption recedes.
+1n9jc6z	Not enough Ash
+1ee896j	Floor {floor} · {title}
+9zj1ix	The Voices of the Choir
+x5po0w	The Choir crumbles. The voices of those you could have saved surround you, waiting.
+1ngen21	Absorb the voices into your Burden
+1q9chhp	The pain runs through you. The voices find peace within you.
+q19kd	Silence them forever
+1ig0sa6	The silence you impose is crueler than death.
+skf0yv	Release them into the valley
+1hart5g	The voices scatter. They will return… but not now. They leave you the Voice of the Survivors.
+1d6ifb0	The Mother's Blood
+1a571wu	The Mother of Vhalzareth lies in the Font. "Take my place, child. Or kill me for real."
+1wog40d	Take her place
+a6xqlj	The Cult kneels. The Font now beats with your heart.
+1iepeq4	Seal the Font
+1mxe2kk	The Font dries up. The swamp breathes, for the first time in centuries.
+1f660u2	Sell her blood to the Shadows
+2t1ri	The Market Shadows pay well. Very well.
+3h5vgq	The Silence of the Heart
+naarr4	The Heart of Krak stops beating. All the buried voices fall silent. You feel the valley waiting for your final choice.
+16c7n3n	Listen to the last voice
+1mukwig	The voice speaks your name. Then falls silent. The Cycle can come to an end.
+308mhv	You defeated {shadowName}, the Shadow of your Burden.
+bt4nie	You defeated the Promise Hunter: a broken promise has been redeemed.
+fcvfut	You defeated {bossIdName} on floor {floor}.
+1nepjst	🏆 {BName} conquered!
+aeu2vn	You are at the bottom of this layer. Return to the surface.
+1boky7c	You pledged {pledge} future max health to continue.
+1fkg8sn	⛓️ Pledge: -{pledge} max health
+1pv0bfb	👁️ For an instant you see Tomas among the shadows…
+to8790	Resolve the room first
+bxys9l	🎒 Loot secured: {cenere} ash, {items} items{reliquie}
+10ux5zv	, {reliquie} relics
+ty72d2	You climbed back from {biomeName} at floor {floor} with a full satchel.
+1p0vu9q	🏃 You fled: half the satchel is lost.
+5taqsr	You fled from {biomeName} at floor {floor}.
+1hyjxo0	You fell: the pledge of {pledged} max health becomes permanent (Elara can lift it).
+14mh1we	☠️ You fell. The valley carries you back to the surface. You lost most of the satchel.
+14tqwxg	You fell on floor {floor} of {biomeName}.
+1x6oenx	You have already faced the Colossus 3 times today
+1akbds1	You are too wounded
+1orokxb	World Boss: The Ash Colossus
+1cnqnqh	🗻 The Ash Colossus
+18kxxvk	You dealt {dmg} damage (tier {tier}). Rewards: {cen} ash{oggetto}{reliquie}.
+4yunkl	, an item
+q3im25	, {tier} relics
+iskotm	You defeated the Tribunal of Echoes: your choices are integrated.
+1q3a78l	⚖️ Integration
+1r563hp	The Tribunal falls. Accusation and defense become one: you are all your choices. Dissonance reset, +3 relics.
+a6q4yc	The Tribunal of Echoes has condemned you. Your name becomes corrupted.
+1x74kko	⚖️ Sentence
+1bdr5le	You fall before your Burdens. Your name crumbles: from now on the valley will mispronounce it.
+d2pb27	You came back alive from floor {floor}.
+34w4on	You fell on floor {floor}: the valley brought you back up.
+mbq9kw	You acted {coh} times in line with your Burden and {inc} times against it.
+1znrxd	The corruption within you rose by {n}.
+55qils	The corruption within you fell by {n}.
+h6l5q	{faction}: reputation {sign}{n}.
+1lbi55y	You kept {n} promises.
+1vds5ez	You broke {n} promises. Someone will hunt you.
+k3h7t4	Promise closest to its deadline: «{text}» ({n} expeditions).
+149e58s	Your Burden has grown so strong that its Shadow now awaits you in the dungeons.
+1esyavo	The world remembers · {biome}
+199bqo1	⬆️ Level {level}! +1 Talent Point
+1xxvy1	You reached level {level}.
+1jcdva7	✴️ Beyond the limit: Ascent {paragon}
+tvdsyz	{c} {cName} reaches level {level}
+1ld1q00	🎓 Talent: {tName}
+14ji10k	You need {cost} Ash
+blpg2i	Talents reset
+10ztqyy	You found {itName} ({rarity}).
+tfutlp	Equipped the best in every slot
+1mx1rqe	Salvaged: +{ferro} iron, +{cenere} ash
+uy2p6p	Salvaged {junk} common and rare items
+phdwea	Not enough resources
+1k2mxgb	You need a Forge in the village
+1dfb3kk	Not enough resources to forge
+zo27x1	Masterfully forged in the Forge of Hondovalle.
+hzafkj	Forged in the Forge of Hondovalle.
+377k0l	🔨 Forged: {itName} ({rarity})
+10ad863	You need Elara's Infirmary
+7jzdtx	Potion bag full
+1kzpl7v	You need 2 supplies and 25 ash
+i0hwyh	🧪 Potion brewed
+e71sjc	Elixir of Strength
+1yjjd3y	+20% attack for the next expedition
+zsk37b	Stoneskin
+14a3jlz	+40% defense for the next expedition
+192tg4o	Elixir of Life
+1567dpq	+25% health for the next expedition
+1d7invl	Clarity
+5dlbzj	Resonance +50% for the next expedition
+rf1pcq	You need Infirmary level 2
+su5ler	{id} {idName} active until the end of the next expedition
+3w3ph4	Parallel Ascension requires a Broken Pact Shard or 5 relics
+1o0ltky	Burden Ascension: {ibrido}{names}.
+oz0w6d	(hybrid)
+1prl9a4	⬆️ Ascension: {names}
+edxleq	{cName} has lost all trust in you and has left.
+1435qy1	{c} {cName} abandons you.
+r6swxa	Your body has changed: you are an Aberration. Some NPCs no longer speak to you.
+clceyh	🦷 You have become an Aberration
+kl0dz2	You promised: "{text}"
+1rwljxa	🔗 Promise: {text}
+1b71qh3	Promise kept: "{text}"
+6l48e9	✨ Promise kept! +3 Resonance, {fName}
+ksjq58	Promise broken: "{text}". A Promise Hunter is looking for you.
+m0dp2i	💔 Promise broken: {text}
+rbslev	Broken promise: "{text}"
+1chxql1	You killed a boy who begged for mercy.
+3qw2bz	You used your companions as shields.
+rnulq3	You lied to Tomas's mother.
+1h46zgg	You sold Ilyas twice.
+16bzmmy	You acted {incoherent} times against your own Burden.
+1gzwvl2	You spared the deserter.
+webag9	You told the truth about Tomas's death.
+9qwhf	You freed the voices of the Choir.
+ioec5w	You stayed true to your Burden {coherent} times.
+1twvutn	You confess everything. Your Burdens look at you and nod. You are acquitted: Dissonance reset, +2 relics.
+dovhvy	You confess. There are too many accusations for an acquittal, but you accept them as part of you: full Resonance, the Burden is integrated.
+belvx5	Your defenses prevail. The Tribunal dissolves: +3 relics.
+mvm457	You defended yourself before the Tribunal of Echoes. The Tribunal disagrees.
+il7i9g	You renounce your Burden. It shatters with the sound of glass. You lose its influence, gain 2 Talent Points and a freedom that is frightening.
+11nfcmu	forced ascension
+y3ni53	You accept the sentence. The Burden devours you and rebuilds you: forced Ascension into {pName}.
+1uvudsb	You accept the sentence. Your name crumbles: the valley will mispronounce it.
+sh1ju6	Trial of Your Own Choices: {outcome}.
+1s384ix	Dark shards on cooldown (anti-griefing)
+1pv6lgz	Used in Fate Contracts
+rf36f4	The shard rots inside you: +20 corruption, +1 relic
+1p0rm09	The shard whispers: +3 Dissonance, +300 ash
+1iw24cj	The shard darkens the sky: Eclipse for 30 minutes
+1oxrnz5	You activated {fName}. {desc}
+l8argu	Maximum 3 open contracts
+tsipsw	📜 Fate Contract: «Tomorrow the shared valley will be in {prediction}»
+185rx5s	The Fate Contract came true ({prediction}): narrative influence, +2 relics.
+1beh1gv	📜 Contract fulfilled!
+1m7d226	The Fate Contract failed (it was {state}): the shard has become corrupted.
+1f03w0s	📜 Contract failed: corrupted shard
+jajrr5	Guilds of Hondovalle
+1vm885t	{playerName} bought {what} from {seller} for {price} ash.
+1ursg1j	{buyer} bought {itName} from {playerName} for {price} ash. "{origin}"
+n4bv73	💰 Sold to {buyer}: +{price}
+146x0f4	{buyer} bought {defName} from {playerName} for {price} ash.{incupisce}
+luwec9	 The valley grows darker.
+5p7lgg	Star lit: {stName} ({consName}). {text}
+1wa0v9d	🌌 {consName} complete: {bonus}
+y1r099	No stars to read here: the others light up only through choices
+x5tkqy	You need {cost} Insight
+1cak94r	You need 2 Insight
+1d2hv7n	🕯️ The interface is purified for 15 minutes
+jkznzp	You need {cenere} ash and 1 relic
+3fo256	Elara lifted your pledge of {pledgedMaxHp} health.
+1pgtmbs	🌿 Pledge lifted
+lnrvrz	You need 8 relics and 3000 ash
+6vi658	Elara's ritual gave you back a human body. The price was enormous.
+1x2fv81	You are human again
+1hto1jq	You need 3 relics
+6yq1l0	You spoke your name at the Altar: {playerName}. The valley remembers it again.
+1jkxv72	Ending: {endName}.
+1gbtjr3	You need 1 relic
+18v5apc	Dream of Sacrifice
+383bbx	You returned to the portal. Tomas was reaching out his hand, but you couldn't reach it.
+1dz1jm9	The Debt Knocks
+a7f1v8	Vesper was counting bone coins on your bed. "The debt grows even while you sleep."
+kahld0	The Witness Dreams
+1tctc1	You saw the night of the fire again. This time you noticed one more face.
+13aca5k	An NPC looked for you
+4nvqu0	While you were away, a messenger from {fName} knocked at your door. They left a gift.
+12ytfm3	A Promise Expires in Sleep
+li9fl3	You dreamed of chains. One of your promises has become more urgent (one less expedition to keep it).
+34nm1d	Shard in the Storehouse
+18s1aia	When you wake up, there's a shard in the storehouse that no one remembers bringing. It's warm. It's corrupted.
+1rczyvo	Dream Expedition
+14e1d5p	In a dream you visited a corrupted version of a dungeon you had already explored. You woke up with your pockets full.
+4u48f3	Dream: {title}.
+12mgluu	Lower Hondovalle is your base. Gather by hand, build buildings and let them produce resources on their own: the village works even when the game is closed.
+lzt8xz	Each building produces a resource every second. Each copy costs 15% more than the previous one. At 10, 25, 50 and 100 copies, upgrades appear that double production.
+1dzw5i2	Elara, Marcus and Vesper remember your choices. Their words change with their faction's reputation, with your name and with what you have become.
+10sdjf9	Here you see how much the village produces per minute. Feats, Memories, cards and the state of the Valley multiply production.
+136a60b	Dungeons are mirrors of your Burden. Descending costs 1 Supply per floor. What you find goes into the Satchel: it's yours only if you return to the surface. If you fall, you lose three quarters of it. Every 5 floors there's a boss.
+z7y1ff	Equipment in 7 slots, with rarities from Common to Ancestral. You can upgrade, salvage, sell and forge. Each level gives a Talent Point for the Paths (Cult, Capital, Farmers, Revolt).
+w07brm	Daily chest and missions, the dreams of the Living Save, feats (+2% production each), the bestiary and the chronicle of everything the valley remembers.
+yfh8ue	Pond of Voices
+1w9rrd6	Tap the water, wait for the bait to sink and tap again at the right moment. Each species you fish up is a memory of the valley: +1% production forever.
+1lccnhx	The map is a constellation. Choices light stars; with Insight you can read others. Here you find Promises, Fate Shards, Contracts and the state of the shared valley.
+hen7ct	The factions ask for resources. Delivering them raises their reputation, but the rival faction loses a little.
+rfp98f	Eight factions, no single karma. Each faction has a rival. The states (Ignored, Tolerated, Trusted, Adored, Feared, Banished, Branded) change prices, dialogue, events and endings.
+1j37nlu	Storyteller
+21hssk	Every 10 minutes the storyteller tells your story: production ×2 for 90 seconds.
+ui0t5d	Kael and Lyra follow you into the dungeons. Their trust rises when you protect and collapses when you use them as shields: below 25 they hesitate, at 0 they leave. You can send them on expeditions that last real hours, even with the game closed.
+1pxh2wc	Dissonance Actions
+6ta1ge	Dissonance is not just a penalty: you can spend it on powerful but destabilizing actions (Dark Pact, Tactical Betrayal, Supply Pyre). The world notices.
+agxkoj	Destiny is traded here: items with a story, Fate Shards and resources. Prices depend on the Market Shadows. Every trade stays in the Ledger of Souls.
+1ku2eyv	You can let your hero fight alone: it uses abilities coherent with your Burden, the Echo when it's ready and a potion below the threshold chosen in Options. It never uses Dissonance actions.
+1j12oev	World Boss
+13au06e	Every day all the bearers strike the Ash Colossus. You have 3 attempts of 10 rounds: the more damage you deal, the better the rewards.
+1s68eva	Relics buy permanent upgrades in the Sanctuary. When you close a Cycle you get an ending, permanent Memories, and your bearer becomes an echo that the next ones will meet.
+1fnkeaj	The Burden
+14f6fef	Your first choice has become a mechanical scar. Every Burden has a weight (light = act first, heavy = hit harder), an advantage, a cost, an Echo and a Shadow.
+6gf2hh	Resonance and Dissonance
+11oh7bx	Every action has a nature (protection, sacrifice, cruelty, betrayal, silence, faith, blood). In battle a GREEN border marks an action coherent with your Burden: it charges Resonance; with a full bar you unlock the Echo. A RED border marks a contrary action: it builds Dissonance. No choice is wrong: it is simply yours.
+1xwbvkl	Corruption
+frmpvz	Ruthless actions raise Corruption, protective ones lower it. High Corruption: stronger enemies, richer loot and, above 60%, an interface that starts to lie (purify it at the Altar).
+tnjma5	Some choices create a Promise with a deadline in expeditions. Kept: Resonance and a Shard. Broken: Dissonance and a Promise Hunter who will look for you in the dungeons.
+epd86a	Satchel and Threshold of Retreat
+1qrb84e	After each floor you choose: go deeper (richer, riskier) or go back up to secure the satchel. Without supplies you can pledge future max health: if you return you get half back, if you fall it stays until Elara lifts it.
+gf5247	Combat
+12qp42s	Choose an ability and then the target. The basic attack gives Focus (◆); strong abilities consume it. Melee attacks hit only the front row. Above each enemy you see their next move (⚠). Potions don't use up your turn.
+1osk8n0	The Breathing Valley
+v5unhk	The valley has a state (Bloom, Quiet, Tension, Corruption, Ash, Eclipse, Rebirth) that changes production, enemies and loot. Buildings, promises, corruption and shards shift it.
+1heh7f8	By turning on fullscreen you enter the Rite: +25% Resonance, whispers in the music and hidden choices in events. With the audio on you see the moves of invisible enemies.
+eyhvgh	Face the Night of the Portal
+uzx8sd	Read the three voices and choose which one to answer. There is no right choice: each creates a different Burden.
+oe2jkv	Gather 10 wood
+1m7bwx2	Tap «Chop» in the Gathering panel.
+dippjv	Build a Sawmill
+fkztvv	In the Buildings panel. It will produce wood on its own, even with the game closed.
+1r9r7uz	Build a Gatherers' Hut
+1nil8s3	Supplies are needed to descend into dungeons: 1 per floor.
+1t78s2h	Descend into the Cemetery of the Betrayed
+17doiwc	Open the «Descent» tab and press «Descend».
+vvwx2w	Win your first fight
+ut7b5q	Choose a door with swords. In battle: ability → target. Green border = coherent with your Burden.
+r3h9xv	Return to the surface with the satchel
+1o7iobd	After clearing a floor you can go deeper or «Return to the surface». What's in your satchel is safe only once you climb back up.
+wpeyay	Equip an item
+lxx8a2	Open «Hero», tap an item and press «Equip» (or «Auto-equip»).
+116fdu	Grow Hondovalle to 5 buildings
+15dzk7d	Workshop and Quarry unlock by building Sawmills. More buildings = more events and requests.
+xv26d0	Defeat the first boss (floor 5)
+1ffkpza	Every 5 floors there's a boss. Upgrade your equipment and bring potions.
+1fx58pm	Open the Compass of Fate
+etcnzh	There you'll find your Promises and the stars lit by your choices.
+9qp50g	Spend a Talent Point
+vauhxo	In «Hero» → Talents. Each Path brings you closer to one faction and pushes another away.
+ftpgqh	✔ {done} · Next: {next}
+a8hjdl	✔ {done} · The guide is complete: now the valley is yours.
+pbno7g	no Burden
+httiob	Legacy of Cycle {n}. {origin}
+ehh2cz	{playerName} arrives in Lower Hondovalle. The valley burns. (Cycle {n})
+12606na	{origin} Now you carry the Burden: {FName}.
+1dtb6z2	{F} {FName}: your Burden has been forged
+5muah3	You built {bName} in Hondovalle.
+1qepxgm	⚙️ {bName}: production ×2
+15r7m67	No upgrades you can afford
+unkpcs	Welcome back to Hondovalle
+3ss7jl	You were away for {away}{h}. The valley went on living.
+1bpwpjf	 (up to {capH}h count)
+1kpm8k3	🧭 {ready} companions have returned from their expeditions.
+8xp2gj	🌙 {dreams} dreams await you in the Journal.
+1bncjh2	🔥 {threatName} sacked the village: -{lostC} ash, -{lostL} wood
+10zv2p1	{threatName} raided Hondovalle.
+p64kmv	Capital Raiders
+1aoxnp8	Ash Wolves
+g3m3t6	Cult Fanatics
+3xfo8c	Wandering Bones
+1wd7u5a	⚠️ Raid: {tName}! Strike them or let the towers handle it.
+jksm9a	🛒 The merchant also gives you a potion!
+d27tm1	🛒 Generous merchant: +{amt} {k}
+1v5va3i	Ash Blessing ×3
+sz32v5	🦌 Blessing: production ×3 for 30s
+c14w94	Frenzy ×10
+1kjh7xr	🦌 Frenzy: manual gathering ×10 for 30s
+1fjybwa	🦌 Spring of clarity: Insight full
+m196iy	🛡️ {name} repelled! +{c} ash
+1c4rgeh	Storyteller's Ballad ×2
+1grdi9h	🎻 The storyteller tells your story: production ×2 for 90s
+10zmhpl	The Cult asks for offerings for the altar of Vhalzareth.
+14adaqd	Captain Marcus requisitions materials for the garrison.
+11tcsy6	The Guilds order raw materials for the looms.
+qpmi6n	The farmers ask for help rebuilding the barns.
+g3qre7	Elara needs supplies for the Infirmary.
+1wn2zcm	The Heretics are looking for material for a clandestine printing press.
+13e42os	A faceless figure orders goods "with no questions asked".
+17mzx3f	The Wardens ask for stone for the seals.
+qmsbih	{faction} Request completed for {factionName}
+13tr0ym	{cName} must be at least level {minLevel}
+umwora	No free slots: build the Inn
+161z9aq	{c} {cName} sets off for {LName}
+sjgudj	{n} relics
+15y40do	a Fate Shard
+1n6ahjk	{c} {cName} returns from {LName}: {parts}
+1wgca1x	You need the Travelers' Inn
+9o6qts	{cName} joins you.
+w89ggb	{c} {cName} joins the party
+1mb5y15	Maximum 2 companions on an expedition
+40yshb	From the Pond of Voices you fished up a memory: {fName}. "{lore}"
+1vneahv	🎣 New memory: {fName}! +1% production
+19m57az	🎣 {fName} (already known): +ash
+131ym0i	🎁 Daily chest opened
+1x8nfdy	✅ Daily mission completed
+1wgyn5z	🏺 All missions: +1 relic
+pml7te	🏆 Feat: {aName} (+2% production)
+9f0m6a	You need {c} relics
+1yxvf0p	🏺 The Sanctuary accepts your offering
+td06ty	Quiet
+1gwazvj	Eclipse
+1ph3tit	Rebirth
+3x6ep6	Ignored
+lpezj7	Tolerated
+k1ncmq	Trusted
+blpztx	Adored
+g9sgn5	Feared
+105jup8	Banished
+18nss9f	Branded
+htfaie	guilt
+mccyx0	fear
+1sgp6a5	ambition
+1nhebee	anger
+1ip3kme	isolation
+ssj8mb	acquittal
+9vwt72	integration
+1tkzl20	rupture
+1phzwer	sentence

@@ -1,0 +1,172 @@
+// ============================================================
+// Piattaforma: pubblicità con ricompensa e classifiche.
+// Usa Playgama Bridge (window.bridge) o il CrazyGames SDK se presenti.
+// La ricompensa si concede SOLO quando la pubblicità è stata vista
+// (stato `rewarded`). Senza piattaforma (file locale) il pulsante diventa
+// un piccolo dono della valle, usabile alle stesse condizioni.
+// ============================================================
+import { kvInit, bridgeActive } from './kv';
+import { setExternalMute } from './audio';
+
+const w = () => (typeof window !== 'undefined' ? (window as any) : {});
+
+// ------------------------------------------------------------
+// Avvio: Bridge si inizializza PRIMA che il gioco carichi testi e salvataggi.
+// ------------------------------------------------------------
+// Ultima pubblicità a schermo intero davvero mostrata: salvata, così ricaricare il gioco non azzera l'ora
+const AD_KEY = 'krak_last_ad';
+let lastAdAt = (() => { try { return Number(localStorage.getItem(AD_KEY)) || 0; } catch { return 0; } })();
+const markAd = () => { lastAdAt = Date.now(); try { localStorage.setItem(AD_KEY, String(lastAdAt)); } catch { /* */ } };
+const bannerEvt = (on: boolean) => { try { window.dispatchEvent(new CustomEvent('krak-banner', { detail: on })); } catch { /* */ } };
+let audioAllowed = true, paused = false, adOpen = false;
+let pageHidden = false;
+const applyMute = (e?: Event) => {
+  if (e?.type === 'pagehide') pageHidden = true; else if (e?.type === 'pageshow') pageHidden = false;
+  setExternalMute(!audioAllowed || paused || adOpen || pageHidden || (typeof document !== 'undefined' && (document.hidden || document.visibilityState === 'hidden')));
+};
+
+export async function bootPlatform(keys: string[]) {
+  // Scheda nascosta / pagina in background: silenzio subito, anche prima che Bridge risponda.
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', applyMute);
+    window.addEventListener('pagehide', applyMute);
+    window.addEventListener('pageshow', applyMute);
+    window.addEventListener('focus', applyMute);
+    applyMute();
+  }
+  const b = w().bridge;
+  if (b?.initialize) {
+    try { await Promise.race([b.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 10_000))]); } catch { /* si gioca comunque */ }
+  }
+  if (bridgeActive()) {
+    try { b.advertisement?.setMinimumDelayBetweenInterstitial?.(300); } catch { /* */ }
+    await kvInit(keys);
+    try {
+      audioAllowed = b.platform.isAudioEnabled !== false;
+      const E = b.EVENT_NAME || {};
+      b.platform.on?.(E.AUDIO_STATE_CHANGED || 'audio_state_changed', (on: boolean) => { audioAllowed = on !== false; applyMute(); });
+      b.platform.on?.(E.PAUSE_STATE_CHANGED || 'pause_state_changed', (p: boolean) => { paused = !!p; applyMute(); });
+      b.advertisement?.on?.(E.INTERSTITIAL_STATE_CHANGED || 'interstitial_state_changed', (st: string) => { adOpen = st === 'opened'; if (st === 'opened') { markAd(); failStreak = 0; } if (st === 'failed') failStreak++; applyMute(); });
+      b.advertisement?.on?.(E.ADVANCED_BANNERS_STATE_CHANGED || 'advanced_banners_state_changed', (st: string) => bannerEvt(st === 'shown'));
+      b.advertisement?.on?.(E.BANNER_STATE_CHANGED || 'banner_state_changed', (st: string) => bannerEvt(st === 'shown'));
+      b.advertisement?.on?.(E.REWARDED_STATE_CHANGED || 'rewarded_state_changed', (st: string) => { adOpen = st === 'opened'; applyMute(); });
+    } catch { /* */ }
+  }
+  applyMute();
+}
+
+/** Il primo fotogramma giocabile è pronto: la piattaforma nasconde il suo caricamento. */
+let readySent = false;
+export function gameReady() {
+  if (readySent) return; readySent = true;
+  try { w().bridge?.platform?.sendMessage?.('game_ready'); } catch { /* */ }
+}
+/** Messaggi di ciclo di vita (inizio/fine livello) per le piattaforme che li usano. */
+export function platformMessage(msg: 'level_started' | 'level_completed' | 'level_failed' | 'player_got_achievement', data?: Record<string, string>) {
+  try { w().bridge?.platform?.sendMessage?.(msg, data); } catch { /* */ }
+}
+/** Pausa naturale (ritorno dal dungeon, fine Ciclo): Bridge decide se mostrare davvero un annuncio. */
+// Al massimo una pubblicità a schermo intero all'ora (la prima dopo 5 minuti di gioco)
+const AD_GAP = 5 * 60_000;
+// Dopo una richiesta (riuscita o fallita) si aspetta: un fallimento non va ritentato ogni 15 secondi.
+let lastTryAt = 0, failStreak = 0;
+const FAIL_GAP = 10 * 60_000;
+export function interstitial(placement = 'pause') {
+  const now = Date.now();
+  if (now - lastAdAt < AD_GAP) return;
+  if (now - lastTryAt < (failStreak ? Math.min(FAIL_GAP * failStreak, 60 * 60_000) : AD_GAP)) return;
+  lastTryAt = now;
+  try { const a = w().bridge?.advertisement; if (a?.showInterstitial && bridgeActive()) a.showInterstitial(placement); } catch { /* */ }
+}
+
+export type AdMode = 'bridge' | 'crazy' | 'none';
+export function adMode(): AdMode {
+  const b = w().bridge;
+  if (bridgeActive() && b?.advertisement && b.advertisement.isRewardedSupported) return 'bridge';
+  if (w().CrazyGames?.SDK?.ad?.requestAd) return 'crazy';
+  return 'none';
+}
+
+let busy = false;
+/** Avvisa l'interfaccia che la pubblicità non è arrivata (niente premio, ma il giocatore deve saperlo). */
+function adFailed() { try { window.dispatchEvent(new CustomEvent('krak-ad-failed')); } catch { /* */ } }
+/** Le ricompense con pubblicità si mostrano solo dove una pubblicità esiste davvero. */
+export function rewardedAvailable() { return adMode() !== 'none'; }
+export function showRewarded(placement = 'reward'): Promise<boolean> {
+  if (busy) return Promise.resolve(false);
+  const mode = adMode();
+  if (mode === 'none') return Promise.resolve(true);
+  busy = true;
+  return new Promise<boolean>(resolve => {
+    let done = false;
+    const finish = (ok: boolean) => { if (done) return; done = true; busy = false; resolve(ok); };
+    if (mode === 'bridge') {
+      const b = w().bridge;
+      const ev = b.EVENT_NAME?.REWARDED_STATE_CHANGED || 'rewarded_state_changed';
+      let rewarded = false;
+      const h = (st: string) => {
+        if (st === 'rewarded') rewarded = true;
+        if (st === 'closed') { try { b.advertisement.off?.(ev, h); } catch { /* */ } finish(rewarded); }
+        if (st === 'failed') { try { b.advertisement.off?.(ev, h); } catch { /* */ } adFailed(); finish(false); }
+      };
+      try { b.advertisement.on(ev, h); b.advertisement.showRewarded(placement); } catch { finish(false); }
+      window.setTimeout(() => { if (!done && !rewarded) adFailed(); finish(rewarded); }, 60_000);
+    } else {
+      try {
+        w().CrazyGames.SDK.ad.requestAd('rewarded', { adFinished: () => finish(true), adError: () => { adFailed(); finish(false); }, adStarted: () => {} });
+      } catch { finish(false); }
+      window.setTimeout(() => finish(false), 90_000);
+    }
+  });
+}
+
+/** Invia un punteggio alla classifica della piattaforma, solo se ne esiste una. */
+export function submitScore(id: string, score: number) {
+  try {
+    const lb = w().bridge?.leaderboards;
+    if (bridgeActive() && lb?.setScore && lb.type && lb.type !== 'not_available') lb.setScore(id, score)?.catch?.(() => {});
+  } catch { /* nessuna classifica */ }
+}
+export function hasLeaderboard() {
+  const lb = w().bridge?.leaderboards;
+  return bridgeActive() && !!lb && !!lb.type && lb.type !== 'not_available';
+}
+
+// ------------------------------------------------------------
+// Banner: solo nelle schermate tranquille (villaggio, menu), mai in combattimento.
+// ------------------------------------------------------------
+let bannerOn = false;
+// Sul portale Playgama (e su CrazyGames/MSN) si usano gli Advanced Banners; altrove il banner classico.
+function advancedOk() { try { return bridgeActive() && !!w().bridge?.advertisement?.isAdvancedBannersSupported; } catch { return false; } }
+function classicOk() { try { return bridgeActive() && !!w().bridge?.advertisement?.isBannerSupported; } catch { return false; } }
+export function bannerSupported() { return advancedOk() || classicOk(); }
+export function setBanner(show: boolean) {
+  if (!bannerSupported() || show === bannerOn) return;
+  bannerOn = show;
+  try {
+    const a = w().bridge.advertisement;
+    if (advancedOk()) { if (show) a.showAdvancedBanners('idle'); else a.hideAdvancedBanners(); }
+    else if (show) a.showBanner('bottom', 'idle'); else a.hideBanner();
+  } catch { /* */ }
+}
+
+// ------------------------------------------------------------
+// Telemetria del percorso del giocatore (Bridge analytics): ogni tappa una volta sola.
+// ------------------------------------------------------------
+const TM_KEY = 'krak_tm2';
+// Ordine delle tappe del percorso del giocatore (step_index)
+export const FUNNEL = ['fun_title_tap', 'fun_intro_done', 'fun_portal_voice', 'fun_fardello', 'fun_first_combat', 'fun_first_kill', 'fun_village', 'fun_first_build', 'fun_first_delve',
+  'fun_build_15', 'fun_level_5', 'fun_first_boss', 'fun_level_10', 'fun_cimitero_done', 'fun_paludi_done', 'fun_torre_done', 'fun_cycle_closed', 'fun_cycle_3', 'fun_cycle_5', 'fun_vigil_played'];
+let tmSent: Set<string> | null = null;
+export function trackOnce(id: string) {
+  try {
+    if (!tmSent) { let raw: string | null = null; try { raw = localStorage.getItem(TM_KEY); } catch { /* */ } tmSent = new Set(raw ? JSON.parse(raw) : []); }
+    if (tmSent.has(id)) return;
+    tmSent.add(id);
+    try { localStorage.setItem(TM_KEY, JSON.stringify([...tmSent])); } catch { /* */ }
+    const b = w().bridge;
+    // Bridge analytics: nome fisso, tappa nei dati (così Playgama la mostra leggibile)
+    if (b?.analytics?.send) b.analytics.send('progression_completed', { step_id: id, step_index: FUNNEL.indexOf(id) });
+    else b?.platform?.sendCustomMessage?.(id);
+  } catch { /* */ }
+}

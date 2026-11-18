@@ -1,8 +1,9 @@
+import { t as T } from '../../i18n';
 import type { FactionId, FardelloId, GameState, Item, Listing, Nature, ValleyState } from '../types';
 import { ASCENSIONS, FACTIONS, FARDELLI, TALENTS } from '../data/core';
 import type { Effect } from '../data/events';
 import { PROMISES } from '../data/events';
-import { BOT_NAMES, CONSTELLATIONS, ENDINGS, FATE_CARDS, FRAGMENTS, STARS } from '../data/world';
+import { BOT_NAMES, CONSTELLATIONS, ENDINGS, FATE_CARDS, FRAGMENTS, STARS, RES_INFO } from '../data/world';
 import { clamp, hashStr, mulberry32, pick, todayKey, uid } from '../rng';
 import { addFlag, addRes, cardMod, chronicle, hasFlag, newGame, stat, toast, valleyState } from './state';
 import { addItem, clampHeroHp, gainXp, hasTalent, heroStats, itemScore, makeItem, resonanceMax, rollRarity, salvageValue } from './hero';
@@ -82,22 +83,31 @@ export function applyEffect(s: GameState, e: Effect, source = '') {
       c.trust = clamp(c.trust + e.trust, 0, 100);
       if (c.trust <= 5 && !c.left) {
         c.left = true; c.inParty = false;
-        chronicle(s, `${c.name} ha perso ogni fiducia in te e se n'è andato.`, 'choice');
-        toast(s, `${c.icon} ${c.name} ti abbandona.`, 'bad');
+        chronicle(s, T('{cName} ha perso ogni fiducia in te e se n\'è andato.', { cName: c.name }), 'choice');
+        toast(s, T('{c} {cName} ti abbandona.', { c: c.icon, cName: c.name }), 'bad');
       }
     }
   }
   if (e.aberration && !s.aberration) {
     s.aberration = true;
     addFlag(s, 'aberration');
-    chronicle(s, 'Il tuo corpo è cambiato: sei un\'Aberrazione. Alcuni PNG non ti parlano più.', 'fate');
-    toast(s, '🦷 Sei diventato un\'Aberrazione', 'fate');
+    chronicle(s, T('Il tuo corpo è cambiato: sei un\'Aberrazione. Alcuni PNG non ti parlano più.'), 'fate');
+    toast(s, T('🦷 Sei diventato un\'Aberrazione'), 'fate');
     clampHeroHp(s);
   }
   if (e.nature) natureOutOfCombat(s, e.nature);
   if (e.prosperity) pushValley(s, { prosperity: e.prosperity });
   if (e.blight) pushValley(s, { blight: e.blight });
-  if (e.companion) { const c = s.companions.find(c => c.id === e.companion); if (c) c.recruited = true; }
+  if (e.quest) { const was = s.quests[e.quest.id]?.stage ?? 0; s.quests[e.quest.id] = { ...(s.quests[e.quest.id] || {}), stage: e.quest.stage }; if (e.quest.stage !== was) toast(s, T('📜 Missione aggiornata'), 'info'); }
+  if (e.companion) {
+    const c = s.companions.find(c => c.id === e.companion);
+    if (c && !c.recruited) {
+      c.recruited = true; c.left = false;
+      if (s.companions.filter(x => x.inParty).length < 2) c.inParty = true;
+      toast(s, T('🤝 {c} si unisce a te.', { c: c.name }), 'good');
+      chronicle(s, T('{c} si è unito al tuo gruppo.', { c: c.name }), 'choice');
+    }
+  }
   stat(s, 'choices');
   if (source) chronicle(s, `${source}.`, 'choice');
   checkPromises(s);
@@ -112,8 +122,8 @@ export function createPromise(s: GameState, defId: string) {
   const def = PROMISES[defId];
   if (!def || s.promises.some(p => p.defId === defId && p.status === 'open')) return;
   s.promises.push({ uid: uid('pr'), defId, text: def.text, createdAt: Date.now(), deadlineDelves: def.deadline, status: 'open' });
-  chronicle(s, `Hai promesso: "${def.text}"`, 'promise');
-  toast(s, `🔗 Promessa: ${def.text}`, 'fate');
+  chronicle(s, T('Hai promesso: "{text}"', { text: def.text }), 'promise');
+  toast(s, T('🔗 Promessa: {text}', { text: def.text }), 'fate');
 }
 
 export function checkPromises(s: GameState) {
@@ -133,15 +143,15 @@ export function checkPromises(s: GameState) {
       changeRep(s, 'contadini', 3); changeRep(s, 'guaritori', 3);
       pushValley(s, { prosperity: 5 });
       addFlag(s, 'promise_kept');
-      chronicle(s, `Promessa mantenuta: "${p.text}"`, 'promise');
-      toast(s, `✨ Promessa mantenuta! +3 Risonanza, ${FRAGMENTS[f].name}`, 'good');
+      chronicle(s, T('Promessa mantenuta: "{text}"', { text: p.text }), 'promise');
+      toast(s, T('✨ Promessa mantenuta! +3 Risonanza, {fName}', { fName: FRAGMENTS[f].name }), 'good');
     } else {
       s.dissonance = Math.min(15, s.dissonance + 4);
       changeRep(s, 'contadini', -3);
       pushValley(s, { blight: 5 });
       addFlag(s, 'promise_broken');
-      chronicle(s, `Promessa infranta: "${p.text}". Un Cacciatore di Promesse ti cerca.`, 'promise');
-      toast(s, `💔 Promessa infranta: ${p.text}`, 'bad');
+      chronicle(s, T('Promessa infranta: "{text}". Un Cacciatore di Promesse ti cerca.', { text: p.text }), 'promise');
+      toast(s, T('💔 Promessa infranta: {text}', { text: p.text }), 'bad');
     }
   }
 }
@@ -159,18 +169,18 @@ export function checkTrial(s: GameState) {
 export function trialScores(s: GameState) {
   const broken = s.promises.filter(p => p.status === 'broken');
   const kept = s.promises.filter(p => p.status === 'kept');
-  const acc: string[] = broken.map(p => `Promessa infranta: "${p.text}"`);
-  if (hasFlag(s, 'killed_innocent')) acc.push('Hai ucciso un ragazzo che implorava pietà.');
-  if (hasFlag(s, 'betrayed')) acc.push('Hai usato i tuoi compagni come scudi.');
-  if (hasFlag(s, 'lied_family')) acc.push('Hai mentito alla madre di Tomas.');
-  if (hasFlag(s, 'sold_ilyas_twice')) acc.push('Hai venduto Ilyas due volte.');
-  if ((s.totals.incoherent || 0) > 10) acc.push(`Hai agito ${s.totals.incoherent} volte contro il tuo stesso Fardello.`);
-  const def: string[] = kept.map(p => `Promessa mantenuta: "${p.text}"`);
-  if (hasFlag(s, 'spared_innocent')) def.push('Hai risparmiato il disertore.');
-  if (hasFlag(s, 'freed_ilyas')) def.push('Hai liberato Ilyas.');
-  if (hasFlag(s, 'told_truth')) def.push('Hai detto la verità sulla morte di Tomas.');
-  if (hasFlag(s, 'freed_voices')) def.push('Hai liberato le voci del Coro.');
-  if ((s.totals.coherent || 0) > 20) def.push(`Sei rimasto fedele al tuo Fardello ${s.totals.coherent} volte.`);
+  const acc: string[] = broken.map(p => T('Promessa infranta: "{text}"', { text: p.text }));
+  if (hasFlag(s, 'killed_innocent')) acc.push(T('Hai ucciso un ragazzo che implorava pietà.'));
+  if (hasFlag(s, 'betrayed')) acc.push(T('Hai usato i tuoi compagni come scudi.'));
+  if (hasFlag(s, 'lied_family')) acc.push(T('Hai mentito alla madre di Tomas.'));
+  if (hasFlag(s, 'sold_ilyas_twice')) acc.push(T('Hai venduto Ilyas due volte.'));
+  if ((s.totals.incoherent || 0) > 10) acc.push(T('Hai agito {incoherent} volte contro il tuo stesso Fardello.', { incoherent: s.totals.incoherent }));
+  const def: string[] = kept.map(p => T('Promessa mantenuta: "{text}"', { text: p.text }));
+  if (hasFlag(s, 'spared_innocent')) def.push(T('Hai risparmiato il disertore.'));
+  if (hasFlag(s, 'freed_ilyas')) def.push(T('Hai liberato Ilyas.'));
+  if (hasFlag(s, 'told_truth')) def.push(T('Hai detto la verità sulla morte di Tomas.'));
+  if (hasFlag(s, 'freed_voices')) def.push(T('Hai liberato le voci del Coro.'));
+  if ((s.totals.coherent || 0) > 20) def.push(T('Sei rimasto fedele al tuo Fardello {coherent} volte.', { coherent: s.totals.coherent }));
   return { acc, def, a: acc.length * 2 + (s.totals.incoherent || 0) / 10, d: def.length * 2 + (s.totals.coherent || 0) / 15 };
 }
 export function trialRespond(s: GameState, resp: 'confessare' | 'difendersi' | 'rinnegare' | 'accettare') {
@@ -179,28 +189,28 @@ export function trialRespond(s: GameState, resp: 'confessare' | 'difendersi' | '
   let outcome = '';
   let text = '';
   if (resp === 'confessare') {
-    if (a <= d + 2) { outcome = 'assoluzione'; s.dissonance = 0; s.reliquie += 2; text = 'Confessi tutto. I tuoi Fardelli ti guardano e annuiscono. Sei assolto: Dissonanza azzerata, +2 reliquie.'; }
-    else { outcome = 'integrazione'; s.resonance = resonanceMax(s); s.influence += 15; text = 'Confessi. Le accuse sono troppe per un\'assoluzione, ma le accetti come parte di te: Risonanza piena, il Fardello si integra.'; }
+    if (a <= d + 2) { outcome = 'assoluzione'; s.dissonance = 0; s.reliquie += 2; text = T('Confessi tutto. I tuoi Fardelli ti guardano e annuiscono. Sei assolto: Dissonanza azzerata, +2 reliquie.'); }
+    else { outcome = 'integrazione'; s.resonance = resonanceMax(s); s.influence += 15; text = T('Confessi. Le accuse sono troppe per un\'assoluzione, ma le accetti come parte di te: Risonanza piena, il Fardello si integra.'); }
   } else if (resp === 'difendersi') {
-    if (d > a) { outcome = 'assoluzione'; s.reliquie += 3; text = 'Le tue difese prevalgono. Il Tribunale si dissolve: +3 reliquie.'; }
+    if (d > a) { outcome = 'assoluzione'; s.reliquie += 3; text = T('Le tue difese prevalgono. Il Tribunale si dissolve: +3 reliquie.'); }
     else {
       s.modal = null;
-      startCombat(s, ['tribunale'], { floor: 10, scale: 1 + s.hero.level / 10, title: 'Il Tribunale degli Echi', kind: 'trial' });
+      startCombat(s, ['tribunale'], { floor: 10, scale: 1 + s.hero.level / 10, title: T('Il Tribunale degli Echi'), kind: 'trial' });
       s.tab = 'discesa';
-      chronicle(s, 'Ti sei difeso davanti al Tribunale degli Echi. Il Tribunale non è d\'accordo.', 'fate');
+      chronicle(s, T('Ti sei difeso davanti al Tribunale degli Echi. Il Tribunale non è d\'accordo.'), 'fate');
       return;
     }
   } else if (resp === 'rinnegare') {
     outcome = 'rottura'; s.influence = 0; s.resonance = 0; s.dissonance = 0; s.hero.talentPoints += 2; addFlag(s, 'fardello_broken');
-    text = 'Rinneghi il tuo Fardello. Si spezza con un suono di vetro. Perdi la sua influenza, guadagni 2 Punti Talento e una libertà che fa paura.';
+    text = T('Rinneghi il tuo Fardello. Si spezza con un suono di vetro. Perdi la sua influenza, guadagni 2 Punti Talento e una libertà che fa paura.');
   } else {
     if (!s.ascension && s.fardello && s.hero.level >= 12) {
-      outcome = 'ascensione forzata'; const p = FARDELLI[s.fardello].ascensions[0]; s.ascension = { paths: [p], hybrid: false }; addFlag(s, 'ascended');
-      text = `Accetti la condanna. Il Fardello ti divora e ti ricostruisce: Ascensione forzata in ${ASCENSIONS[p].name}.`;
-    } else { outcome = 'condanna'; s.nameCorrupted = true; s.reliquie += 1; text = 'Accetti la condanna. Il tuo nome si sfalda: la valle lo pronuncerà storpiato.'; }
+      outcome = T('ascensione forzata'); const p = FARDELLI[s.fardello].ascensions[0]; s.ascension = { paths: [p], hybrid: false }; addFlag(s, 'ascended');
+      text = T('Accetti la condanna. Il Fardello ti divora e ti ricostruisce: Ascensione forzata in {pName}.', { pName: ASCENSIONS[p].name });
+    } else { outcome = 'condanna'; s.nameCorrupted = true; s.reliquie += 1; text = T('Accetti la condanna. Il tuo nome si sfalda: la valle lo pronuncerà storpiato.'); }
   }
   s.trial = 'done'; s.trialOutcome = outcome; addFlag(s, 'trial_done');
-  chronicle(s, `Processo alle Proprie Scelte: ${outcome}.`, 'fate');
+  chronicle(s, T('Processo alle Proprie Scelte: {outcome}.', { outcome: outcome }), 'fate');
   s.modal = { kind: 'info', title: `⚖️ ${outcome[0].toUpperCase()}${outcome.slice(1)}`, text };
   checkStars(s);
 }
@@ -216,8 +226,8 @@ export function randomFragment(s: GameState, r: () => number = Math.random): str
 export function fragmentUsable(s: GameState, defId: string): { ok: boolean; why?: string } {
   const f = FRAGMENTS[defId];
   if (f.constraint && (!s.fardello || !f.constraint.includes(s.fardello))) return { ok: false, why: `Vincolo: ${f.constraint.map(c => FARDELLI[c as FardelloId].name).join(' o ')}` };
-  if (f.dark && (s.totals.darkFragAt || 0) > Date.now()) return { ok: false, why: 'Frammenti oscuri in ricarica (anti-griefing)' };
-  if (defId === 'patto') return { ok: false, why: 'Si usa nei Contratti di Fato' };
+  if (f.dark && (s.totals.darkFragAt || 0) > Date.now()) return { ok: false, why: T('Frammenti oscuri in ricarica (anti-griefing)') };
+  if (defId === 'patto') return { ok: false, why: T('Si usa nei Contratti di Fato') };
   return { ok: true };
 }
 export function useFragment(s: GameState, fuid: string) {
@@ -239,17 +249,17 @@ export function useFragment(s: GameState, fuid: string) {
     case 'purezza': s.corruption = Math.max(0, s.corruption - 40); s.dissonance = Math.max(0, s.dissonance - 5); break;
     case 'corrotto': {
       const r = Math.random();
-      if (r < 0.33) { s.corruption = Math.min(100, s.corruption + 20); s.reliquie += 1; toast(s, 'Il frammento ti marcia dentro: +20 corruzione, +1 reliquia', 'fate'); }
-      else if (r < 0.66) { s.dissonance = Math.min(15, s.dissonance + 3); addRes(s, { cenere: 300 }); toast(s, 'Il frammento sussurra: +3 Dissonanza, +300 cenere', 'fate'); }
-      else { s.valley.eclipseUntil = now + 1800_000; toast(s, 'Il frammento oscura il cielo: Eclisse per 30 minuti', 'fate'); }
+      if (r < 0.33) { s.corruption = Math.min(100, s.corruption + 20); s.reliquie += 1; toast(s, T('Il frammento ti marcia dentro: +20 corruzione, +1 reliquia'), 'fate'); }
+      else if (r < 0.66) { s.dissonance = Math.min(15, s.dissonance + 3); addRes(s, { cenere: 300 }); toast(s, T('Il frammento sussurra: +3 Dissonanza, +300 cenere'), 'fate'); }
+      else { s.valley.eclipseUntil = now + 1800_000; toast(s, T('Il frammento oscura il cielo: Eclisse per 30 minuti'), 'fate'); }
       break;
     }
   }
   if (f.dark) s.totals.darkFragAt = now + 3600_000;
   s.fragments.splice(i, 1);
   stat(s, 'fragmentsUsed');
-  chronicle(s, `Hai attivato ${f.name}. ${f.desc}`, 'fate');
-  toast(s, `${f.icon} ${f.name} attivato`, 'fate');
+  chronicle(s, T('Hai attivato {fName}. {desc}', { fName: f.name, desc: f.desc }), 'fate');
+  toast(s, T('{icon} {name} attivato', { icon: f.icon, name: f.name }), 'fate');
 }
 
 // ============================================================
@@ -272,10 +282,10 @@ export function sharedWorld(day: string, s?: GameState) {
 export function placeContract(s: GameState, fuid: string, prediction: ValleyState) {
   const f = s.fragments.find(f => f.uid === fuid);
   if (!f) return;
-  if (s.contracts.filter(c => !c.resolved).length >= 3) { toast(s, 'Massimo 3 contratti aperti', 'bad'); return; }
+  if (s.contracts.filter(c => !c.resolved).length >= 3) { toast(s, T('Massimo 3 contratti aperti'), 'bad'); return; }
   s.fragments = s.fragments.filter(x => x.uid !== fuid);
   s.contracts.push({ uid: uid('ct'), fragmentUid: f.uid, fragmentDef: f.defId, prediction, day: todayKey() });
-  toast(s, `📜 Contratto di Fato: "Domani la valle condivisa sarà in ${prediction}"`, 'fate');
+  toast(s, T('📜 Contratto di Fato: «Domani la valle condivisa sarà in {prediction}»', { prediction: T(prediction) }), 'fate');
 }
 export function resolveContracts(s: GameState) {
   const today = todayKey();
@@ -288,12 +298,12 @@ export function resolveContracts(s: GameState) {
       s.reliquie += 2;
       s.fragments.push({ uid: uid('fr'), defId: c.fragmentDef }, { uid: uid('fr'), defId: randomFragment(s) });
       changeRep(s, 'ombre', 5);
-      chronicle(s, `Il Contratto di Fato si è avverato (${c.prediction}): influenza narrativa, +2 reliquie.`, 'fate');
-      toast(s, '📜 Contratto avverato!', 'good');
+      chronicle(s, T('Il Contratto di Fato si è avverato ({prediction}): influenza narrativa, +2 reliquie.', { prediction: c.prediction }), 'fate');
+      toast(s, T('📜 Contratto avverato!'), 'good');
     } else {
       s.fragments.push({ uid: uid('fr'), defId: 'corrotto' });
-      chronicle(s, `Il Contratto di Fato è fallito (era ${w.state}): il frammento si è corrotto.`, 'fate');
-      toast(s, '📜 Contratto fallito: frammento corrotto', 'bad');
+      chronicle(s, T('Il Contratto di Fato è fallito (era {state}): il frammento si è corrotto.', { state: w.state }), 'fate');
+      toast(s, T('📜 Contratto fallito: frammento corrotto'), 'bad');
     }
   }
   s.contracts = s.contracts.filter(c => !c.resolved || Date.now() - hashStrTime(c.day) < 7 * 86400_000);
@@ -316,17 +326,23 @@ export function refreshMarket(s: GameState, force = false) {
   if (!force && now < s.market.refreshAt && s.market.listings.length) return;
   const L: Listing[] = [];
   const lv = s.hero.level;
-  for (let i = 0; i < 4; i++) {
-    const it = makeItem(lv + 1, rollRarity(1 + Math.random()));
-    L.push({ uid: uid('ls'), seller: pick(BOT_NAMES), kind: 'item', item: it, price: Math.round((40 + it.ilvl * 14) * (1 + it.rarity * 0.9)) });
+  // Prezzi bilanciati: la rarità pesa davvero, frammenti e risorse seguono il livello dell'economia.
+  const RAR = [1, 1.8, 3.4, 6.5, 12, 22];
+  for (let i = 0; i < 5; i++) {
+    const it = makeItem(lv + 1, rollRarity(1 + Math.random() + (i === 4 ? 0.6 : 0)));
+    L.push({ uid: uid('ls'), seller: pick(BOT_NAMES), kind: 'item', item: it, price: Math.round((60 + it.ilvl * 18) * RAR[Math.min(5, it.rarity)]) });
   }
   for (let i = 0; i < 2; i++) {
     const f = randomFragment(s);
-    L.push({ uid: uid('ls'), seller: pick(BOT_NAMES), kind: 'fragment', fragment: f, price: FRAGMENTS[f].value * 9 });
+    L.push({ uid: uid('ls'), seller: pick(BOT_NAMES), kind: 'fragment', fragment: f, price: Math.round(FRAGMENTS[f].value * 9 * (1 + lv / 25)) });
   }
-  const rk = pick(['provviste', 'ferro', 'pietra', 'intuizione'] as const);
-  const amt = rk === 'provviste' ? 8 : rk === 'intuizione' ? 2 : 100 + lv * 20;
-  L.push({ uid: uid('ls'), seller: 'Gilde di Hondovalle', kind: 'res', res: { key: rk, amount: amt }, price: rk === 'provviste' ? 90 : rk === 'intuizione' ? 120 : Math.round(amt * 1.2) });
+  const kinds = ['provviste', 'ferro', 'pietra', 'legno', 'intuizione'] as const;
+  const a = pick(kinds); const b = pick(kinds.filter(k => k !== a));
+  for (const rk of [a, b]) {
+    const amt = rk === 'provviste' ? 6 + Math.floor(lv / 4) : rk === 'intuizione' ? 2 : 80 + lv * 25;
+    const price = rk === 'provviste' ? amt * (12 + lv) : rk === 'intuizione' ? 140 + lv * 18 : Math.round(amt * (rk === 'ferro' ? 2.2 : 1.1));
+    L.push({ uid: uid('ls'), seller: T('Gilde di Hondovalle'), kind: 'res', res: { key: rk, amount: amt }, price });
+  }
   s.market.listings = L;
   s.market.refreshAt = now + 10 * 60_000;
 }
@@ -334,14 +350,14 @@ export function buyListing(s: GameState, luid: string) {
   const l = s.market.listings.find(x => x.uid === luid);
   if (!l) return;
   const price = Math.round(l.price * priceMult(s));
-  if (s.res.cenere < price) { toast(s, 'Cenere insufficiente', 'bad'); return; }
+  if (s.res.cenere < price) { toast(s, T('Cenere insufficiente'), 'bad'); return; }
   s.res.cenere -= price;
   if (l.item) addItem(s, l.item);
   if (l.fragment) s.fragments.push({ uid: uid('fr'), defId: l.fragment });
   if (l.res) addRes(s, { [l.res.key]: l.res.amount }, false);
   s.market.listings = s.market.listings.filter(x => x.uid !== luid);
-  const what = l.item?.name || (l.fragment && FRAGMENTS[l.fragment].name) || `${l.res!.amount} ${l.res!.key}`;
-  s.market.history.unshift(`${s.playerName} ha comprato ${what} da ${l.seller} per ${price} cenere.`);
+  const what = l.item?.name || (l.fragment && FRAGMENTS[l.fragment].name) || `${l.res!.amount} ${RES_INFO[l.res!.key].name}`;
+  s.market.history.unshift(T('{playerName} ha comprato {what} da {seller} per {price} cenere.', { playerName: s.playerName, what: what, seller: l.seller, price: price }));
   stat(s, 'trades');
   changeRep(s, 'ombre', 1);
   toast(s, `🛒 ${what}`, 'good');
@@ -353,9 +369,9 @@ export function sellItem(s: GameState, iuid: string) {
   s.inventory = s.inventory.filter(i => i.uid !== iuid);
   addRes(s, { cenere: price });
   const buyer = pick(BOT_NAMES);
-  s.market.history.unshift(`${buyer} ha comprato ${it.name} da ${s.playerName} per ${price} cenere. "${it.origin}"`);
+  s.market.history.unshift(T('{buyer} ha comprato {itName} da {playerName} per {price} cenere. "{origin}"', { buyer: buyer, itName: it.name, playerName: s.playerName, price: price, origin: it.origin }));
   stat(s, 'trades');
-  toast(s, `💰 Venduto a ${buyer}: +${price}`, 'good');
+  toast(s, T('💰 Venduto a {buyer}: +{price}', { buyer: buyer, price: price }), 'good');
 }
 export function sellFragment(s: GameState, fuid: string) {
   const f = s.fragments.find(x => x.uid === fuid);
@@ -366,7 +382,7 @@ export function sellFragment(s: GameState, fuid: string) {
   addRes(s, { cenere: price });
   if (def.dark) { pushValley(s, { blight: 3 }); }
   const buyer = pick(BOT_NAMES);
-  s.market.history.unshift(`${buyer} ha comprato ${def.name} da ${s.playerName} per ${price} cenere.${def.dark ? ' La valle si incupisce.' : ''}`);
+  s.market.history.unshift(T('{buyer} ha comprato {defName} da {playerName} per {price} cenere.{incupisce}', { buyer: buyer, defName: def.name, playerName: s.playerName, price: price, incupisce: def.dark ? T(' La valle si incupisce.') : '' }));
   stat(s, 'trades');
   toast(s, `💰 ${def.name}: +${price}`, 'good');
 }
@@ -389,10 +405,10 @@ function giveStar(s: GameState, id: string) {
   if (r.reliquie) s.reliquie += r.reliquie;
   if (r.flag) addFlag(s, r.flag);
   if (r.fragment) s.fragments.push({ uid: uid('fr'), defId: r.fragment });
-  chronicle(s, `Stella accesa: ${st.name} (${CONSTELLATIONS[st.cons].name}). ${st.text}`, 'fate');
+  chronicle(s, T('Stella accesa: {stName} ({consName}). {text}', { stName: st.name, consName: CONSTELLATIONS[st.cons].name, text: st.text }), 'fate');
   toast(s, `⭐ ${st.name}`, 'fate');
   const consStars = STARS.filter(x => x.cons === st.cons);
-  if (consStars.every(x => s.stars.includes(x.id))) toast(s, `🌌 ${CONSTELLATIONS[st.cons].name} completa: ${CONSTELLATIONS[st.cons].bonus}`, 'fate');
+  if (consStars.every(x => s.stars.includes(x.id))) toast(s, T('🌌 {consName} completa: {bonus}', { consName: CONSTELLATIONS[st.cons].name, bonus: CONSTELLATIONS[st.cons].bonus }), 'fate');
 }
 export function checkStars(s: GameState) {
   for (const st of STARS) if (st.flag && !s.stars.includes(st.id) && starFlagMet(s, st.flag)) giveStar(s, st.id);
@@ -401,8 +417,8 @@ export function readStar(s: GameState, cons: string) {
   const lit = STARS.filter(x => x.cons === cons && s.stars.includes(x.id)).length;
   const cost = lit > 0 ? 2 : 4;
   const cands = STARS.filter(x => x.cons === cons && !x.flag && !s.stars.includes(x.id));
-  if (!cands.length) { toast(s, 'Nessuna stella da leggere qui: le altre si accendono solo con le scelte', 'info'); return; }
-  if (s.res.intuizione < cost) { toast(s, `Servono ${cost} Intuizione`, 'bad'); return; }
+  if (!cands.length) { toast(s, T('Nessuna stella da leggere qui: le altre si accendono solo con le scelte'), 'info'); return; }
+  if (s.res.intuizione < cost) { toast(s, T('Servono {cost} Intuizione', { cost: cost }), 'bad'); return; }
   s.res.intuizione -= cost;
   giveStar(s, pick(cands).id);
 }
@@ -411,10 +427,10 @@ export function readStar(s: GameState, cons: string) {
 // Rituali del villaggio
 // ============================================================
 export function purifyUI(s: GameState) {
-  if (s.res.intuizione < 2) { toast(s, 'Servono 2 Intuizione', 'bad'); return; }
+  if (s.res.intuizione < 2) { toast(s, T('Servono 2 Intuizione'), 'bad'); return; }
   s.res.intuizione -= 2;
   s.settings.purifiedUntil = Date.now() + 15 * 60_000;
-  toast(s, '🕯️ L\'interfaccia è purificata per 15 minuti', 'good');
+  toast(s, T('🕯️ L\'interfaccia è purificata per 15 minuti'), 'good');
 }
 export function pledgeCureCost(s: GameState) {
   return { cenere: Math.round(s.hero.pledgedMaxHp * (hasFlag(s, 'elara_cure') ? 12 : 25)), reliquie: 1 };
@@ -422,37 +438,51 @@ export function pledgeCureCost(s: GameState) {
 export function curePledge(s: GameState) {
   if (s.hero.pledgedMaxHp <= 0) return;
   const c = pledgeCureCost(s);
-  if (s.res.cenere < c.cenere || s.reliquie < c.reliquie) { toast(s, `Servono ${c.cenere} cenere e 1 reliquia`, 'bad'); return; }
+  if (s.res.cenere < c.cenere || s.reliquie < c.reliquie) { toast(s, T('Servono {cenere} cenere e 1 reliquia', { cenere: c.cenere }), 'bad'); return; }
   s.res.cenere -= c.cenere; s.reliquie -= 1;
-  chronicle(s, `Elara ha sciolto il tuo pegno di ${s.hero.pledgedMaxHp} salute.`, 'fate');
+  chronicle(s, T('Elara ha sciolto il tuo pegno di {pledgedMaxHp} salute.', { pledgedMaxHp: s.hero.pledgedMaxHp }), 'fate');
   s.hero.pledgedMaxHp = 0;
   changeRep(s, 'guaritori', 3);
-  toast(s, '🌿 Pegno sciolto', 'good');
+  toast(s, T('🌿 Pegno sciolto'), 'good');
 }
 export function cureAberration(s: GameState) {
   if (!s.aberration) return;
-  if (s.reliquie < 8 || s.res.cenere < 3000) { toast(s, 'Servono 8 reliquie e 3000 cenere', 'bad'); return; }
+  if (s.reliquie < 8 || s.res.cenere < 3000) { toast(s, T('Servono 8 reliquie e 3000 cenere'), 'bad'); return; }
   s.reliquie -= 8; s.res.cenere -= 3000;
   s.aberration = false;
-  chronicle(s, 'Il rituale di Elara ti ha restituito un corpo umano. Il prezzo è stato enorme.', 'fate');
-  toast(s, 'Torni umano', 'good');
+  chronicle(s, T('Il rituale di Elara ti ha restituito un corpo umano. Il prezzo è stato enorme.'), 'fate');
+  toast(s, T('Torni umano'), 'good');
   clampHeroHp(s);
 }
 export function restoreName(s: GameState) {
   if (!s.nameCorrupted) return;
-  if (s.reliquie < 3) { toast(s, 'Servono 3 reliquie', 'bad'); return; }
+  if (s.reliquie < 3) { toast(s, T('Servono 3 reliquie'), 'bad'); return; }
   s.reliquie -= 3;
   s.nameCorrupted = false;
   addFlag(s, 'name_spoken');
-  chronicle(s, `Hai pronunciato il tuo nome all'Altare: ${s.playerName}. La valle se lo ricorda di nuovo.`, 'fate');
+  chronicle(s, T('Hai pronunciato il tuo nome all\'Altare: {playerName}. La valle se lo ricorda di nuovo.', { playerName: s.playerName }), 'fate');
   checkStars(s);
 }
 
 // ============================================================
 // Fine del Ciclo, finali ed Eredità
 // ============================================================
+// Strada lunga per chiudere un Ciclo senza il Cuore di Krak: ogni Ciclo chiede di più.
+export function cycleGoals(s: GameState): { label: string; have: number; need: number; done: boolean }[] {
+  const n = Math.max(1, s.cycle.n);
+  const cen = 150_000 * Math.pow(3, n - 1);
+  const lvl = 12 + 3 * (n - 1);
+  const goals = [
+    { label: T('Cenere guadagnata in questo Ciclo'), have: Math.floor(s.totals.cycleCenere || 0), need: cen },
+    { label: T('Livello dell\'eroe'), have: s.hero.level, need: lvl },
+    { label: T('Paludi di Vhalzareth conquistate'), have: s.biomes.paludi.conquered ? 1 : 0, need: 1 },
+  ];
+  if (n >= 3) goals.push({ label: T('Torre del Silenzio conquistata'), have: s.biomes.torre.conquered ? 1 : 0, need: 1 });
+  if (n >= 4) goals.push({ label: T('Piano raggiunto nell\'Abisso'), have: s.biomes.abisso.best || 0, need: 10 + 5 * (n - 4) });
+  return goals.map(g => ({ ...g, done: g.have >= g.need }));
+}
 export function canEndCycle(s: GameState) {
-  return hasFlag(s, 'boss_cuore_krak') || ((s.totals.cycleCenere || 0) >= 150_000 && s.hero.level >= 12);
+  return hasFlag(s, 'boss_cuore_krak') || cycleGoals(s).every(g => g.done);
 }
 export function computeEnding(s: GameState): string {
   const kept = s.promises.filter(p => p.status === 'kept').length;
@@ -472,7 +502,8 @@ export function computeEnding(s: GameState): string {
 export function memorieGain(s: GameState) {
   const base = Math.pow((s.totals.cycleCenere || 0) / 20000, 0.25) * 2 + s.hero.level / 10 + (hasFlag(s, 'boss_cuore_krak') ? 5 : 0)
     + (['cimitero', 'paludi', 'torre'] as const).filter(b => s.biomes[b].conquered).length * 2 + (s.totals.abyssBest || 0) / 10;
-  return Math.max(1, Math.floor(base * (1 + cardMod(s, 'memorie'))));
+  // Abbattere il Cuore di Krak vale il doppio della strada lunga
+  return Math.max(1, Math.floor(base * (1 + cardMod(s, 'memorie')) * (hasFlag(s, 'boss_cuore_krak') ? 2 : 1)));
 }
 export function endCycle(s: GameState) {
   if (!canEndCycle(s)) return;
@@ -480,7 +511,7 @@ export function endCycle(s: GameState) {
   s.ending = end;
   s.scene = 'ending';
   s.cycle.cardOffer = pickCards(3);
-  chronicle(s, `Finale: ${ENDINGS[end].name}.`, 'fate');
+  chronicle(s, T('Finale: {endName}.', { endName: ENDINGS[end].name }), 'fate');
 }
 function pickCards(n: number) {
   const pool = [...FATE_CARDS];
@@ -489,7 +520,7 @@ function pickCards(n: number) {
   return out;
 }
 export function rerollCards(s: GameState) {
-  if (s.reliquie < 1) { toast(s, 'Serve 1 reliquia', 'bad'); return; }
+  if (s.reliquie < 1) { toast(s, T('Serve 1 reliquia'), 'bad'); return; }
   s.reliquie--;
   s.cycle.cardOffer = pickCards(3);
 }
@@ -509,10 +540,16 @@ export function startNewCycle(s: GameState, cardId: string, heirloomUid: string 
   n.legacies = [legacy, ...s.legacies].slice(0, 20);
   n.settings = s.settings;
   n.market.history = s.market.history.slice(0, 30);
+  n.krak = { level: s.krak?.level || 0, max: Math.min(10, Math.max(s.krak?.max || 0, (s.krak?.level || 0) + 1, 1)) };
+  n.dailyRun = s.dailyRun;
   n.cycle = { n: s.cycle.n + 1, memorie: s.cycle.memorie + gain, memorieTotal: s.cycle.memorieTotal + gain, sanctuary: s.cycle.sanctuary, card: cardId, cardOffer: [], heirloom: heirloom ? { ...heirloom, locked: true } : null };
   n.valley.rebirthUntil = Date.now() + 3600_000;
   n.valley.prosperity = 45; n.valley.blight = 15;
   n.flags = ['new_cycle'];
+  // dal secondo Ciclo in poi niente guida: il portatore conosce già la valle
+  n.unlocked = [...s.unlocked];
+  n.tipsSeen = [...s.tipsSeen];
+  n.tutorial = 999;
   n.scene = 'intro';
   return n;
 }
@@ -528,17 +565,17 @@ export function generateDreams(s: GameState, hours: number) {
     const roll = r();
     const id = uid('dr');
     if (roll < 0.3) {
-      const t = { sacrificio: ['Sogno di Sacrificio', 'Sei tornato al portale. Tomas ti tendeva la mano, ma non riuscivi a raggiungerla.'], sangue: ['Il Debito Bussa', 'Vesper contava monete d\'osso sul tuo letto. "Il debito cresce anche quando dormi."'], silenzio: ['Il Testimone Sogna', 'Hai rivisto la notte dell\'incendio. Questa volta hai notato un volto in più.'] }[s.fardello];
+      const t = { sacrificio: [T('Sogno di Sacrificio'), T('Sei tornato al portale. Tomas ti tendeva la mano, ma non riuscivi a raggiungerla.')], sangue: [T('Il Debito Bussa'), T('Vesper contava monete d\'osso sul tuo letto. "Il debito cresce anche quando dormi."')], silenzio: [T('Il Testimone Sogna'), T('Hai rivisto la notte dell\'incendio. Questa volta hai notato un volto in più.')] }[s.fardello];
       s.dreams.push({ id, title: t[0], text: t[1], rewards: { intuizione: 1, cenere: 40 } });
     } else if (roll < 0.5) {
       const f = pick(Object.keys(FACTIONS) as FactionId[]);
-      s.dreams.push({ id, title: 'Un PNG ti ha cercato', text: `Mentre eri via, un messaggero di ${FACTIONS[f].name} ha bussato alla tua porta. Ha lasciato un dono.`, rewards: { cenere: 80, provviste: 2 }, consequence: `rep_${f}` });
+      s.dreams.push({ id, title: T('Un PNG ti ha cercato'), text: T('Mentre eri via, un messaggero di {fName} ha bussato alla tua porta. Ha lasciato un dono.', { fName: FACTIONS[f].name }), rewards: { cenere: 80, provviste: 2 }, consequence: `rep_${f}` });
     } else if (roll < 0.65 && s.promises.some(p => p.status === 'open')) {
-      s.dreams.push({ id, title: 'Una Promessa Scade nel Sonno', text: 'Hai sognato catene. Una delle tue promesse si è fatta più urgente (una spedizione in meno per mantenerla).', rewards: { intuizione: 1 }, consequence: 'promise_tick' });
+      s.dreams.push({ id, title: T('Una Promessa Scade nel Sonno'), text: T('Hai sognato catene. Una delle tue promesse si è fatta più urgente (una spedizione in meno per mantenerla).'), rewards: { intuizione: 1 }, consequence: 'promise_tick' });
     } else if (roll < 0.8) {
-      s.dreams.push({ id, title: 'Frammento nel Magazzino', text: 'Al risveglio, nel magazzino c\'è un frammento che nessuno ricorda di aver portato. È tiepido. È corrotto.', rewards: {}, consequence: 'fragment_corrupt' });
+      s.dreams.push({ id, title: T('Frammento nel Magazzino'), text: T('Al risveglio, nel magazzino c\'è un frammento che nessuno ricorda di aver portato. È tiepido. È corrotto.'), rewards: {}, consequence: 'fragment_corrupt' });
     } else {
-      s.dreams.push({ id, title: 'Spedizione Onirica', text: 'In sogno hai visitato una versione corrotta di un dungeon già esplorato. Ti sei svegliato con le tasche piene.', rewards: { cenere: 120, ferro: 30, provviste: 1 } });
+      s.dreams.push({ id, title: T('Spedizione Onirica'), text: T('In sogno hai visitato una versione corrotta di un dungeon già esplorato. Ti sei svegliato con le tasche piene.'), rewards: { cenere: 120, ferro: 30, provviste: 1 } });
     }
   }
 }
@@ -552,7 +589,7 @@ export function claimDream(s: GameState, id: string) {
   if (d.consequence === 'promise_tick') { const p = s.promises.find(p => p.status === 'open'); if (p) { p.deadlineDelves--; checkPromises(s); } }
   if (d.consequence === 'fragment_corrupt') s.fragments.push({ uid: uid('fr'), defId: 'corrotto' });
   s.dreams = s.dreams.filter(x => x.id !== id);
-  chronicle(s, `Sogno: ${d.title}.`, 'world');
+  chronicle(s, T('Sogno: {title}.', { title: d.title }), 'world');
 }
 
 export function bestHeirloomCandidates(s: GameState): Item[] {

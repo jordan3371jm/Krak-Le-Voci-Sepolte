@@ -1,7 +1,10 @@
+import { isProfane } from './profanity';
+import { kvGet, kvSet, kvDel, kvUsesBridge } from './kv';
 // Salvataggio robusto (GDD §21): autosave, backup rotanti, checksum, migrazione, codice di esportazione.
 import type { GameState } from './types';
 import { newGame, SAVE_VERSION } from './engine/state';
 import { hashStr } from './rng';
+import { onboard } from './engine/onboarding';
 
 const KEY = 'krak_voci_sepolte_save';
 const BAK = 'krak_voci_sepolte_bak_';
@@ -39,8 +42,26 @@ export function migrate(raw: any): GameState | null {
   // nuovi compagni aggiunti in versioni successive
   for (const c of base.companions) if (!out.companions.some((x: any) => x.id === c.id)) out.companions.push(c);
   out.toasts = [];
+  if ((raw.version || 0) < 3) {
+    // partite precedenti: sblocca subito ciò che il giocatore ha già raggiunto e riaccende la nuova musica
+    out.settings.music = true;
+    if (out.scene === 'game') { onboard(out, true); out.toasts = []; }
+  }
+  // nomi salvati prima del filtro delle parolacce
+  if (typeof out.playerName === 'string' && isProfane(out.playerName)) out.playerName = 'Portatore';
   out.version = SAVE_VERSION;
   if (out.combat && !out.combat.party) out.combat = null;
+  if (out.combat) { out.combat.chain ??= 0; out.combat.bestChain ??= 0; }
+  out.lastReport ??= null;
+  out.talk ??= null;
+  out.quests ??= {};
+  out.krak ??= { level: 0, max: out.cycle?.n > 1 ? 1 : 0 };
+  out.omens ??= [];
+  out.dailyRun ??= { day: '', best: 0, tries: 0, allBest: 0 };
+  out.glitchUntil ??= 0;
+  out.lostSatchel ??= null;
+  out.weekly ??= { key: '', missions: [], bonus: false };
+  out.monthly ??= { key: '', missions: [], bonus: false };
   return out as GameState;
 }
 
@@ -49,12 +70,12 @@ export function saveGame(s: GameState): boolean {
   if (s.scene === 'intro' && !s.playerName && s.cycle.n === 1) return false;
   try {
     const data = wrap({ ...s, lastSave: Date.now() });
-    localStorage.setItem(KEY, data);
+    kvSet(KEY, data);
     const now = Date.now();
-    if (now - lastBackup > 5 * 60_000) {
+    if (!kvUsesBridge() && now - lastBackup > 5 * 60_000) {
       lastBackup = now;
       const slot = Math.floor(now / (5 * 60_000)) % BAK_SLOTS;
-      localStorage.setItem(BAK + slot, data);
+      kvSet(BAK + slot, data);
     }
     return true;
   } catch (e) {
@@ -65,11 +86,11 @@ export function saveGame(s: GameState): boolean {
 
 export function loadGame(): GameState | null {
   try {
-    const main = unwrap(localStorage.getItem(KEY));
+    const main = unwrap(kvGet(KEY));
     if (main) return main;
     // fallback sui backup rotanti, il più recente valido
     const baks: GameState[] = [];
-    for (let i = 0; i < BAK_SLOTS; i++) { const b = unwrap(localStorage.getItem(BAK + i)); if (b) baks.push(b); }
+    for (let i = 0; i < BAK_SLOTS; i++) { const b = unwrap(kvGet(BAK + i)); if (b) baks.push(b); }
     baks.sort((a, b) => b.lastSave - a.lastSave);
     return baks[0] || null;
   } catch {
@@ -81,13 +102,13 @@ export function hasSave(): boolean {
   try { return !!loadGame(); } catch { return false; }
 }
 export function hasOldSave(): boolean {
-  try { return !!localStorage.getItem(LEGACY_KEY); } catch { return false; }
+  try { return !!kvGet(LEGACY_KEY); } catch { return false; }
 }
 
 export function deleteSave() {
   try {
-    localStorage.removeItem(KEY);
-    for (let i = 0; i < BAK_SLOTS; i++) localStorage.removeItem(BAK + i);
+    kvDel(KEY);
+    for (let i = 0; i < BAK_SLOTS; i++) kvDel(BAK + i);
   } catch { /* ignora */ }
 }
 

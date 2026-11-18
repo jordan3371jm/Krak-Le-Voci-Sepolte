@@ -117,6 +117,8 @@ export interface CombatState {
   repositioned?: boolean;
   wordUsed?: boolean;
   reviveAvailable: boolean;
+  chain: number;        // Catena di Coerenza
+  bestChain: number;
   title: string;
 }
 
@@ -132,7 +134,7 @@ export interface Loot {
   fragments: string[];
 }
 
-export type RoomType = 'combat' | 'elite' | 'event' | 'trap' | 'shrine' | 'treasure' | 'ghost' | 'shadow' | 'hunter' | 'boss' | 'merchant';
+export type RoomType = 'combat' | 'elite' | 'event' | 'trap' | 'shrine' | 'treasure' | 'ghost' | 'shadow' | 'hunter' | 'boss' | 'merchant' | 'puzzle';
 
 export interface RoomOption { type: RoomType; seed: number; hint: string }
 
@@ -145,6 +147,7 @@ export interface ActiveRoom {
   ghostKind?: 'ally' | 'enemy' | 'merchant' | 'corpse';
   bossChoice?: Item[];
   merchantItems?: { item: Item; price: number }[];
+  puzzle?: { seq: number[]; input: number[]; mode: 'candele' | 'sigillo' };
 }
 
 export interface DelveState {
@@ -159,6 +162,8 @@ export interface DelveState {
   emotion: Emotion;
   pledged: number;
   ghostAlly?: boolean;
+  daily?: boolean;
+  snap?: { t: number; coh: number; inc: number; corr: number; influence: number; factions: Record<string, number>; open: number; kept: number; broken: number; bosses?: number; cenere?: number };
   log: string[];
 }
 
@@ -175,6 +180,9 @@ export interface Companion {
   inParty: boolean;
   mission?: { locId: string; start: number; end: number } | null;
   left?: boolean;
+  weight?: number;                 // Peso emotivo: a 100 si spezza o trova una Virtù
+  mood?: 'broken' | 'virtue' | null;
+  gifts?: number;
 }
 
 export interface PromiseState {
@@ -228,7 +236,7 @@ export interface VillageEvents {
   bardReadyAt: number;
 }
 
-export type TabId = 'villaggio' | 'discesa' | 'eroe' | 'bussola' | 'mercato' | 'fazioni' | 'spedizioni' | 'diario' | 'eredita' | 'opzioni';
+export type TabId = 'villaggio' | 'discesa' | 'eroe' | 'bussola' | 'mercato' | 'fazioni' | 'spedizioni' | 'diario' | 'eredita' | 'veglia' | 'opzioni';
 
 export interface Modal {
   kind: 'event' | 'welcome' | 'trial' | 'info' | 'promise';
@@ -236,6 +244,7 @@ export interface Modal {
   title?: string;
   text?: string;
   lines?: string[];
+  double?: Partial<Resources>;
 }
 
 export interface Toast { id: number; text: string; kind: 'info' | 'good' | 'bad' | 'fate' }
@@ -276,7 +285,7 @@ export interface GameState {
   reliquie: number;
   totals: Record<string, number>;
 
-  village: { buildings: Record<string, number>; upgrades: string[] };
+  village: { buildings: Record<string, number>; upgrades: string[]; works?: Record<string, number> };
   companions: Companion[];
 
   resonance: number;
@@ -302,6 +311,8 @@ export interface GameState {
   world: { day: string; bossDamage: number; bossTries: number };
 
   daily: { day: string; chest: boolean; missions: DailyMission[]; bonus: boolean };
+  weekly: { key: string; missions: DailyMission[]; bonus: boolean };
+  monthly: { key: string; missions: DailyMission[]; bonus: boolean };
   achievements: string[];
   bestiary: Record<string, number>;
   fish: string[];
@@ -320,8 +331,24 @@ export interface GameState {
   trialOutcome: string | null;
   ending: string | null;
 
-  settings: { music: boolean; sfx: boolean; autoBattle: boolean; autoPotion: number; fastCombat: boolean; purifiedUntil: number; reduceFx: boolean };
+  settings: { music: boolean; musicVolume: number; sfx: boolean; muted?: boolean; autoBattle: boolean; autoPotion: number; fastCombat: boolean; purifiedUntil: number; reduceFx: boolean };
   fullscreen: boolean;
+
+  unlocked: string[];
+  newTabs: string[];
+  codexQueue: string[];
+  tutorial: number;
+  tipsSeen: string[];
+  lastReport: { title: string; good: boolean; lines: string[]; voices?: { id: string; text: string }[] } | null;
+
+  krak: { level: number; max: number };
+  omens: { id: string; left: number; biome: BiomeId; floor: number }[];
+  dailyRun: { day: string; best: number; tries: number; allBest: number };
+  glitchUntil: number;
+  lostSatchel: { cenere: number; legno: number; pietra: number; ferro: number; items: Item[] } | null;
+
+  talk: { npc: string; node: string; log: { who: string; text: string }[]; roll: { skill: string; die: number; bonus: number; dc: number; ok: boolean } | null } | null;
+  quests: Record<string, { stage: number; done?: boolean; outcome?: string }>;
 
   modal: Modal | null;
   toasts: Toast[];
