@@ -49,7 +49,7 @@ export function newGame(): GameState {
     cycle: { n: 1, memorie: 0, memorieTotal: 0, sanctuary: {}, card: null, cardOffer: [], heirloom: null },
     legacies: [], dreams: [],
     trial: 'none', trialOutcome: null, ending: null,
-    settings: { music: true, musicVolume: 0.55, sfx: true, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
+    settings: { music: true, musicVolume: 0.55, sfx: true, muted: false, autoBattle: false, autoPotion: 35, fastCombat: false, purifiedUntil: 0, reduceFx: false },
     fullscreen: false,
     unlocked: [], newTabs: [], codexQueue: [], tutorial: 0, tipsSeen: [], lastReport: null,
     krak: { level: 0, max: 0 }, omens: [], dailyRun: { day: '', best: 0, tries: 0, allBest: 0 }, glitchUntil: 0, lostSatchel: null,

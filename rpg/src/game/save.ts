@@ -1,3 +1,4 @@
+import { isProfane } from './profanity';
 import { kvGet, kvSet, kvDel, kvUsesBridge } from './kv';
 // Salvataggio robusto (GDD §21): autosave, backup rotanti, checksum, migrazione, codice di esportazione.
 import type { GameState } from './types';
@@ -46,6 +47,8 @@ export function migrate(raw: any): GameState | null {
     out.settings.music = true;
     if (out.scene === 'game') { onboard(out, true); out.toasts = []; }
   }
+  // nomi salvati prima del filtro delle parolacce
+  if (typeof out.playerName === 'string' && isProfane(out.playerName)) out.playerName = 'Portatore';
   out.version = SAVE_VERSION;
   if (out.combat && !out.combat.party) out.combat = null;
   if (out.combat) { out.combat.chain ??= 0; out.combat.bestChain ??= 0; }

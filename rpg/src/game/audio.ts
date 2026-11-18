@@ -21,8 +21,10 @@ let musicWet: GainNode | null = null;
 let sfxBus: GainNode | null = null;
 let reverb: ConvolverNode | null = null;
 let musicOn = true;
-let extMuted = false;
-let recorded = false;   // un brano registrato sta suonando: la partitura generativa tace   // la piattaforma (pubblicità, scheda nascosta, pausa) chiede il silenzio
+let extMuted = false;  // la piattaforma (pubblicità, scheda nascosta, pausa) chiede il silenzio
+let userMuted = false; // il giocatore ha premuto il pulsante muto
+let recorded = false;  // un brano registrato sta suonando: la partitura generativa tace
+const silenced = () => extMuted || userMuted;
 let sfxOn = true;
 let musicVol = 0.55;
 let sched: number | null = null;
@@ -46,13 +48,13 @@ const hz = (semi: number, base = TONIC) => base * Math.pow(2, semi / 12);
 
 export function initAudio() {
   unlockMusic();
-  if (ctx) { if (ctx.state === 'suspended') ctx.resume().catch(() => {}); return; }
+  if (ctx) { if (ctx.state === 'suspended' && !silenced()) ctx.resume().catch(() => {}); return; }
   try {
     const AC = window.AudioContext || (window as any).webkitAudioContext;
     ctx = new AC();
     const comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -18; comp.ratio.value = 3;
-    master = ctx.createGain(); master.gain.value = extMuted ? 0 : 0.8;
+    master = ctx.createGain(); master.gain.value = silenced() ? 0 : 0.8;
     master.connect(comp); comp.connect(ctx.destination);
     reverb = ctx.createConvolver(); reverb.buffer = impulse(ctx, 4.2, 2.6);
     musicBus = ctx.createGain(); musicBus.gain.value = musicOn ? musicVol : 0;
@@ -63,6 +65,7 @@ export function initAudio() {
     sfxBus = ctx.createGain(); sfxBus.gain.value = sfxOn ? 0.5 : 0; sfxBus.connect(master);
     nextChordAt = ctx.currentTime + 0.2;
     sched = window.setInterval(schedule, 200);
+    if (silenced()) ctx.suspend().catch(() => {});
   } catch {
     ctx = null;
   }
@@ -79,12 +82,17 @@ function impulse(c: AudioContext, secs: number, decay: number) {
 }
 
 /** Silenzio imposto dalla piattaforma: azzera il volume generale e sospende l'audio. */
-export function setExternalMute(on: boolean) {
-  extMuted = on;
-  setTrackMuted(on);
+export function setExternalMute(on: boolean) { extMuted = on; applySilence(); }
+/** Pulsante muto del giocatore: spegne tutto (musica, partitura, effetti, brani registrati). */
+export function setMuted(on: boolean) { userMuted = on; applySilence(); }
+export const isSilenced = () => silenced();
+function applySilence() {
+  const off = silenced();
+  setTrackMuted(off);
   if (!ctx || !master) return;
-  master.gain.setTargetAtTime(on ? 0 : 0.8, ctx.currentTime, 0.05);
-  if (on) ctx.suspend().catch(() => {}); else ctx.resume().catch(() => {});
+  master.gain.cancelScheduledValues(ctx.currentTime);
+  master.gain.setValueAtTime(off ? 0 : 0.8, ctx.currentTime);
+  if (off) ctx.suspend().catch(() => {}); else ctx.resume().catch(() => {});
 }
 
 export function setMusic(on: boolean) {
@@ -226,7 +234,7 @@ function noiseBurst(t: number, dur: number, vol: number, freq: number, dest: 'mu
 
 // ---------------- compositore ----------------
 function schedule() {
-  if (!ctx || !musicOn || mood.silent || recorded || ctx.state !== 'running') return;
+  if (!ctx || !musicOn || mood.silent || recorded || silenced() || ctx.state !== 'running') return;
   while (nextChordAt < ctx.currentTime + 0.6) {
     playChord(nextChordAt);
     nextChordAt += PROGRESSIONS[mood.scene].secs;
@@ -294,7 +302,7 @@ function playChord(t: number) {
 
 // ---------------- effetti sonori ----------------
 function note(freq: number, dur: number, type: OscillatorType, vol: number, delay = 0, pan = 0) {
-  if (!ctx || !sfxBus) return;
+  if (!ctx || !sfxBus || silenced()) return;
   const t = ctx.currentTime + delay;
   const o = ctx.createOscillator(); const g = ctx.createGain();
   o.type = type; o.frequency.setValueAtTime(freq, t);
@@ -306,7 +314,7 @@ function note(freq: number, dur: number, type: OscillatorType, vol: number, dela
   if (reverb && musicWet) { const w = ctx.createGain(); w.gain.value = 0.25; g.connect(w); w.connect(reverb); }
   o.start(t); o.stop(t + dur + 0.05);
 }
-const nz = (dur: number, vol: number, freq: number, delay = 0) => { if (ctx) noiseBurst(ctx.currentTime + delay, dur, vol, freq, 'sfx'); };
+const nz = (dur: number, vol: number, freq: number, delay = 0) => { if (ctx && !silenced()) noiseBurst(ctx.currentTime + delay, dur, vol, freq, 'sfx'); };
 
 export const sfx = {
   click: () => note(880, 0.05, 'sine', 0.03),
@@ -320,7 +328,7 @@ export const sfx = {
   dissonance: () => { note(233, 0.6, 'triangle', 0.05); note(247, 0.6, 'triangle', 0.05); },
   // eco inversa: le note crescono invece di spegnersi
   echo: () => {
-    if (!ctx || !sfxBus) return;
+    if (!ctx || !sfxBus || silenced()) return;
     const t = ctx.currentTime;
     [294, 440, 587, 880].forEach((f, i) => {
       const o = ctx!.createOscillator(); const g = ctx!.createGain();

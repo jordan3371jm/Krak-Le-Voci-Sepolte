@@ -10,6 +10,8 @@ import { beginGame } from '../game/engine/village';
 import { initAudio, sfx } from '../game/audio';
 import { tryAutoplay } from '../game/music';
 import { trackOnce } from '../game/platform';
+import { MuteButton } from './HUD';
+import { isProfane } from '../game/profanity';
 import { Btn } from './ui';
 import { Icon } from './icons';
 import { LangPicker } from './LangPicker';
@@ -32,6 +34,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
   const [line, setLine] = useState(0);
   const [name, setName] = useState(() => NAMES[Math.floor(Math.random() * NAMES.length)]);
   const [cls, setCls] = useState<ClassId>('custode');
+  const badName = isProfane(name);
   const newCycle = state.cycle.n > 1;
   const legacy = state.legacies[0];
   const card = FATE_CARDS.find(c => c.id === state.cycle.card);
@@ -45,7 +48,7 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
   if (step === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
-        <div className="absolute top-4 right-4 z-10"><LangPicker /></div>
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2"><MuteButton muted={!!state.settings.muted} onToggle={() => act(d => { d.settings.muted = !d.settings.muted; })} /><LangPicker /></div>
         <Particles mode="portal" tint="255,120,50" />
         {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-60 pointer-events-none kenburns" style={{ backgroundImage: `radial-gradient(ellipse at center, rgba(5,4,6,.35), rgba(5,4,6,.92)), url(${BG.copertina})` }} />}
         <div className="absolute inset-0 bg-gradient-to-t from-red-950/60 via-transparent to-transparent animate-breathe pointer-events-none" />
@@ -93,19 +96,21 @@ export default function Intro({ state, act }: { state: GameState; act: Act }) {
       {BG.copertina && <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none kenburns" style={{ backgroundImage: `radial-gradient(ellipse at center, rgba(5,4,6,.45), rgba(5,4,6,.96)), url(${BG.copertina})` }} />}
       <div aria-hidden className="absolute inset-0 pointer-events-none transition-[background] duration-700" style={{ background: `radial-gradient(ellipse at 50% 60%, rgba(${CC[cls]}, .16), transparent 60%)` }} />
       <Particles mode="portal" tint={CC[cls]} intensity={0.6} />
-      <div className="absolute top-4 right-4 z-10"><LangPicker /></div>
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2"><MuteButton muted={!!state.settings.muted} onToggle={() => act(d => { d.settings.muted = !d.settings.muted; })} /><LangPicker /></div>
       <div className="w-full max-w-5xl animate-rise relative z-10">
         <p className="text-center text-[10px] uppercase tracking-[0.5em] text-amber-300/80 mb-1">{T('Prologo')}</p>
         <h2 className="text-3xl sm:text-4xl text-center text-gradient-ember title-beat mb-1">{T('Chi porta il Fardello?')}</h2>
         <p className="text-center text-sm text-mist mb-4 italic">{T('Il tuo nome diventerà un incantesimo. Alcuni lo pronunceranno con amore, altri lo malediranno.')}</p>
-        <div className="text-center mb-5"><Btn kind="ember" disabled={!name.trim()} onClick={() => { initAudio(); sfx.door(); act(d => beginGame(d, name, cls)); }}>{T('Scendi a Hondovalle Bassa')}</Btn></div>
+        <div className="text-center mb-5"><Btn kind="ember" disabled={!name.trim() || badName} onClick={() => { if (badName) return; initAudio(); sfx.door(); act(d => beginGame(d, name, cls)); }}>{T('Scendi a Hondovalle Bassa')}</Btn></div>
         <input
           value={name}
           onChange={e => setName(e.target.value)}
           maxLength={20}
           placeholder={T('Il tuo nome')}
-          className="w-full max-w-sm mx-auto block bg-black/60 border border-ember/40 rounded-xl px-4 py-3 text-center text-xl font-display tracking-wider text-bone focus:outline-none focus:border-ember focus:shadow-[0_0_30px_rgba(251,146,60,.25)] mb-8"
+          aria-invalid={badName}
+          className={`w-full max-w-sm mx-auto block bg-black/60 border ${badName ? 'border-red-600' : 'border-ember/40'} rounded-xl px-4 py-3 text-center text-xl font-display tracking-wider text-bone focus:outline-none focus:border-ember focus:shadow-[0_0_30px_rgba(251,146,60,.25)] ${badName ? 'mb-2' : 'mb-8'}`}
         />
+        {badName && <p role="alert" className="text-center text-sm text-red-300 mb-6">{T('Questo nome non è ammesso: scegline un altro.')}</p>}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
           {Object.values(CLASSES).map(c => {
             const st: [string, number, number][] = [[T('Salute'), c.base.maxHp, 120], [T('Attacco'), c.base.atk, 16], [T('Difesa'), c.base.def, 9]];

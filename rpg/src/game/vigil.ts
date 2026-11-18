@@ -1,3 +1,4 @@
+import { cleanName } from './profanity';
 // ============================================================
 // LA VEGLIA — modalità cooperativa (1–4 portatori, bot nei posti vuoti).
 // Attorno all'ultimo fuoco di Hondovalle, i portatori resistono alle
@@ -59,7 +60,7 @@ const BOT_NAMES = ['Orsola', 'Garrik', 'Mira', 'Brann', 'Lyra', 'Teodora', 'Ilya
 const CLASSES: VClass[] = ['custode', 'penitente', 'lama', 'veggente'];
 export function addPlayer(s: VigilState, id: string, name: string, cls: VClass, bot = false) {
   if (s.players.some(p => p.id === id) || s.players.length >= 4) return;
-  s.players.push({ id, name: name.slice(0, 16) || T('Portatore'), cls, bot, choice: null, vote: null, dmg: 0 });
+  s.players.push({ id, name: cleanName(String(name || '').slice(0, 16), T('Portatore')), cls, bot, choice: null, vote: null, dmg: 0 });
 }
 export function removePlayer(s: VigilState, id: string) {
   const p = s.players.find(x => x.id === id);

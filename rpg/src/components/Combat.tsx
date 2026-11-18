@@ -36,13 +36,13 @@ function Unit({ u, s, targetable, onClick }: { u: Combatant; s: GameState; targe
     <button
       disabled={!targetable}
       onClick={onClick}
-      className={`relative rounded-xl border p-2 text-left transition w-full ${pulse} ${u.side === 'enemy' && !dead && !targetable ? 'threat' : ''} ${dead ? 'dead border-stone-800' : targetable ? 'border-ember ring-2 ring-ember/60 cursor-pointer hover:bg-ember/10' : boss ? 'border-red-800 bg-red-950/20' : 'border-stone-700 bg-black/40'} ${fx.some(f => f.kind === 'dmg' || f.kind === 'crit') ? 'animate-shake' : ''}`}
+      className={`relative rounded-xl border p-1.5 sm:p-2 text-left transition w-full ${pulse} ${u.side === 'enemy' && !dead && !targetable ? 'threat' : ''} ${dead ? 'dead border-stone-800' : targetable ? 'border-ember ring-2 ring-ember/60 cursor-pointer hover:bg-ember/10' : boss ? 'border-red-800 bg-red-950/20' : 'border-stone-700 bg-black/40'} ${fx.some(f => f.kind === 'dmg' || f.kind === 'crit') ? 'animate-shake' : ''}`}
     >
       {fx.slice(-3).map((f, i) => (
         <span key={f.id} className={`fx-float text-sm ${f.kind === 'heal' ? 'text-green-300' : f.kind === 'crit' ? 'text-yellow-300 text-lg' : f.kind === 'miss' ? 'text-sky-300' : f.kind === 'echo' ? 'text-teal-200 text-lg' : f.kind === 'status' ? 'text-purple-300 text-xs' : 'text-red-300'}`} style={{ top: `${-4 - i * 14}px` }}>{f.text}</span>
       ))}
       <div className="flex items-center gap-2">
-        {u.uid === 'hero' ? <Icon name={s.aberration ? 'corruzione' : s.classId} size={46} /> : (artFor(u.defId) ? <img src={artFor(u.defId)} alt="" className={`rounded-full object-cover ${u.side === 'enemy' && !dead ? 'portrait-uncanny' : 'portrait-alive'} shrink-0 ${boss ? 'ring-2 ring-red-500/70' : 'ring-1 ring-ember/50'}`} style={{ width: boss ? 64 : 48, height: boss ? 64 : 48 }} /> : <Sigil emoji={u.icon} size={boss ? 56 : 44} tone={u.side === 'enemy' ? (boss ? 'blood' : 'ember') : 'teal'} />)}
+        {u.uid === 'hero' ? <Icon name={s.aberration ? 'corruzione' : s.classId} size={40} /> : (artFor(u.defId) ? <img src={artFor(u.defId)} alt="" className={`rounded-full object-cover ${u.side === 'enemy' && !dead ? 'portrait-uncanny' : 'portrait-alive'} shrink-0 ${boss ? 'ring-2 ring-red-500/70' : 'ring-1 ring-ember/50'}`} style={{ width: boss ? 56 : 40, height: boss ? 56 : 40 }} /> : <Sigil emoji={u.icon} size={boss ? 56 : 44} tone={u.side === 'enemy' ? (boss ? 'blood' : 'ember') : 'teal'} />)}
         <div className="min-w-0 flex-1">
           <div className="text-xs text-bone truncate">{u.name}{u.row === 'back' ? <span className="text-[9px] text-mist">{' '}{T('· retrovia')}</span> : ''}</div>
           <Bar value={u.hp} max={u.maxHp} color={u.side === 'enemy' ? 'bg-gradient-to-r from-red-900 to-red-500' : 'bg-gradient-to-r from-emerald-800 to-emerald-500'} height="h-1.5" />
@@ -131,7 +131,7 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
   const partyRows = [front(c.party), back(c.party)].filter(r => r.length);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-3">
+    <div className="max-w-5xl mx-auto h-full flex flex-col gap-2 combat-screen">
       {intro && bossUnit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 animate-fade cursor-pointer" onClick={() => setIntro(null)}>
           <div className="text-center px-6 animate-rise max-w-lg">
@@ -143,13 +143,15 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
           </div>
         </div>
       )}
-      {(s.totals.kills || 0) === 0 && (
-        <Tip id="combat" state={s} act={act} title={T('Il tuo primo scontro')}>
+      {(s.totals.kills || 0) === 0 && !s.tipsSeen.includes('combat') && !intro && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-3 animate-fade"><div className="w-full max-w-lg"><Tip id="combat" state={s} act={act} title={T('Il tuo primo scontro')}>
           <p>{rich(T('1. Tocca un\'**abilità**, poi il **nemico** da colpire. L\'attacco base dà Focus (◆), le abilità forti lo spendono.'))}</p>
           <p>{rich(T('2. Bordo **verde** = l\'azione è coerente col tuo Fardello e carica la Risonanza. Bordo **rosso** = gli è contraria e genera Dissonanza. Nessuna è sbagliata.'))}</p>
           <p>{T('3. Sotto ogni nemico (⚠) vedi la sua prossima mossa. Le pozioni non consumano il turno.')}</p>
-        </Tip>
+        </Tip></div></div>
       )}
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar space-y-2 pt-1">
+
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base sm:text-lg text-bone">{c.title}</h2>
         <div className="flex items-center gap-2 text-xs">
@@ -191,22 +193,24 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
         <Bar value={c.focus} max={5} color="bg-amber-500" label={<><span className="text-amber-300">{T('◆ Focus')}</span><span>{c.focus}/5</span></>} />
       </div>
 
+      </div>
+
       {/* Azioni */}
       {c.phase !== 'won' && c.phase !== 'lost' && (
-        <div className="panel rounded-xl p-3 space-y-2">
+        <div className="panel rounded-xl p-2 sm:p-3 space-y-2 shrink-0 max-h-[55%] overflow-y-auto overscroll-contain no-scrollbar">
           {F && (
-            <button disabled={s.resonance < rmax || c.phase !== 'player'} onClick={() => act(d => useEcho(d))} className={`w-full rounded-lg border p-2 text-left transition ${s.resonance >= rmax ? 'border-resonance bg-teal-900/30 res-glow' : 'border-stone-800 opacity-40'}`}>
-              <span className="text-sm text-teal-200">✨ {F.echoName}</span> <span className="text-[11px] text-mist">— {F.echoDesc}</span>
+            <button disabled={s.resonance < rmax || c.phase !== 'player'} onClick={() => act(d => useEcho(d))} className={`w-full rounded-lg border px-2 py-1.5 text-left transition truncate ${s.resonance >= rmax ? 'border-resonance bg-teal-900/30 res-glow' : 'border-stone-800 opacity-40'}`}>
+              <span className="text-sm text-teal-200">✨ {F.echoName}</span> <span className="text-[11px] text-mist hidden sm:inline">— {F.echoDesc}</span>
             </button>
           )}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 lg:grid-cols-6 gap-1.5">
             {mainSkills.map(sk => {
               const ok = canUseSkill(s, sk.id);
               return (
                 <button key={sk.id} disabled={!ok.ok || c.phase !== 'player'} onClick={() => choose(sk)} title={T('{desc} · natura: {n}', { desc: sk.desc, n: sk.natures.map(n => NATURE_LABEL[n]).join(', ') })}
-                  className={`rounded-lg border ${coherenceOf(sk)} bg-black/40 p-2 text-left disabled:opacity-35 hover:bg-white/5 ${pending?.id === sk.id ? 'ring-2 ring-ember' : ''}`}>
-                  <div className="text-sm text-bone flex items-center gap-2">{artFor('skill_' + sk.id) ? <Icon name={'skill_' + sk.id} size={34} /> : sk.icon} <span>{sk.name}</span></div>
-                  <div className="text-[10px] text-mist">{sk.focusCost ? `◆${sk.focusCost} ` : ''}{sk.focusGain ? '+1◆ ' : ''}{ok.why || sk.natures.map(n => NATURE_LABEL[n]).join('·')}</div>
+                  className={`rounded-lg border ${coherenceOf(sk)} bg-black/40 p-1.5 text-left min-w-0 disabled:opacity-35 hover:bg-white/5 ${pending?.id === sk.id ? 'ring-2 ring-ember' : ''}`}>
+                  <div className="text-xs sm:text-sm text-bone flex items-center gap-1.5 min-w-0">{artFor('skill_' + sk.id) ? <Icon name={'skill_' + sk.id} size={28} /> : sk.icon} <span className="truncate">{sk.name}</span></div>
+                  <div className="text-[10px] text-mist truncate">{sk.focusCost ? `◆${sk.focusCost} ` : ''}{sk.focusGain ? '+1◆ ' : ''}{ok.why || sk.natures.map(n => NATURE_LABEL[n]).join('·')}</div>
                 </button>
               );
             })}
@@ -238,14 +242,14 @@ export default function Combat({ state: s, act }: { state: GameState; act: Act }
       )}
 
       {(c.phase === 'won' || c.phase === 'lost') && (
-        <div className={`panel rounded-xl p-4 text-center animate-rise ${c.phase === 'won' ? 'border-resonance/60' : 'border-dissonance/60'}`}>
+        <div className={`panel rounded-xl p-4 text-center animate-rise shrink-0 ${c.phase === 'won' ? 'border-resonance/60' : 'border-dissonance/60'}`}>
           <h3 className="text-xl mb-1">{c.kind === 'worldboss' ? T('🗻 Fine dello scontro') : c.phase === 'won' ? T('🏆 Vittoria') : T('☠️ Sconfitta')}</h3>
           <p className="text-xs text-mist mb-3">{c.kind === 'worldboss' ? T('Danni inflitti: {damageDealt}', { damageDealt: c.damageDealt }) : c.phase === 'won' ? c.enemies.map(e => ENEMIES[e.defId]?.lore).filter(Boolean)[0] : T('La valle ti riporta in superficie, più povero.')}</p>
           <Btn kind={c.phase === 'won' ? 'good' : 'bad'} onClick={() => act(d => finishCombat(d))}>{T('Continua')}</Btn>
         </div>
       )}
 
-      <div ref={logRef} className="panel rounded-xl p-2 h-28 overflow-y-auto text-[11px] text-bone/70 space-y-0.5">
+      <div ref={logRef} className="panel rounded-xl p-2 h-14 sm:h-20 shrink-0 overflow-y-auto overscroll-contain text-[11px] text-bone/70 space-y-0.5 combat-log">
         {c.log.map((l, i) => <div key={i}>{l}</div>)}
       </div>
     </div>

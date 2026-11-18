@@ -421,3 +421,8 @@ input[type=range], input[type=checkbox] { accent-color: #f59e0b; }
 :root { --ad-h: 10vh; }
 @media (min-width: 1500px) and (orientation: landscape) { :root { --ad-h: 0px; } }
 .ad-shrink { min-height: 0 !important; }
+
+/* Combattimento: la pagina non scorre, tutto sta nello schermo */
+html.in-combat, html.in-combat body { overflow: hidden; height: 100%; overscroll-behavior: none; }
+html.in-combat #root { height: 100%; }
+@media (max-height: 640px) { .combat-log { display: none; } }

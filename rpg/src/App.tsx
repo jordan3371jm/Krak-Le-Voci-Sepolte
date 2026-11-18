@@ -4,10 +4,10 @@ import { useGame } from './game/useGame';
 import { heroStats } from './game/engine/hero';
 import { BIOMES } from './game/data/enemies';
 import { corruptedUI, toast } from './game/engine/state';
-import { initAudio, setMood, setMusic, setMusicVolume, setSfx, sfx } from './game/audio';
+import { initAudio, setMood, setMusic, setMusicVolume, setMuted, setSfx, sfx } from './game/audio';
 import Intro from './components/Intro';
 import { Icon, ICON_NAMES } from './components/icons';
-import HUD, { Nav } from './components/HUD';
+import HUD, { MuteButton, Nav } from './components/HUD';
 import Village, { PortalScreen } from './components/Village';
 import { Codex, GuideBar, UnlockCard } from './components/Guide';
 import Delve from './components/Delve';
@@ -78,10 +78,19 @@ export default function App() {
   const idle = s.scene === 'ending' || (s.scene === 'game' && !!s.fardello && !s.combat && !s.talk && !moralModal && !(s.tab === 'veglia' && vigilBusy));
   useEffect(() => { setBanner(idle); }, [idle]);
 
+  // Combattimento a schermo fisso: la pagina del browser non scorre (requisito Playgama)
+  useEffect(() => {
+    const el = document.documentElement;
+    el.classList.toggle('in-combat', !!s.combat);
+    if (s.combat) window.scrollTo(0, 0);
+    return () => el.classList.remove('in-combat');
+  }, [!!s.combat]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ---------------- audio come sistema ----------------
   useEffect(() => { setMusic(s.settings.music); }, [s.settings.music]);
   useEffect(() => { setMusicVolume(s.settings.musicVolume ?? 0.55); }, [s.settings.musicVolume]);
   useEffect(() => { setSfx(s.settings.sfx); }, [s.settings.sfx]);
+  useEffect(() => { setMuted(!!s.settings.muted); }, [s.settings.muted]);
   useEffect(() => {
     const root = s.combat ? (s.combat.kind === 'boss' ? 41 : 49) : s.delve ? BIOMES[s.delve.biome].drone : 55;
     setMood({ scene: s.scene !== 'game' ? 'menu' : s.combat ? (s.combat.kind === 'boss' || s.combat.kind === 'shadow' || s.combat.kind === 'trial' ? 'boss' : 'combat') : s.delve ? 'delve' : 'village', root, corruption: s.corruption, fullscreen: s.fullscreen, intensity: s.combat ? 1 : s.delve ? 0.5 : 0.1, silent: s.dissonance >= 15 });
@@ -156,11 +165,11 @@ export default function App() {
   );
   if (s.scene === 'intro') return <Intro state={s} act={act} />;
   if (s.scene === 'ending') return <Ending state={s} act={act} replace={replace} />;
-  if (!s.fardello) return <PortalScreen act={act} />;
+  if (!s.fardello) return <><PortalScreen act={act} /><div className="fixed top-3 left-3 z-[80]"><MuteButton muted={!!s.settings.muted} onToggle={() => act(d => { d.settings.muted = !d.settings.muted; })} /></div></>;
 
   const corrupt = corruptedUI(s) && !s.settings.reduceFx;
   return (
-    <div style={bannerOn && idle ? { height: 'calc(100dvh - var(--ad-h))', overflowY: 'auto' } : undefined} className={`min-h-screen noise ${bannerOn && idle ? 'ad-shrink' : ''} ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
+    <div style={bannerOn && idle ? { height: 'calc(100dvh - var(--ad-h))', overflowY: 'auto' } : undefined} className={`${s.combat ? 'h-[100dvh] overflow-hidden flex flex-col' : 'min-h-screen'} noise ${bannerOn && idle ? 'ad-shrink' : ''} ${corrupt ? 'ui-corrupt' : ''} ${s.settings.reduceFx ? 'reduce-fx' : ''}`}>
       {(() => { const k = s.delve ? s.delve.biome : s.tab === 'villaggio' ? 'villaggio' : ''; return k && BG[k] ? <div aria-hidden className="fixed inset-0 -z-0 pointer-events-none overflow-hidden"><div className="absolute inset-0 bg-cover bg-center opacity-40 kenburns" style={{ backgroundImage: `url(${BG[k]})` }} /><div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(5,4,6,.55), rgba(5,4,6,.92))' }} /></div> : null; })()}
       {!s.settings.reduceFx && <>
         <Particles mode={s.combat ? 'combat' : s.delve ? 'delve' : 'village'} tint={s.delve?.biome === 'paludi' ? '220,40,40' : s.delve?.biome === 'torre' ? '170,120,255' : s.delve?.biome === 'abisso' ? '120,200,255' : '255,140,60'} intensity={s.combat ? 0.7 : 1} />
@@ -173,12 +182,12 @@ export default function App() {
       {(s.delve || s.combat) && s.hero.hp < heroStats(s).maxHp * 0.3 && !s.settings.reduceFx && <div className="vignette vignette-low" />}
       {corrupt && <div className="vignette vignette-corrupt" />}
       {s.fullscreen && !s.settings.reduceFx && <div className="vignette vignette-rite" />}
-      <div className="sticky top-0 z-30">
-        <HUD state={s} act={act} onFullscreen={toggleFullscreen} onCodex={() => setCodex(true)} onSave={saveNow} />
-        <Nav state={s} act={act} />
+      <div className="sticky top-0 z-30 shrink-0">
+        <HUD state={s} act={act} onFullscreen={toggleFullscreen} onCodex={() => setCodex(true)} onSave={saveNow} compact={!!s.combat} />
+        {!s.combat && <Nav state={s} act={act} />}
       </div>
       {!s.combat && <GuideBar state={s} act={act} />}
-      <main className={`${fresh ? "stagger-root" : ""} relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-4 pb-16`}>
+      <main className={`${fresh ? "stagger-root" : ""} relative z-10 max-w-6xl mx-auto px-3 sm:px-4 ${s.combat ? "w-full flex-1 min-h-0 py-2" : "py-4 pb-16"}`}>
         {s.combat ? <Combat state={s} act={act} /> : (
           <>
             {s.tab === 'villaggio' && <Village state={s} act={act} />}
@@ -195,7 +204,7 @@ export default function App() {
           </>
         )}
       </main>
-      <div className={`fixed ${bannerOn && idle ? "bottom-[calc(var(--ad-h)+12px)]" : "bottom-3"} left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 z-50 w-[min(92vw,360px)] space-y-1 pointer-events-none`}>
+      <div className={`fixed ${s.combat ? "top-16 sm:top-auto sm:bottom-3" : bannerOn && idle ? "bottom-[calc(var(--ad-h)+12px)]" : "bottom-3"} left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 z-50 w-[min(92vw,360px)] space-y-1 pointer-events-none`}>
         {s.toasts.slice(-4).map(t => (
           <div key={t.id} className={`animate-rise rounded-lg px-3 py-1.5 text-xs sm:text-sm shadow-lg border bg-black/90 ${t.kind === 'good' ? 'border-resonance/60 text-teal-100' : t.kind === 'bad' ? 'border-dissonance/60 text-red-100' : t.kind === 'fate' ? 'border-fate/60 text-purple-100' : 'border-ember/40 text-bone'}`}>{t.text}</div>
         ))}

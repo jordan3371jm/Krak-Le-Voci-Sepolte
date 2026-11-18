@@ -1,3 +1,4 @@
+import { cleanName } from '../profanity';
 import { MISSION_PERIODS, type MissionPeriod } from '../data/world';
 import { t as T } from '../../i18n';
 import type { ClassId, FactionId, FardelloId, GameState, ResKey, Resources } from '../types';
@@ -13,7 +14,7 @@ import { changeRep, checkStars, createPromise, generateDreams, pushValley, rando
 // Inizio partita / scelta del Fardello (onboarding < 5 minuti)
 // ============================================================
 export function beginGame(s: GameState, name: string, classId: ClassId) {
-  s.playerName = name.trim().slice(0, 20) || 'Portatore';
+  s.playerName = cleanName(name.trim().slice(0, 20), 'Portatore');
   s.classId = classId;
   s.scene = 'game';
   s.tab = 'villaggio';

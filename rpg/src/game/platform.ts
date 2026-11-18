@@ -19,9 +19,21 @@ let lastAdAt = (() => { try { return Number(localStorage.getItem(AD_KEY)) || 0; 
 const markAd = () => { lastAdAt = Date.now(); try { localStorage.setItem(AD_KEY, String(lastAdAt)); } catch { /* */ } };
 const bannerEvt = (on: boolean) => { try { window.dispatchEvent(new CustomEvent('krak-banner', { detail: on })); } catch { /* */ } };
 let audioAllowed = true, paused = false, adOpen = false;
-const applyMute = () => setExternalMute(!audioAllowed || paused || adOpen || (typeof document !== 'undefined' && document.hidden));
+let pageHidden = false;
+const applyMute = (e?: Event) => {
+  if (e?.type === 'pagehide') pageHidden = true; else if (e?.type === 'pageshow') pageHidden = false;
+  setExternalMute(!audioAllowed || paused || adOpen || pageHidden || (typeof document !== 'undefined' && (document.hidden || document.visibilityState === 'hidden')));
+};
 
 export async function bootPlatform(keys: string[]) {
+  // Scheda nascosta / pagina in background: silenzio subito, anche prima che Bridge risponda.
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', applyMute);
+    window.addEventListener('pagehide', applyMute);
+    window.addEventListener('pageshow', applyMute);
+    window.addEventListener('focus', applyMute);
+    applyMute();
+  }
   const b = w().bridge;
   if (b?.initialize) {
     try { await Promise.race([b.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 10_000))]); } catch { /* si gioca comunque */ }
@@ -40,7 +52,6 @@ export async function bootPlatform(keys: string[]) {
       b.advertisement?.on?.(E.REWARDED_STATE_CHANGED || 'rewarded_state_changed', (st: string) => { adOpen = st === 'opened'; applyMute(); });
     } catch { /* */ }
   }
-  if (typeof document !== 'undefined') document.addEventListener('visibilitychange', applyMute);
   applyMute();
 }
 

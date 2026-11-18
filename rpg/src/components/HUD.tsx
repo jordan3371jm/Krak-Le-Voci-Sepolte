@@ -21,7 +21,7 @@ function lie(n: number, on: boolean) {
 
 const iconBtn = 'w-9 h-9 flex items-center justify-center rounded-full border border-stone-700 hover:border-amber-500/70 transition';
 
-export default function HUD({ state: s, act, onFullscreen, onCodex, onSave }: { state: GameState; act: Act; onFullscreen: () => void; onCodex: () => void; onSave?: () => void }) {
+export default function HUD({ state: s, act, onFullscreen, onCodex, onSave, compact = false }: { state: GameState; act: Act; onFullscreen: () => void; onCodex: () => void; onSave?: () => void; compact?: boolean }) {
   const st = heroStats(s);
   const corrupt = corruptedUI(s);
   const prod = productionPerSec(s);
@@ -55,10 +55,11 @@ export default function HUD({ state: s, act, onFullscreen, onCodex, onSave }: { 
         </div>
         <div className="ml-auto flex items-center gap-2 shrink-0">
           {s.fardello && <span className={`text-xs ${VE.color} hidden md:inline whitespace-nowrap`} title={VE.desc}>{VE.icon} {T(vs)}</span>}
+          <MuteButton muted={!!s.settings.muted} onToggle={() => act(d => { d.settings.muted = !d.settings.muted; })} />
           <GameMenu state={s} act={act} onFullscreen={onFullscreen} onCodex={onCodex} onSave={onSave} />
         </div>
       </div>
-      <div className={`max-w-6xl mx-auto px-3 py-1.5 flex gap-1.5 overflow-x-auto no-scrollbar ${corrupt ? 'corruptible' : ''}`}>
+      <div className={`max-w-6xl mx-auto px-3 py-1.5 flex gap-1.5 overflow-x-auto no-scrollbar ${compact ? 'hidden' : ''} ${corrupt ? 'corruptible' : ''}`}>
         {keys.map(k => (
           <div key={k} className={`shrink-0 flex items-center gap-1.5 rounded-full bg-white/[.03] border border-stone-800 pl-0.5 pr-2.5 py-0.5 ${RES_INFO[k].color} ${corrupt ? 'corrupt-num' : ''}`} title={`${RES_INFO[k].name}${prod[k] ? ` · +${fmt(prod[k])}/s` : ''}`}>
             <Icon name={k} size={30} />
@@ -72,6 +73,16 @@ export default function HUD({ state: s, act, onFullscreen, onCodex, onSave }: { 
         {isUnlocked(s, 'discesa') && <div className="shrink-0 flex items-center gap-1.5 rounded-full bg-white/[.03] border border-stone-800 pl-1 pr-2.5 py-0.5 text-red-300" title={T('Pozioni')}><Icon name="pozione" size={26} /><span className="text-sm tabular-nums">{s.potions}</span></div>}
       </div>
     </header>
+  );
+}
+
+/** Pulsante muto sempre visibile: spegne tutto l'audio del gioco (musica, effetti, voci). */
+export function MuteButton({ muted, onToggle, className = '' }: { muted: boolean; onToggle: () => void; className?: string }) {
+  return (
+    <button onClick={onToggle} aria-pressed={muted} aria-label={muted ? T('Attiva l\'audio') : T('Disattiva l\'audio')} title={muted ? T('Attiva l\'audio') : T('Disattiva l\'audio')}
+      className={`w-11 h-11 flex items-center justify-center rounded-full border text-xl transition ${muted ? 'border-red-800/80 bg-red-950/40' : 'border-stone-700 hover:border-amber-500/70'} ${className}`}>
+      <span aria-hidden>{muted ? '🔇' : '🔊'}</span>
+    </button>
   );
 }
 
@@ -95,6 +106,7 @@ function GameMenu({ state: s, act, onFullscreen, onCodex, onSave }: { state: Gam
         <div className="absolute right-0 z-[70] mt-2 w-72 max-w-[92vw] rounded-xl border border-amber-800/60 bg-black/95 p-1.5 shadow-2xl animate-rise">
           <div className="px-2 py-2"><LangGrid onBeforeChange={onSave} /></div>
           <button className={row} onClick={() => { setOpen(false); onCodex(); }}><Icon name="diario" size={30} />{T('Codex: come funziona')}</button>
+          <button className={row} onClick={() => act(d => { d.settings.muted = !d.settings.muted; })}><span className="w-[30px] text-center text-xl">{s.settings.muted ? '🔇' : '🔊'}</span>{s.settings.muted ? T('Audio disattivato') : T('Audio attivo')}</button>
           <button className={row} onClick={() => act(d => { d.settings.music = !d.settings.music; })}><span className={s.settings.music ? '' : 'opacity-40'}><Icon name="musica" size={30} /></span>{s.settings.music ? T('Musica attiva') : T('Musica spenta')}</button>
           <button className={row} onClick={() => { setOpen(false); onFullscreen(); }}><Icon name="rito" size={30} />{T('Il Rito (schermo intero)')}</button>
           {onSave && <button className={row} onClick={() => { onSave(); setOpen(false); }}><Icon name="opzioni" size={30} />{T('💾 Salva ora')}</button>}

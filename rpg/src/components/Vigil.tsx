@@ -1,3 +1,4 @@
+import { cleanName } from '../game/profanity';
 import { t as T } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
 import type { GameState } from '../game/types';
@@ -10,6 +11,9 @@ import { sfx } from '../game/audio';
 import { AdBtn, Btn, Panel } from './ui';
 import { Icon } from './icons';
 import { artOr, BG } from './art';
+
+// I nomi degli altri portatori passano dal filtro delle parolacce anche quando arrivano dall'host.
+const scrub = (st: VigilState): VigilState => { if (st?.players) for (const p of st.players) p.name = cleanName(String(p.name || '').slice(0, 24), T('Portatore')); return st; };
 
 const ACTIONS: { id: VAction; icon: string; name: () => string; desc: () => string }[] = [
   { id: 'strike', icon: 'combat', name: () => T('Colpisci'), desc: () => T('Ferisci il Sepolto più vicino.') },
@@ -84,8 +88,8 @@ export default function Vigil({ state: s, act }: { state: GameState; act: Act })
   }, [v?.phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlers = {
-    onState: (st: VigilState) => { if (!mpIsHost()) { vs.current = st; rerender(); } },
-    applyState: (st: VigilState) => { vs.current = st; rerender(); },
+    onState: (st: VigilState) => { if (!mpIsHost()) { vs.current = scrub(st); rerender(); } },
+    applyState: (st: VigilState) => { vs.current = scrub(st); rerender(); },
     getState: () => vs.current || newVigil(),
     onMessage: (m: { type: string; data: any; from: string }) => {
       const cur = vs.current; if (!cur || !mpIsHost()) return;

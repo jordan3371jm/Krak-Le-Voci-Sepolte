@@ -331,7 +331,7 @@ export interface GameState {
   trialOutcome: string | null;
   ending: string | null;
 
-  settings: { music: boolean; musicVolume: number; sfx: boolean; autoBattle: boolean; autoPotion: number; fastCombat: boolean; purifiedUntil: number; reduceFx: boolean };
+  settings: { music: boolean; musicVolume: number; sfx: boolean; muted?: boolean; autoBattle: boolean; autoPotion: number; fastCombat: boolean; purifiedUntil: number; reduceFx: boolean };
   fullscreen: boolean;
 
   unlocked: string[];

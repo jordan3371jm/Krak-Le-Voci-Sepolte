@@ -460,6 +460,7 @@ export function Settings({ state: s, act, replace, saveNow, onFullscreen }: { st
       </Panel>
       <Panel title={T('Rito e Suono')} icon="🎧">
         <div className="space-y-2 text-sm">
+          <label className="flex items-center gap-2"><input type="checkbox" checked={!s.settings.muted} onChange={() => act(d => { d.settings.muted = !d.settings.muted; })} />{' '}{T('Audio del gioco (tutto)')}</label>
           <label className="flex items-center gap-2"><input type="checkbox" checked={s.settings.music} onChange={() => act(d => { d.settings.music = !d.settings.music; })} />{' '}{T('Musica e ambiente')}</label>
           <div className="text-xs text-mist">{T('Volume musica')}{' '}{Math.round((s.settings.musicVolume ?? 0.55) * 100)}%
             <input type="range" min={0} max={1} step={0.05} value={s.settings.musicVolume ?? 0.55} onChange={e => { const v = +e.target.value; act(d => { d.settings.musicVolume = v; }); }} className="w-full" />
